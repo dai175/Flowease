@@ -33,9 +33,9 @@ FloweaseUITests/          # UIテスト
 
 **Purpose**: プロジェクト構造の作成と基本設定
 
-- [ ] T001 Flowease/Utilities/Constants.swift に定数定義ファイルを作成
-- [ ] T002 [P] Flowease/Resources/Info.plist にカメラ使用理由とLSUIElementを設定
-- [ ] T003 [P] Flowease/Resources/Assets.xcassets/StatusBarIcon/ にメニューバーアイコン（緑/黄/赤）を追加
+- [x] T001 Flowease/Utilities/Constants.swift に定数定義ファイルを作成
+- [x] T002 [P] Flowease/Resources/Info.plist にカメラ使用理由とLSUIElementを設定
+- [x] T003 [P] Flowease/Resources/Assets.xcassets/StatusBarIcon/ にメニューバーアイコン（緑/黄/赤）を追加
 
 ---
 

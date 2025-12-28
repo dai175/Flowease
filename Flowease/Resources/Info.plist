@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Camera Usage Description -->
+	<key>NSCameraUsageDescription</key>
+	<string>Floweaseは、あなたの姿勢をリアルタイムで検知し、悪い姿勢が続いた場合に通知を送ります。カメラ映像はデバイス内でのみ処理され、外部に送信されることはありません。</string>
+
+	<!-- Hide Dock Icon (Menu Bar App) -->
+	<key>LSUIElement</key>
+	<true/>
+
+	<!-- App Category -->
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.healthcare-fitness</string>
+
+	<!-- Minimum System Version -->
+	<key>LSMinimumSystemVersion</key>
+	<string>14.6</string>
+</dict>
+</plist>
