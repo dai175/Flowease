@@ -131,3 +131,6 @@ Temporary Items
 *.p12
 *.key
 Secrets/
+
+# Serena
+.serena/
