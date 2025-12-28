@@ -54,9 +54,9 @@ protocol PostureDetectionServiceProtocol {
 
 | メソッド | 入力 | 出力 | エラー |
 |---------|------|------|--------|
-| startDetection | cameraDeviceID: String? | void | CameraAccessDenied, CameraNotFound, VisionError |
+| startDetection | cameraDeviceID: String? | void | cameraAccessDenied, cameraNotFound, visionFrameworkError |
 | stopDetection | - | void | - |
-| detectPosture | pixelBuffer: CVPixelBuffer | PostureState | VisionError, NoPoseDetected |
+| detectPosture | pixelBuffer: CVPixelBuffer | PostureState | visionFrameworkError, noPoseDetected |
 | updateThresholds | forwardLeanThreshold, neckTiltThreshold | void | - |
 
 ### エラー定義
@@ -162,6 +162,8 @@ protocol NotificationServiceProtocol {
     // MARK: - Properties
 
     /// 通知が許可されているか
+    /// - Note: 非同期プロパティ。呼び出し側は `await` を使用してアクセスする必要があります。
+    ///   例: `let authorized = await notificationService.isAuthorized`
     var isAuthorized: Bool { get async }
 
     // MARK: - Methods
@@ -210,9 +212,17 @@ protocol NotificationServiceProtocol {
 ### エラー定義
 
 ```swift
+/// 通知権限リクエスト時のエラー
+enum AuthorizationError: Error {
+    case denied
+    case restricted
+    case systemError(Error)
+}
+
+/// 通知送信時のエラー
 enum NotificationError: Error {
-    case authorizationDenied
     case deliveryFailed(Error)
+    case invalidContent
 }
 ```
 

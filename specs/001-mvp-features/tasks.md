@@ -135,9 +135,9 @@ FloweaseUITests/          # UIテスト
 ### Implementation for User Story 2
 
 - [ ] T035 [US2] Flowease/Services/BreakReminderService.swift に休憩タイマーとスヌーズ機能を実装
-- [ ] T036 [US2] NotificationService.swift に休憩リマインダー通知（アクション付き）を追加
-- [ ] T037 [US2] PopoverView.swift に次の休憩までの残り時間表示を追加
-- [ ] T038 [US2] SettingsView.swift に休憩間隔設定（30-60分）を追加
+- [ ] T036 [US2] Flowease/Services/NotificationService.swift に休憩リマインダー通知（アクション付き）を追加
+- [ ] T037 [US2] Flowease/Views/PopoverView.swift に次の休憩までの残り時間表示を追加
+- [ ] T038 [US2] Flowease/Views/SettingsView.swift に休憩間隔設定（30-60分）を追加
 
 **Checkpoint**: 休憩リマインダー完成 - 設定時間後に休憩通知が表示される
 
@@ -154,7 +154,7 @@ FloweaseUITests/          # UIテスト
 - [ ] T039 [P] [US3] Flowease/Services/StretchService.swift にストレッチセッション管理を実装
 - [ ] T040 [P] [US3] Flowease/Views/Stretch/StretchGuideView.swift にストレッチガイドUIを実装
 - [ ] T041 [US3] Flowease/Views/Stretch/StretchAnimationView.swift にストレッチアニメーションを実装
-- [ ] T042 [US3] PopoverView.swift に「今すぐストレッチ」ボタンを追加
+- [ ] T042 [US3] Flowease/Views/PopoverView.swift に「今すぐストレッチ」ボタンを追加
 - [ ] T043 [US3] 休憩通知のアクションからストレッチガイドを開始する連携を実装
 
 **Checkpoint**: ストレッチガイド完成 - ストレッチセッションが正常に動作
