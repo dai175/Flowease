@@ -2,9 +2,6 @@ import Foundation
 
 /// 休憩リマインダーモデル
 public struct BreakReminder: Codable, Sendable {
-    /// 休憩間隔（分）
-    public var intervalMinutes: Int
-
     /// 次回通知予定時刻
     public var nextReminderTime: Date?
 
@@ -18,16 +15,11 @@ public struct BreakReminder: Codable, Sendable {
     public var snoozeCount: Int
 
     public init(
-        intervalMinutes: Int = Constants.BreakReminder.defaultIntervalMinutes,
         nextReminderTime: Date? = nil,
         isEnabled: Bool = true,
         lastBreakTime: Date? = nil,
         snoozeCount: Int = 0
     ) {
-        self.intervalMinutes = max(
-            Constants.BreakReminder.minimumIntervalMinutes,
-            min(Constants.BreakReminder.maximumIntervalMinutes, intervalMinutes)
-        )
         self.nextReminderTime = nextReminderTime
         self.isEnabled = isEnabled
         self.lastBreakTime = lastBreakTime
@@ -55,7 +47,6 @@ public struct BreakReminder: Codable, Sendable {
 extension BreakReminder {
     /// デフォルト設定
     public static let `default` = BreakReminder(
-        intervalMinutes: Constants.BreakReminder.defaultIntervalMinutes,
         nextReminderTime: nil,
         isEnabled: true,
         lastBreakTime: nil,

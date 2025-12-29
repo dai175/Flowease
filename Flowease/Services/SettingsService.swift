@@ -104,11 +104,6 @@ extension SettingsService {
             min(Constants.BreakReminder.maximumIntervalMinutes, minutes)
         )
         updateSetting(\.breakIntervalMinutes, value: clampedMinutes)
-
-        // BreakReminderも更新
-        var currentReminder = breakReminder.value
-        currentReminder.intervalMinutes = clampedMinutes
-        saveBreakReminder(currentReminder)
     }
 
     /// 姿勢感度を更新
