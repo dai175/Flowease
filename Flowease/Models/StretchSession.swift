@@ -71,10 +71,22 @@ public struct StretchSession: Sendable {
         return remainingDuration + remainingSecondsForCurrentStretch
     }
 
-    /// 残り時間をフォーマット済みで返す
-    public var formattedRemainingTime: String {
-        let seconds = remainingSecondsForCurrentStretch
-        return String(format: "%02d", seconds)
+    /// 現在のストレッチの残り時間（フォーマット済み mm:ss）
+    public var formattedCurrentStretchRemainingTime: String {
+        formatTime(remainingSecondsForCurrentStretch)
+    }
+
+    /// セッション全体の残り時間（フォーマット済み mm:ss）
+    public var formattedTotalRemainingTime: String {
+        formatTime(totalRemainingSeconds)
+    }
+
+    // MARK: - Private Helpers
+
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let secs = seconds % 60
+        return String(format: "%02d:%02d", minutes, secs)
     }
 }
 
