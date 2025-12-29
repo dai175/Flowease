@@ -25,7 +25,7 @@ public struct StretchSession: Sendable {
         isPaused: Bool = false
     ) {
         self.stretches = stretches
-        self.currentIndex = max(0, min(stretches.count - 1, currentIndex))
+        self.currentIndex = max(0, min(stretches.count, currentIndex))
         self.elapsedSeconds = max(0, elapsedSeconds)
         self.startedAt = startedAt
         self.isPaused = isPaused
