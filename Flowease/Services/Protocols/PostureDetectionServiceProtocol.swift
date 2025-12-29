@@ -25,14 +25,21 @@ public protocol PostureDetectionServiceProtocol: AnyObject {
     /// 姿勢検知を停止
     func stopDetection()
 
-    /// 単一フレームから姿勢を検知（テスト用）
-    /// - Parameter pixelBuffer: カメラからのフレーム
-    /// - Returns: 検知結果
-    func detectPosture(from pixelBuffer: CVPixelBuffer) async throws -> PostureState
-
     /// 姿勢判定の閾値を更新
     /// - Parameters:
     ///   - forwardLeanThreshold: 前かがみ閾値（度）
     ///   - neckTiltThreshold: 首傾き閾値（度）
     func updateThresholds(forwardLeanThreshold: Double, neckTiltThreshold: Double)
+}
+
+// MARK: - Testable Protocol
+
+/// テスト用の拡張プロトコル
+/// 単体テストやデバッグ目的で使用する追加メソッドを提供
+public protocol PostureDetectionServiceTestable: PostureDetectionServiceProtocol {
+    /// 単一フレームから姿勢を検知
+    /// - Parameter pixelBuffer: カメラからのフレーム
+    /// - Returns: 検知結果
+    /// - Note: 主にユニットテストや単一画像解析で使用
+    func detectPosture(from pixelBuffer: CVPixelBuffer) async throws -> PostureState
 }
