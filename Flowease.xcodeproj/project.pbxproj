@@ -99,7 +99,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7E5119572F002BCA00863379 /* Build configuration list for PBXNativeTarget "Flowease" */;
 			buildPhases = (
+				7EC460542F024EE2009707B2 /* SwiftFormat */,
 				7E5119322F002BC900863379 /* Sources */,
+				7EC460552F024F40009707B2 /* SwiftLint */,
 				7E5119332F002BC900863379 /* Frameworks */,
 				7E5119342F002BC900863379 /* Resources */,
 			);
@@ -230,6 +232,47 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7EC460542F024EE2009707B2 /* SwiftFormat */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftFormat;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = " if which swiftformat > /dev/null; then\n   swiftformat .\n else\n   echo \"warning: SwiftFormat not installed. Run 'brew install swiftformat'\"\n fi\n";
+		};
+		7EC460552F024F40009707B2 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = " if which swiftlint > /dev/null; then\n   swiftlint\n else\n   echo\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7E5119322F002BC900863379 /* Sources */ = {

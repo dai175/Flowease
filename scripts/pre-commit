@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# SwiftFormat - 自動修正してステージング
+if which swiftformat > /dev/null; then
+  # 変更されたSwiftファイルのみを対象
+  git diff --cached --name-only --diff-filter=ACM | grep '\.swift$' | while read file; do
+    swiftformat "$file"
+    git add "$file"
+  done
+fi
+
+# SwiftLint - チェック（エラーがあればコミット中断）
+if which swiftlint > /dev/null; then
+  swiftlint lint --quiet
+  RESULT=$?
+  if [ $RESULT -ne 0 ]; then
+    echo "SwiftLint found issues. Please fix them before committing."
+    exit 1
+  fi
+fi
+
+exit 0
