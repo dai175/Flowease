@@ -15,6 +15,9 @@ struct PopoverView: View {
     /// 現在の姿勢レベル
     let postureLevel: PostureLevel
 
+    /// 現在の姿勢スコア（0.0〜1.0）
+    var postureScore = 0.0
+
     /// 次の休憩までの残り時間（秒）（Phase 5 で実装）
     var timeUntilNextBreak: TimeInterval?
 
@@ -84,9 +87,17 @@ struct PopoverView: View {
                     .foregroundColor(postureLevel.color)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(postureLevel.displayName)
-                        .font(.title2)
-                        .fontWeight(.semibold)
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text(postureLevel.displayName)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                        if postureLevel != .unknown {
+                            Text("\(Int(postureScore * 100))%")
+                                .font(.headline)
+                                .foregroundColor(postureLevel.color)
+                        }
+                    }
 
                     Text(postureStatusDescription)
                         .font(.caption)

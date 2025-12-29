@@ -106,17 +106,17 @@ FloweaseUITests/          # UIテスト
 
 ### Tests for User Story 1 (Optional) ⚠️
 
-- [ ] T026 [P] [US1] FloweaseTests/Services/PostureDetectionServiceTests.swift に姿勢検知テストを作成
-- [ ] T027 [P] [US1] FloweaseTests/Models/PostureStateTests.swift に姿勢状態モデルテストを作成
+- [x] T026 [P] [US1] FloweaseTests/Services/PostureDetectionServiceTests.swift に姿勢検知テストを作成
+- [x] T027 [P] [US1] FloweaseTests/Models/PostureStateTests.swift に姿勢状態モデルテストを作成
 
 ### Implementation for User Story 1
 
-- [ ] T028 [US1] Flowease/Services/CameraService.swift に AVFoundation カメラ連携を実装
-- [ ] T029 [US1] Flowease/Services/PostureDetectionService.swift に Vision Framework 姿勢検知を実装
-- [ ] T030 [US1] Flowease/Services/NotificationService.swift に姿勢警告通知を実装
-- [ ] T031 [US1] AppDelegate.swift にカメラ権限リクエストと姿勢検知開始を統合
-- [ ] T032 [US1] PopoverView.swift に姿勢スコアのリアルタイム表示を統合
-- [ ] T033 [US1] StatusBarView.swift にアイコン色変更（緑/黄/赤）を統合
+- [x] T028 [US1] Flowease/Services/CameraService.swift に AVFoundation カメラ連携を実装
+- [x] T029 [US1] Flowease/Services/PostureDetectionService.swift に Vision Framework 姿勢検知を実装
+- [x] T030 [US1] Flowease/Services/NotificationService.swift に姿勢警告通知を実装
+- [x] T031 [US1] AppDelegate.swift にカメラ権限リクエストと姿勢検知開始を統合
+- [x] T032 [US1] PopoverView.swift に姿勢スコアのリアルタイム表示を統合
+- [x] T033 [US1] StatusBarView.swift にアイコン色変更（緑/黄/赤）を統合
 
 **Checkpoint**: 姿勢検知MVP完成 - 悪い姿勢で通知が表示される
 

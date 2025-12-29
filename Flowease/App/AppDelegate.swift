@@ -25,15 +25,36 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         ServiceContainer.shared.settingsService
     }
 
+    /// 姿勢検知サービス
+    private var postureDetectionService: PostureDetectionServiceProtocol? {
+        ServiceContainer.shared.isPostureDetectionServiceAvailable
+            ? ServiceContainer.shared.postureDetectionService
+            : nil
+    }
+
+    /// 通知サービス
+    private var notificationService: NotificationServiceProtocol? {
+        ServiceContainer.shared.isNotificationServiceAvailable
+            ? ServiceContainer.shared.notificationService
+            : nil
+    }
+
     /// キャンセラブルの保持用
     private var cancellables = Set<AnyCancellable>()
 
-    /// 現在の姿勢状態（Phase 4で姿勢検知サービスと連携）
+    /// 現在の姿勢状態
     @Published private var currentPostureLevel: PostureLevel = .unknown
+
+    /// 現在の姿勢スコア
+    @Published private var currentPostureScore = 0.0
 
     // MARK: - NSApplicationDelegate
 
-    public func applicationDidFinishLaunching(_ notification: Notification) {
+    public func applicationDidFinishLaunching(_: Notification) {
+        // サービスを登録
+        registerServices()
+
+        // UIをセットアップ
         setupStatusItem()
         setupPopover()
 
@@ -44,11 +65,121 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.updateStatusItemIcon(for: level)
             }
             .store(in: &cancellables)
+
+        // 姿勢検知を開始
+        Task {
+            await startPostureMonitoring()
+        }
+
+        // 通知からストレッチ開始の通知を購読
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleStartStretchNotification),
+            name: .startStretchFromNotification,
+            object: nil
+        )
     }
 
-    public func applicationWillTerminate(_ notification: Notification) {
+    public func applicationWillTerminate(_: Notification) {
+        // 姿勢検知を停止
+        postureDetectionService?.stopDetection()
+
         // クリーンアップ処理
         cancellables.removeAll()
+        // Note: removeObserver は不要（アプリ終了時にプロセスごと解放される）
+    }
+
+    // MARK: - Service Registration
+
+    /// サービスを登録
+    private func registerServices() {
+        // カメラサービスを登録
+        let cameraService = CameraService()
+        ServiceContainer.shared.registerCameraService(cameraService)
+
+        // 通知サービスを登録
+        let notificationService = NotificationService()
+        ServiceContainer.shared.registerNotificationService(notificationService)
+
+        // 姿勢検知サービスを登録
+        let postureDetectionService = PostureDetectionService(cameraService: cameraService)
+        ServiceContainer.shared.registerPostureDetectionService(postureDetectionService)
+    }
+
+    // MARK: - Posture Monitoring
+
+    /// 姿勢監視を開始
+    private func startPostureMonitoring() async {
+        guard let postureService = postureDetectionService else { return }
+
+        // 設定が有効な場合のみ開始
+        let settings = settingsService.settings.value
+        guard settings.postureMonitoringEnabled else { return }
+
+        // 通知権限をリクエスト
+        if let notifService = notificationService {
+            _ = try? await notifService.requestAuthorization()
+        }
+
+        // 姿勢の変更を購読
+        postureService.posturePublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] postureState in
+                self?.handlePostureUpdate(postureState)
+            }
+            .store(in: &cancellables)
+
+        // 姿勢検知を開始
+        do {
+            try await postureService.startDetection(cameraDeviceID: settings.selectedCameraID)
+        } catch {
+            print("Failed to start posture detection: \(error.localizedDescription)")
+            currentPostureLevel = .unknown
+        }
+    }
+
+    /// 姿勢更新を処理
+    private func handlePostureUpdate(_ postureState: PostureState?) {
+        guard let state = postureState else {
+            currentPostureLevel = .unknown
+            currentPostureScore = 0.0
+            return
+        }
+
+        currentPostureLevel = state.level
+        currentPostureScore = state.score
+
+        // ポップオーバーの内容も更新
+        if let popover = popover, popover.isShown {
+            updatePopoverContent()
+        }
+
+        // 悪い姿勢が続いている場合は通知を送信
+        Task {
+            await checkAndSendPostureAlert(state)
+        }
+    }
+
+    /// 姿勢警告が必要かチェックして送信
+    private func checkAndSendPostureAlert(_ state: PostureState) async {
+        let settings = settingsService.settings.value
+
+        // 通知が無効の場合はスキップ
+        guard settings.notificationsEnabled else { return }
+
+        // 悪い姿勢が設定時間以上続いている場合
+        if state.level == .bad,
+           state.badPostureDuration >= settings.badPostureAlertDelay
+        {
+            try? await notificationService?.sendPostureAlert(postureState: state)
+        }
+    }
+
+    /// 通知からストレッチ開始
+    @objc private func handleStartStretchNotification() {
+        DispatchQueue.main.async { [weak self] in
+            self?.startStretch()
+        }
     }
 
     // MARK: - Setup
@@ -78,6 +209,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         // PopoverView を SwiftUI でホスト
         let popoverView = PopoverView(
             postureLevel: currentPostureLevel,
+            postureScore: currentPostureScore,
             onSettingsPressed: { [weak self] in
                 self?.openSettings()
             },
@@ -157,6 +289,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     private func updatePopoverContent() {
         let popoverView = PopoverView(
             postureLevel: currentPostureLevel,
+            postureScore: currentPostureScore,
             onSettingsPressed: { [weak self] in
                 self?.openSettings()
             },
