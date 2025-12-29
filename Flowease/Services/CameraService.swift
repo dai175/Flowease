@@ -12,6 +12,7 @@ import Foundation
 
 /// カメラサービスの実装
 /// AVFoundation を使用してカメラの制御とフレーム取得を行う
+@MainActor
 public final class CameraService: NSObject, CameraServiceProtocol {
     // MARK: - Properties
 
@@ -126,7 +127,7 @@ public final class CameraService: NSObject, CameraServiceProtocol {
     public func stopCamera() {
         sessionQueue.async { [weak self] in
             self?.captureSession?.stopRunning()
-            DispatchQueue.main.async {
+            Task { @MainActor in
                 self?.isActive = false
                 self?.currentCamera = nil
             }
@@ -224,7 +225,7 @@ public final class CameraService: NSObject, CameraServiceProtocol {
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             sessionQueue.async { [weak self] in
                 self?.captureSession?.startRunning()
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     self?.isActive = true
                 }
                 continuation.resume()
@@ -236,7 +237,7 @@ public final class CameraService: NSObject, CameraServiceProtocol {
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 
 extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
-    public func captureOutput(
+    public nonisolated func captureOutput(
         _: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
