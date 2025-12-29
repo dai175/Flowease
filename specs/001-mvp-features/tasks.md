@@ -47,32 +47,32 @@ FloweaseUITests/          # UIテスト
 
 ### Models (全ストーリー共通)
 
-- [ ] T004 [P] Flowease/Models/PostureState.swift に PostureLevel enum と PostureState struct を作成
-- [ ] T005 [P] Flowease/Models/BreakReminder.swift に BreakReminder struct を作成
-- [ ] T006 [P] Flowease/Models/Stretch.swift に StretchCategory enum と Stretch struct を作成
-- [ ] T007 [P] Flowease/Models/UserSettings.swift に UserSettings struct を作成
-- [ ] T008 [P] Flowease/Models/CameraDevice.swift に CameraDevice struct を作成
-- [ ] T009 [P] Flowease/Models/StretchSession.swift に StretchSession struct を作成
+- [x] T004 [P] Flowease/Models/PostureState.swift に PostureLevel enum と PostureState struct を作成
+- [x] T005 [P] Flowease/Models/BreakReminder.swift に BreakReminder struct を作成
+- [x] T006 [P] Flowease/Models/Stretch.swift に StretchCategory enum と Stretch struct を作成
+- [x] T007 [P] Flowease/Models/UserSettings.swift に UserSettings struct を作成
+- [x] T008 [P] Flowease/Models/CameraDevice.swift に CameraDevice struct を作成
+- [x] T009 [P] Flowease/Models/StretchSession.swift に StretchSession struct を作成
 
 ### Error Definitions
 
-- [ ] T010 [P] Flowease/Services/Errors/PostureDetectionError.swift にエラー定義を作成
-- [ ] T011 [P] Flowease/Services/Errors/CameraError.swift にエラー定義を作成
-- [ ] T012 [P] Flowease/Services/Errors/NotificationError.swift にエラー定義を作成
+- [x] T010 [P] Flowease/Services/Errors/PostureDetectionError.swift にエラー定義を作成
+- [x] T011 [P] Flowease/Services/Errors/CameraError.swift にエラー定義を作成
+- [x] T012 [P] Flowease/Services/Errors/NotificationError.swift にエラー定義を作成
 
 ### Service Protocols
 
-- [ ] T013 [P] Flowease/Services/Protocols/PostureDetectionServiceProtocol.swift にプロトコルを作成
-- [ ] T014 [P] Flowease/Services/Protocols/CameraServiceProtocol.swift にプロトコルを作成
-- [ ] T015 [P] Flowease/Services/Protocols/NotificationServiceProtocol.swift にプロトコルを作成
-- [ ] T016 [P] Flowease/Services/Protocols/SettingsServiceProtocol.swift にプロトコルを作成
-- [ ] T017 [P] Flowease/Services/Protocols/BreakReminderServiceProtocol.swift にプロトコルを作成
-- [ ] T018 [P] Flowease/Services/Protocols/StretchServiceProtocol.swift にプロトコルを作成
+- [x] T013 [P] Flowease/Services/Protocols/PostureDetectionServiceProtocol.swift にプロトコルを作成
+- [x] T014 [P] Flowease/Services/Protocols/CameraServiceProtocol.swift にプロトコルを作成
+- [x] T015 [P] Flowease/Services/Protocols/NotificationServiceProtocol.swift にプロトコルを作成
+- [x] T016 [P] Flowease/Services/Protocols/SettingsServiceProtocol.swift にプロトコルを作成
+- [x] T017 [P] Flowease/Services/Protocols/BreakReminderServiceProtocol.swift にプロトコルを作成
+- [x] T018 [P] Flowease/Services/Protocols/StretchServiceProtocol.swift にプロトコルを作成
 
 ### Core Services (全ストーリー共通)
 
-- [ ] T019 Flowease/Services/SettingsService.swift に UserDefaults 連携の設定サービスを実装
-- [ ] T020 Flowease/Services/ServiceContainer.swift に依存性注入コンテナを作成
+- [x] T019 Flowease/Services/SettingsService.swift に UserDefaults 連携の設定サービスを実装
+- [x] T020 Flowease/Services/ServiceContainer.swift に依存性注入コンテナを作成
 
 **Checkpoint**: 基盤完了 - ユーザーストーリーの実装を開始可能
 
