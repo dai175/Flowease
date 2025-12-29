@@ -112,7 +112,8 @@ Temporary Items
 .apdisk
 
 # Claude Code
-.claude/
+.claude/*
+!.claude/commands/
 
 # IDE
 #
