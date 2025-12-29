@@ -5,11 +5,17 @@ import Foundation
 public protocol BreakReminderServiceProtocol: AnyObject {
     // MARK: - Properties
 
-    /// 現在の休憩リマインダー状態
-    var reminder: CurrentValueSubject<BreakReminder, Never> { get }
+    /// 現在の休憩リマインダー状態（購読用）
+    var reminderPublisher: AnyPublisher<BreakReminder, Never> { get }
 
-    /// 次の休憩までの残り時間（秒）
-    var timeUntilNextBreak: CurrentValueSubject<TimeInterval?, Never> { get }
+    /// 現在の休憩リマインダー状態（同期アクセス用）
+    var currentReminder: BreakReminder { get }
+
+    /// 次の休憩までの残り時間（購読用）
+    var timeUntilNextBreakPublisher: AnyPublisher<TimeInterval?, Never> { get }
+
+    /// 次の休憩までの残り時間（同期アクセス用、秒）
+    var currentTimeUntilNextBreak: TimeInterval? { get }
 
     /// リマインダーが動作中か
     var isRunning: Bool { get }

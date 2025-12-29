@@ -6,8 +6,11 @@ import Foundation
 public protocol PostureDetectionServiceProtocol: AnyObject {
     // MARK: - Properties
 
-    /// 現在の姿勢状態（リアルタイム更新）
-    var currentPosture: CurrentValueSubject<PostureState?, Never> { get }
+    /// 姿勢状態の変更を購読するPublisher
+    var posturePublisher: AnyPublisher<PostureState?, Never> { get }
+
+    /// 現在の姿勢状態（同期アクセス用）
+    var currentPosture: PostureState? { get }
 
     /// 検知が実行中か
     var isDetecting: Bool { get }
