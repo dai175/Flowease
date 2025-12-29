@@ -11,9 +11,15 @@ public final class ServiceContainer {
     // MARK: - Services
 
     /// 設定サービス
-    public lazy var settingsService: SettingsServiceProtocol = {
-        SettingsService()
-    }()
+    private var _settingsService: SettingsServiceProtocol?
+    public var settingsService: SettingsServiceProtocol {
+        get {
+            guard let service = _settingsService else {
+                fatalError("SettingsService has not been registered. Call registerSettingsService() first.")
+            }
+            return service
+        }
+    }
 
     // 以下のサービスはPhase 3以降で実装
     // Phase 3: User Story 4 - メニューバーUI完成後に実装
@@ -81,6 +87,11 @@ public final class ServiceContainer {
 
     // MARK: - Service Registration
 
+    /// 設定サービスを登録
+    public func registerSettingsService(_ service: SettingsServiceProtocol) {
+        _settingsService = service
+    }
+
     /// カメラサービスを登録
     public func registerCameraService(_ service: CameraServiceProtocol) {
         _cameraService = service
@@ -107,6 +118,11 @@ public final class ServiceContainer {
     }
 
     // MARK: - Service Availability Check
+
+    /// 設定サービスが登録されているか
+    public var isSettingsServiceAvailable: Bool {
+        _settingsService != nil
+    }
 
     /// カメラサービスが登録されているか
     public var isCameraServiceAvailable: Bool {
@@ -137,6 +153,7 @@ public final class ServiceContainer {
 
     /// 全てのサービスをリセット（テスト用）
     public func reset() {
+        _settingsService = nil
         _cameraService = nil
         _notificationService = nil
         _postureDetectionService = nil

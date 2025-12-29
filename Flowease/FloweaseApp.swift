@@ -9,6 +9,11 @@ import SwiftUI
 
 @main
 struct FloweaseApp: App {
+
+    init() {
+        ServiceContainer.shared.registerSettingsService(SettingsService())
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
