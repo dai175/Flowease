@@ -8,8 +8,11 @@ public protocol StretchServiceProtocol: AnyObject {
     /// 利用可能なストレッチ一覧
     var stretches: [Stretch] { get }
 
-    /// 現在のセッション
-    var currentSession: CurrentValueSubject<StretchSession?, Never> { get }
+    /// 現在のセッション（購読用）
+    var currentSessionPublisher: AnyPublisher<StretchSession?, Never> { get }
+
+    /// 現在のセッション値（同期アクセス用）
+    var currentSessionValue: StretchSession? { get }
 
     /// セッションが進行中か
     var isSessionActive: Bool { get }
