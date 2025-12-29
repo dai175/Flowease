@@ -41,12 +41,24 @@ public struct UserSettings: Codable, Sendable, Equatable {
             Constants.BreakReminder.minimumIntervalMinutes,
             min(Constants.BreakReminder.maximumIntervalMinutes, breakIntervalMinutes)
         )
-        self.postureSensitivity = max(0.0, min(1.0, postureSensitivity))
+        self.postureSensitivity = max(
+            Constants.PostureDetection.minimumSensitivity,
+            min(Constants.PostureDetection.maximumSensitivity, postureSensitivity)
+        )
         self.notificationsEnabled = notificationsEnabled
         self.postureMonitoringEnabled = postureMonitoringEnabled
-        self.forwardLeanThreshold = max(5.0, min(30.0, forwardLeanThreshold))
-        self.neckTiltThreshold = max(10.0, min(40.0, neckTiltThreshold))
-        self.badPostureAlertDelay = max(3.0, min(10.0, badPostureAlertDelay))
+        self.forwardLeanThreshold = max(
+            Constants.PostureDetection.minimumForwardLeanThreshold,
+            min(Constants.PostureDetection.maximumForwardLeanThreshold, forwardLeanThreshold)
+        )
+        self.neckTiltThreshold = max(
+            Constants.PostureDetection.minimumNeckTiltThreshold,
+            min(Constants.PostureDetection.maximumNeckTiltThreshold, neckTiltThreshold)
+        )
+        self.badPostureAlertDelay = max(
+            Constants.PostureDetection.minimumBadPostureAlertDelay,
+            min(Constants.PostureDetection.maximumBadPostureAlertDelay, badPostureAlertDelay)
+        )
     }
 
     public init(from decoder: Decoder) throws {
@@ -107,13 +119,13 @@ public extension UserSettings {
     var isValid: Bool {
         breakIntervalMinutes >= Constants.BreakReminder.minimumIntervalMinutes
             && breakIntervalMinutes <= Constants.BreakReminder.maximumIntervalMinutes
-            && postureSensitivity >= 0.0
-            && postureSensitivity <= 1.0
-            && forwardLeanThreshold >= 5.0
-            && forwardLeanThreshold <= 30.0
-            && neckTiltThreshold >= 10.0
-            && neckTiltThreshold <= 40.0
-            && badPostureAlertDelay >= 3.0
-            && badPostureAlertDelay <= 10.0
+            && postureSensitivity >= Constants.PostureDetection.minimumSensitivity
+            && postureSensitivity <= Constants.PostureDetection.maximumSensitivity
+            && forwardLeanThreshold >= Constants.PostureDetection.minimumForwardLeanThreshold
+            && forwardLeanThreshold <= Constants.PostureDetection.maximumForwardLeanThreshold
+            && neckTiltThreshold >= Constants.PostureDetection.minimumNeckTiltThreshold
+            && neckTiltThreshold <= Constants.PostureDetection.maximumNeckTiltThreshold
+            && badPostureAlertDelay >= Constants.PostureDetection.minimumBadPostureAlertDelay
+            && badPostureAlertDelay <= Constants.PostureDetection.maximumBadPostureAlertDelay
     }
 }

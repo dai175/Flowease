@@ -40,6 +40,38 @@ public enum Constants {
 
         /// Vision Framework の信頼度閾値
         public static let confidenceThreshold: Float = 0.5
+
+        // MARK: - Sensitivity Bounds
+
+        /// 感度の最小値
+        public static let minimumSensitivity = 0.0
+
+        /// 感度の最大値
+        public static let maximumSensitivity = 1.0
+
+        // MARK: - Forward Lean Threshold Bounds
+
+        /// 前かがみ閾値の最小値（度）
+        public static let minimumForwardLeanThreshold = 5.0
+
+        /// 前かがみ閾値の最大値（度）
+        public static let maximumForwardLeanThreshold = 30.0
+
+        // MARK: - Neck Tilt Threshold Bounds
+
+        /// 首傾き閾値の最小値（度）
+        public static let minimumNeckTiltThreshold = 10.0
+
+        /// 首傾き閾値の最大値（度）
+        public static let maximumNeckTiltThreshold = 40.0
+
+        // MARK: - Bad Posture Alert Delay Bounds
+
+        /// 悪い姿勢警告遅延の最小値（秒）
+        public static let minimumBadPostureAlertDelay: TimeInterval = 3.0
+
+        /// 悪い姿勢警告遅延の最大値（秒）
+        public static let maximumBadPostureAlertDelay: TimeInterval = 10.0
     }
 
     // MARK: - Camera
