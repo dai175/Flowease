@@ -3,7 +3,6 @@ import Foundation
 
 /// Flowease アプリケーション全体で使用される定数
 public enum Constants {
-
     // MARK: - App Info
 
     public enum App {
@@ -84,7 +83,7 @@ public enum Constants {
 
     // MARK: - UI
 
-    public enum UI {
+    public enum UserInterface {
         /// ポップオーバーのサイズ
         public enum Popover {
             public static let width: CGFloat = 300

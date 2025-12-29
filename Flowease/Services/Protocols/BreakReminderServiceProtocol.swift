@@ -3,7 +3,6 @@ import Foundation
 
 /// 休憩リマインダーサービスプロトコル
 public protocol BreakReminderServiceProtocol: AnyObject {
-
     // MARK: - Properties
 
     /// 現在の休憩リマインダー状態

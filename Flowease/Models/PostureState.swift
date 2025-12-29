@@ -3,9 +3,9 @@ import SwiftUI
 
 /// 姿勢の判定レベル
 public enum PostureLevel: String, Codable, CaseIterable, Sendable {
-    case good = "good"         // 良い姿勢
-    case warning = "warning"   // 注意
-    case bad = "bad"           // 悪い姿勢
+    case good       // 良い姿勢
+    case warning    // 注意
+    case bad        // 悪い姿勢
 
     /// メニューバーアイコンの色
     public var color: Color {
@@ -107,9 +107,9 @@ public struct PostureState: Sendable {
 
 // MARK: - Default Values
 
-extension PostureState {
+public extension PostureState {
     /// 検出なし状態（顔が検出されていない）
-    public static let notDetected = PostureState(
+    static let notDetected = PostureState(
         level: .good,
         score: 0.0,
         forwardLeanAngle: 0.0,

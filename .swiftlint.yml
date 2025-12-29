@@ -71,8 +71,7 @@ opt_in_rules:
   - yoda_condition
 
 # 無効にするルール
-disabled_rules:
-  - trailing_comma  # SwiftFormatで管理
+disabled_rules: []
 
 # カスタムルール設定
 line_length:

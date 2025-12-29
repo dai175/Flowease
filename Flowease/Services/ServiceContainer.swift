@@ -3,7 +3,6 @@ import Foundation
 /// アプリケーション全体の依存性注入コンテナ
 /// シングルトンパターンでサービスを管理し、テスト時にはモックを注入可能
 public final class ServiceContainer {
-
     // MARK: - Singleton
 
     public static let shared = ServiceContainer()
@@ -13,12 +12,10 @@ public final class ServiceContainer {
     /// 設定サービス
     private var _settingsService: SettingsServiceProtocol?
     public var settingsService: SettingsServiceProtocol {
-        get {
-            guard let service = _settingsService else {
-                fatalError("SettingsService has not been registered. Call registerSettingsService() first.")
-            }
-            return service
+        guard let service = _settingsService else {
+            fatalError("SettingsService has not been registered. Call registerSettingsService() first.")
         }
+        return service
     }
 
     // 以下のサービスはPhase 3以降で実装
@@ -28,57 +25,52 @@ public final class ServiceContainer {
     /// カメラサービス（Phase 4で実装）
     private var _cameraService: CameraServiceProtocol?
     public var cameraService: CameraServiceProtocol {
-        get {
-            guard let service = _cameraService else {
-                fatalError("CameraService has not been registered. Call registerCameraService() first.")
-            }
-            return service
+        guard let service = _cameraService else {
+            fatalError("CameraService has not been registered. Call registerCameraService() first.")
         }
+        return service
     }
 
     /// 通知サービス（Phase 4で実装）
     private var _notificationService: NotificationServiceProtocol?
     public var notificationService: NotificationServiceProtocol {
-        get {
-            guard let service = _notificationService else {
-                fatalError("NotificationService has not been registered. Call registerNotificationService() first.")
-            }
-            return service
+        guard let service = _notificationService else {
+            let message = "NotificationService has not been registered. " +
+                "Call registerNotificationService() first."
+            fatalError(message)
         }
+        return service
     }
 
     /// 姿勢検知サービス（Phase 4で実装）
     private var _postureDetectionService: PostureDetectionServiceProtocol?
     public var postureDetectionService: PostureDetectionServiceProtocol {
-        get {
-            guard let service = _postureDetectionService else {
-                fatalError("PostureDetectionService has not been registered. Call registerPostureDetectionService() first.")
-            }
-            return service
+        guard let service = _postureDetectionService else {
+            let message = "PostureDetectionService has not been registered. " +
+                "Call registerPostureDetectionService() first."
+            fatalError(message)
         }
+        return service
     }
 
     /// 休憩リマインダーサービス（Phase 5で実装）
     private var _breakReminderService: BreakReminderServiceProtocol?
     public var breakReminderService: BreakReminderServiceProtocol {
-        get {
-            guard let service = _breakReminderService else {
-                fatalError(
-                    "BreakReminderService has not been registered. Call registerBreakReminderService() first.")
-            }
-            return service
+        guard let service = _breakReminderService else {
+            let message = "BreakReminderService has not been registered. " +
+                "Call registerBreakReminderService() first."
+            fatalError(message)
         }
+        return service
     }
 
     /// ストレッチサービス（Phase 6で実装）
     private var _stretchService: StretchServiceProtocol?
     public var stretchService: StretchServiceProtocol {
-        get {
-            guard let service = _stretchService else {
-                fatalError("StretchService has not been registered. Call registerStretchService() first.")
-            }
-            return service
+        guard let service = _stretchService else {
+            fatalError("StretchService has not been registered. Call registerStretchService() first.")
         }
+        return service
     }
 
     // MARK: - Initialization

@@ -2,7 +2,6 @@ import Foundation
 
 /// 通知サービスプロトコル
 public protocol NotificationServiceProtocol: AnyObject {
-
     // MARK: - Properties
 
     /// 通知が許可されているか

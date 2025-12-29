@@ -4,7 +4,6 @@ import Foundation
 
 /// 姿勢検知サービスプロトコル
 public protocol PostureDetectionServiceProtocol: AnyObject {
-
     // MARK: - Properties
 
     /// 現在の姿勢状態（リアルタイム更新）

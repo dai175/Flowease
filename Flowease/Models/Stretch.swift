@@ -2,10 +2,10 @@ import Foundation
 
 /// ストレッチカテゴリ
 public enum StretchCategory: String, Codable, CaseIterable, Sendable {
-    case neck = "neck"           // 首
-    case shoulder = "shoulder"   // 肩
-    case back = "back"           // 腰・背中
-    case fullBody = "fullBody"   // 全身
+    case neck        // 首
+    case shoulder    // 肩
+    case back        // 腰・背中
+    case fullBody    // 全身
 
     public var displayName: String {
         switch self {
@@ -74,9 +74,9 @@ public struct Stretch: Identifiable, Codable, Sendable {
 
 // MARK: - Static Data
 
-extension Stretch {
+public extension Stretch {
     /// 全ての組み込みストレッチ
-    public static let allStretches: [Stretch] = [
+    static let allStretches: [Stretch] = [
         Stretch(
             id: "neck-rotation",
             name: "首回し",
@@ -162,7 +162,7 @@ extension Stretch {
     ]
 
     /// カテゴリ別のストレッチを取得
-    public static func stretches(for category: StretchCategory) -> [Stretch] {
+    static func stretches(for category: StretchCategory) -> [Stretch] {
         allStretches.filter { $0.category == category }
     }
 }

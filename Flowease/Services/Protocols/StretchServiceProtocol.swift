@@ -3,7 +3,6 @@ import Foundation
 
 /// ストレッチサービスプロトコル
 public protocol StretchServiceProtocol: AnyObject {
-
     // MARK: - Properties
 
     /// 利用可能なストレッチ一覧

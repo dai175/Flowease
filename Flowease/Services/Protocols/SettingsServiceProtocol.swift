@@ -3,7 +3,6 @@ import Foundation
 
 /// 設定サービスプロトコル
 public protocol SettingsServiceProtocol: AnyObject {
-
     // MARK: - Properties
 
     /// 現在の設定

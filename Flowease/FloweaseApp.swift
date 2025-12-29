@@ -9,7 +9,6 @@ import SwiftUI
 
 @main
 struct FloweaseApp: App {
-
     init() {
         ServiceContainer.shared.registerSettingsService(SettingsService())
     }

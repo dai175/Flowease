@@ -92,50 +92,50 @@ public struct StretchSession: Sendable {
 
 // MARK: - Mutations
 
-extension StretchSession {
+public extension StretchSession {
     /// 次のストレッチに進む
-    public mutating func moveToNext() {
+    mutating func moveToNext() {
         guard currentIndex < stretches.count else { return }
         currentIndex += 1
         elapsedSeconds = 0
     }
 
     /// 現在のストレッチをスキップ
-    public mutating func skip() {
+    mutating func skip() {
         moveToNext()
     }
 
     /// 経過時間を更新
-    public mutating func updateElapsedTime(_ seconds: Int) {
+    mutating func updateElapsedTime(_ seconds: Int) {
         elapsedSeconds = max(0, seconds)
     }
 
     /// セッションを一時停止
-    public mutating func pause() {
+    mutating func pause() {
         isPaused = true
     }
 
     /// セッションを再開
-    public mutating func resume() {
+    mutating func resume() {
         isPaused = false
     }
 }
 
 // MARK: - Factory Methods
 
-extension StretchSession {
+public extension StretchSession {
     /// 全てのストレッチを含むセッションを作成
-    public static func createWithAllStretches() -> StretchSession {
+    static func createWithAllStretches() -> StretchSession {
         StretchSession(stretches: Stretch.allStretches)
     }
 
     /// カテゴリでフィルタしたセッションを作成
-    public static func create(for category: StretchCategory) -> StretchSession {
+    static func create(for category: StretchCategory) -> StretchSession {
         StretchSession(stretches: Stretch.stretches(for: category))
     }
 
     /// 指定したストレッチでセッションを作成
-    public static func create(with stretches: [Stretch]) -> StretchSession {
+    static func create(with stretches: [Stretch]) -> StretchSession {
         StretchSession(stretches: stretches)
     }
 }

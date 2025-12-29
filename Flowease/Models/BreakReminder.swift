@@ -44,9 +44,9 @@ public struct BreakReminder: Codable, Sendable {
 
 // MARK: - Default Values
 
-extension BreakReminder {
+public extension BreakReminder {
     /// デフォルト設定
-    public static let `default` = BreakReminder(
+    static let `default` = BreakReminder(
         nextReminderTime: nil,
         isEnabled: true,
         lastBreakTime: nil,

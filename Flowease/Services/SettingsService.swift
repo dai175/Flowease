@@ -4,7 +4,6 @@ import os
 
 /// ユーザー設定を管理するサービス
 public final class SettingsService: SettingsServiceProtocol {
-
     // MARK: - Properties
 
     public let settings: CurrentValueSubject<UserSettings, Never>
@@ -93,14 +92,14 @@ public final class SettingsService: SettingsServiceProtocol {
 
 // MARK: - Convenience Methods
 
-extension SettingsService {
+public extension SettingsService {
     /// カメラIDを更新
-    public func updateSelectedCamera(_ deviceID: String?) {
+    func updateSelectedCamera(_ deviceID: String?) {
         updateSetting(\.selectedCameraID, value: deviceID)
     }
 
     /// 休憩間隔を更新
-    public func updateBreakInterval(_ minutes: Int) {
+    func updateBreakInterval(_ minutes: Int) {
         let clampedMinutes = max(
             Constants.BreakReminder.minimumIntervalMinutes,
             min(Constants.BreakReminder.maximumIntervalMinutes, minutes)
@@ -109,29 +108,29 @@ extension SettingsService {
     }
 
     /// 姿勢感度を更新
-    public func updatePostureSensitivity(_ sensitivity: Double) {
+    func updatePostureSensitivity(_ sensitivity: Double) {
         let clampedSensitivity = max(0.0, min(1.0, sensitivity))
         updateSetting(\.postureSensitivity, value: clampedSensitivity)
     }
 
     /// 通知の有効/無効を切り替え
-    public func updateNotificationsEnabled(_ enabled: Bool) {
+    func updateNotificationsEnabled(_ enabled: Bool) {
         updateSetting(\.notificationsEnabled, value: enabled)
     }
 
     /// 姿勢モニタリングの有効/無効を切り替え
-    public func updatePostureMonitoringEnabled(_ enabled: Bool) {
+    func updatePostureMonitoringEnabled(_ enabled: Bool) {
         updateSetting(\.postureMonitoringEnabled, value: enabled)
     }
 
     /// 前かがみ閾値を更新
-    public func updateForwardLeanThreshold(_ threshold: Double) {
+    func updateForwardLeanThreshold(_ threshold: Double) {
         let clampedThreshold = max(5.0, min(30.0, threshold))
         updateSetting(\.forwardLeanThreshold, value: clampedThreshold)
     }
 
     /// 首傾き閾値を更新
-    public func updateNeckTiltThreshold(_ threshold: Double) {
+    func updateNeckTiltThreshold(_ threshold: Double) {
         let clampedThreshold = max(10.0, min(40.0, threshold))
         updateSetting(\.neckTiltThreshold, value: clampedThreshold)
     }

@@ -52,9 +52,9 @@ public struct UserSettings: Codable, Sendable {
 
 // MARK: - Default Values
 
-extension UserSettings {
+public extension UserSettings {
     /// デフォルト設定
-    public static let `default` = UserSettings(
+    static let `default` = UserSettings(
         selectedCameraID: nil,
         breakIntervalMinutes: Constants.BreakReminder.defaultIntervalMinutes,
         postureSensitivity: Constants.PostureDetection.defaultSensitivity,
@@ -68,10 +68,10 @@ extension UserSettings {
 
 // MARK: - Validation
 
-extension UserSettings {
+public extension UserSettings {
     /// 設定が有効かどうか
-    public var isValid: Bool {
-        return breakIntervalMinutes >= Constants.BreakReminder.minimumIntervalMinutes
+    var isValid: Bool {
+        breakIntervalMinutes >= Constants.BreakReminder.minimumIntervalMinutes
             && breakIntervalMinutes <= Constants.BreakReminder.maximumIntervalMinutes
             && postureSensitivity >= 0.0
             && postureSensitivity <= 1.0

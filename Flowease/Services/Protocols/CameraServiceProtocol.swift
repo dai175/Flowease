@@ -5,7 +5,6 @@ import Foundation
 
 /// カメラサービスプロトコル
 public protocol CameraServiceProtocol: AnyObject {
-
     // MARK: - Properties
 
     /// 利用可能なカメラ一覧
