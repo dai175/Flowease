@@ -43,6 +43,7 @@ enum PostureLevel: String, Codable, CaseIterable {
     case good = "good"         // 良い姿勢
     case warning = "warning"   // 注意
     case bad = "bad"           // 悪い姿勢
+    case unknown = "unknown"   // 顔未検出・判定不能
 
     /// メニューバーアイコンの色
     var color: Color {
@@ -50,6 +51,7 @@ enum PostureLevel: String, Codable, CaseIterable {
         case .good: return .green
         case .warning: return .yellow
         case .bad: return .red
+        case .unknown: return .gray
         }
     }
 
@@ -59,6 +61,7 @@ enum PostureLevel: String, Codable, CaseIterable {
         case .good: return "figure.stand"
         case .warning: return "exclamationmark.triangle.fill"
         case .bad: return "xmark.circle.fill"
+        case .unknown: return "questionmark.circle"
         }
     }
 
@@ -68,6 +71,7 @@ enum PostureLevel: String, Codable, CaseIterable {
         case .good: return "良好"
         case .warning: return "注意"
         case .bad: return "要改善"
+        case .unknown: return "未検出"
         }
     }
 }
@@ -101,7 +105,7 @@ struct PostureState {
 
 | フィールド | 型 | 説明 | バリデーション |
 |-----------|-----|------|----------------|
-| level | PostureLevel | 姿勢の判定レベル | - |
+| level | PostureLevel | 姿勢の判定レベル（good/warning/bad/unknown） | - |
 | score | Double | 姿勢スコア | 0.0〜1.0 |
 | forwardLeanAngle | Double | 前かがみ角度 | 0.0〜90.0 |
 | neckTiltAngle | Double | 首の傾き角度 | 0.0〜90.0 |
@@ -112,31 +116,41 @@ struct PostureState {
 ### 状態遷移
 
 ```
-                 ┌─────────────────────────────────┐
-                 │                                 │
-                 ▼                                 │
-    ┌───────────────────┐                         │
-    │       good        │◄────────────────────────┤
-    │   (良い姿勢)       │                         │
-    └───────────────────┘                         │
-             │                                    │
-             │ score < 0.6                        │
-             ▼                                    │
-    ┌───────────────────┐                         │
-    │      warning      │ ───► score >= 0.8 ─────┘
-    │   (注意)          │
-    └───────────────────┘
-             │
-             │ score < 0.4 && duration >= 5秒
-             ▼
     ┌───────────────────┐
+    │      unknown      │◄─────── 顔未検出 ─────────┐
+    │   (未検出)         │                          │
+    └───────────────────┘                          │
+             │                                      │
+             │ 顔検出                               │
+             ▼                                      │
+                 ┌─────────────────────────────────┐│
+                 │                                 ││
+                 ▼                                 ││
+    ┌───────────────────┐                         ││
+    │       good        │◄────────────────────────┤│
+    │   (良い姿勢)       │                         ││
+    └───────────────────┘                         ││
+             │                                    ││
+             │ score < 0.6                        ││
+             ▼                                    ││
+    ┌───────────────────┐                         ││
+    │      warning      │ ───► score >= 0.8 ─────┘│
+    │   (注意)          │                          │
+    └───────────────────┘                          │
+             │                                      │
+             │ score < 0.4 && duration >= 5秒      │
+             ▼                                      │
+    ┌───────────────────┐                          │
     │        bad        │ ───► score >= 0.6 ──► warning
-    │   (悪い姿勢)       │
-    └───────────────────┘
+    │   (悪い姿勢)       │                          │
+    └───────────────────┘──────────────────────────┘
              │
              │ 5秒継続
              ▼
        [通知を送信]
+
+※ unknown状態では通知を送信しない
+※ unknown状態では badPostureDuration をリセット
 ```
 
 ### 永続化

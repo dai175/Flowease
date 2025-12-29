@@ -6,6 +6,7 @@ public enum PostureLevel: String, Codable, CaseIterable, Sendable {
     case good // 良い姿勢
     case warning // 注意
     case bad // 悪い姿勢
+    case unknown // 顔未検出・判定不能
 
     /// メニューバーアイコンの色
     public var color: Color {
@@ -13,6 +14,7 @@ public enum PostureLevel: String, Codable, CaseIterable, Sendable {
         case .good: return Color("PostureGoodColor")
         case .warning: return Color("PostureWarningColor")
         case .bad: return Color("PostureBadColor")
+        case .unknown: return Color("PostureUnknownColor")
         }
     }
 
@@ -22,6 +24,7 @@ public enum PostureLevel: String, Codable, CaseIterable, Sendable {
         case .good: return "figure.stand"
         case .warning: return "exclamationmark.triangle.fill"
         case .bad: return "xmark.circle.fill"
+        case .unknown: return "questionmark.circle"
         }
     }
 
@@ -31,6 +34,7 @@ public enum PostureLevel: String, Codable, CaseIterable, Sendable {
         case .good: return "良好"
         case .warning: return "注意"
         case .bad: return "要改善"
+        case .unknown: return "未検出"
         }
     }
 }
@@ -110,7 +114,7 @@ public struct PostureState: Sendable {
 public extension PostureState {
     /// 検出なし状態（顔が検出されていない）
     static let notDetected = PostureState(
-        level: .good,
+        level: .unknown,
         score: 0.0,
         forwardLeanAngle: 0.0,
         neckTiltAngle: 0.0,
