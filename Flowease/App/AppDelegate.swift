@@ -42,6 +42,9 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     /// キャンセラブルの保持用
     private var cancellables = Set<AnyCancellable>()
 
+    /// 姿勢監視の購読（重複防止用）
+    private var postureMonitoringCancellable: AnyCancellable?
+
     /// 現在の姿勢状態
     @Published private var currentPostureLevel: PostureLevel = .unknown
 
@@ -116,18 +119,20 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         let settings = settingsService.settings.value
         guard settings.postureMonitoringEnabled else { return }
 
+        // 既存の購読をキャンセル（重複防止）
+        postureMonitoringCancellable?.cancel()
+
         // 通知権限をリクエスト
         if let notifService = notificationService {
             _ = try? await notifService.requestAuthorization()
         }
 
         // 姿勢の変更を購読
-        postureService.posturePublisher
+        postureMonitoringCancellable = postureService.posturePublisher
             .receive(on: RunLoop.main)
             .sink { [weak self] postureState in
                 self?.handlePostureUpdate(postureState)
             }
-            .store(in: &cancellables)
 
         // 姿勢検知を開始
         do {
