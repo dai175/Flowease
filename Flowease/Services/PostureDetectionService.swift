@@ -195,16 +195,67 @@ public final class PostureDetectionService: PostureDetectionServiceProtocol, Pos
 
     /// Vision Framework を使用して姿勢を検知
     private func performPoseDetection(on pixelBuffer: CVPixelBuffer) throws -> PostureState {
-        let request = VNDetectHumanBodyPoseRequest()
+        // 顔のランドマーク検出を使用（Macカメラでは上半身のみなので全身検出は困難）
+        let request = VNDetectFaceLandmarksRequest()
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:])
 
         try handler.perform([request])
 
-        guard let observation = request.results?.first else {
+        guard let faceObservation = request.results?.first else {
             return PostureState.notDetected
         }
 
-        return calculatePostureState(from: observation)
+        return calculatePostureStateFromFace(from: faceObservation)
+    }
+
+    /// 顔の観測結果から姿勢状態を計算
+    private func calculatePostureStateFromFace(from observation: VNFaceObservation) -> PostureState {
+        // 顔のバウンディングボックスから位置を取得
+        let boundingBox = observation.boundingBox
+
+        // 顔の中心位置（0-1の正規化座標）
+        let faceCenterX = boundingBox.midX
+        let faceCenterY = boundingBox.midY
+
+        // 顔のサイズ（画面に対する割合）
+        let faceWidth = boundingBox.width
+        let faceHeight = boundingBox.height
+
+        // ヨー角（左右の傾き）とロール角（首の傾き）を取得
+        let yaw = observation.yaw?.doubleValue ?? 0.0 // ラジアン
+        let roll = observation.roll?.doubleValue ?? 0.0 // ラジアン
+
+        // 度数に変換
+        let yawDegrees = abs(yaw * 180 / .pi)
+        let rollDegrees = abs(roll * 180 / .pi)
+
+        // 前傾の推定: 顔が画面の下部にある + 顔が大きい = 前かがみ
+        // 正常な姿勢では顔は画面中央より上にあり、適度なサイズ
+        let verticalDeviation = max(0, 0.5 - faceCenterY) * 100 // 中央より下にあるほど大きい値
+        let sizeDeviation = max(0, faceHeight - 0.25) * 100 // 顔が大きすぎる場合
+
+        // 前傾角度の推定（ヨー角 + 位置補正）
+        let forwardLeanAngle = yawDegrees + verticalDeviation + sizeDeviation
+
+        // 首の傾き角度（ロール角を使用）
+        let neckTiltAngle = rollDegrees
+
+        // スコアを計算
+        let score = calculatePostureScore(
+            forwardLeanAngle: forwardLeanAngle,
+            neckTiltAngle: neckTiltAngle
+        )
+
+        // 悪い姿勢の継続時間を計算
+        let badPostureDuration = calculateBadPostureDuration(score: score)
+
+        return PostureState(
+            score: score,
+            forwardLeanAngle: forwardLeanAngle,
+            neckTiltAngle: neckTiltAngle,
+            badPostureDuration: badPostureDuration,
+            isFaceDetected: true
+        )
     }
 
     /// ポーズ観測結果から姿勢状態を計算

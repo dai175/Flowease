@@ -209,12 +209,27 @@ public final class CameraService: NSObject, CameraServiceProtocol {
 
     /// フレームレートを設定
     private func configureFrameRate(for device: AVCaptureDevice) {
+        // カメラがサポートするフレームレート範囲を確認
+        guard let frameRateRange = device.activeFormat.videoSupportedFrameRateRanges.first else {
+            return
+        }
+
+        // フレームレートが固定の場合（minとmaxが同じ）は設定不要
+        if frameRateRange.minFrameRate == frameRateRange.maxFrameRate {
+            return
+        }
+
         do {
             try device.lockForConfiguration()
 
-            let frameRate = CMTimeMake(value: 1, timescale: Constants.Camera.frameRate)
-            device.activeVideoMinFrameDuration = frameRate
-            device.activeVideoMaxFrameDuration = frameRate
+            let desiredFrameRate = Double(Constants.Camera.frameRate)
+
+            // 希望のフレームレートが範囲内かクランプして設定
+            let clampedFrameRate = min(max(desiredFrameRate, frameRateRange.minFrameRate), frameRateRange.maxFrameRate)
+            let frameDuration = CMTimeMake(value: 1, timescale: Int32(clampedFrameRate))
+
+            device.activeVideoMinFrameDuration = frameDuration
+            device.activeVideoMaxFrameDuration = frameDuration
 
             device.unlockForConfiguration()
         } catch {
