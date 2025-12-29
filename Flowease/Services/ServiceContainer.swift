@@ -144,7 +144,7 @@ public final class ServiceContainer {
     // MARK: - Reset (for testing)
 
     /// 全てのサービスをリセット（テスト用）
-    public func reset() {
+    func reset() {
         _settingsService = nil
         _cameraService = nil
         _notificationService = nil
