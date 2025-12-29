@@ -159,9 +159,9 @@ final class PostureDetectionServiceTests: XCTestCase {
 
     // MARK: - Face Detection Tests
 
+    // Note: Empty pixel buffer naturally results in no face detection by Vision Framework
     func testPostureUnknownWhenNoFaceDetected() async throws {
         mockCameraService.authorizationStatus = .authorized
-        mockCameraService.simulateNoFaceDetection = true
 
         let expectation = XCTestExpectation(description: "Posture update received")
         var receivedPosture: PostureState?
@@ -202,7 +202,6 @@ final class MockCameraService: CameraServiceProtocol {
     // MARK: - Mock Configuration
 
     var authorizationStatus: AVAuthorizationStatus = .notDetermined
-    var simulateNoFaceDetection = false
 
     // MARK: - CameraServiceProtocol
 
