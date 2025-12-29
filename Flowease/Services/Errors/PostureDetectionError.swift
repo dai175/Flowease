@@ -8,6 +8,9 @@ public enum PostureDetectionError: Error, LocalizedError, Sendable {
     /// カメラが見つからない
     case cameraNotFound
 
+    /// カメラサービスのエラー
+    case cameraError(CameraError)
+
     /// Vision Frameworkのエラー
     case visionFrameworkError(any Error & Sendable)
 
@@ -29,6 +32,8 @@ public enum PostureDetectionError: Error, LocalizedError, Sendable {
             return "カメラへのアクセスが拒否されました。システム設定からカメラへのアクセスを許可してください。"
         case .cameraNotFound:
             return "カメラが見つかりません。カメラが接続されているか確認してください。"
+        case let .cameraError(error):
+            return "カメラエラーが発生しました: \(error.localizedDescription)"
         case let .visionFrameworkError(error):
             return "姿勢検知でエラーが発生しました: \(error.localizedDescription)"
         case .noPoseDetected:
@@ -48,6 +53,8 @@ public enum PostureDetectionError: Error, LocalizedError, Sendable {
             return "システム設定 > プライバシーとセキュリティ > カメラ からFloweaseへのアクセスを許可してください。"
         case .cameraNotFound:
             return "内蔵カメラまたは外部カメラを接続してから、アプリを再起動してください。"
+        case .cameraError:
+            return "カメラの接続を確認し、アプリを再起動してください。"
         case .visionFrameworkError:
             return "アプリを再起動してください。問題が解決しない場合は、開発者にお問い合わせください。"
         case .noPoseDetected:
@@ -73,6 +80,8 @@ extension PostureDetectionError: Equatable {
              (.insufficientConfidence, .insufficientConfidence),
              (.alreadyRunning, .alreadyRunning),
              (.notRunning, .notRunning):
+            return true
+        case (.cameraError, .cameraError):
             return true
         case (.visionFrameworkError, .visionFrameworkError):
             return true

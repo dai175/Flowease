@@ -96,7 +96,7 @@ public final class PostureDetectionService: PostureDetectionServiceProtocol, Pos
             case let .deviceNotFound(deviceID):
                 throw PostureDetectionError.cameraNotFound
             default:
-                throw PostureDetectionError.visionFrameworkError(error)
+                throw PostureDetectionError.cameraError(error)
             }
         }
 
