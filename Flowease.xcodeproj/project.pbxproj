@@ -251,7 +251,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = " if which swiftformat > /dev/null; then\n   swiftformat .\n else\n   echo \"warning: SwiftFormat not installed. Run 'brew install swiftformat'\"\n fi\n";
+			shellScript = "if which swiftformat > /dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed. Run 'brew install swiftformat'\"\nfi\n";
 		};
 		7EC460552F024F40009707B2 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -270,7 +270,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = " if which swiftlint > /dev/null; then\n   swiftlint\n else\n   echo \"warning: SwiftLint not installed. Run 'brew install swiftlint'\"\nfi\n";
+			shellScript = "if which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed. Run 'brew install swiftlint'\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
