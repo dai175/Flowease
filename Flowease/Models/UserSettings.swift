@@ -1,7 +1,7 @@
 import Foundation
 
 /// ユーザー設定モデル
-public struct UserSettings: Codable, Sendable {
+public struct UserSettings: Codable, Sendable, Equatable {
     /// 選択されたカメラのデバイスID
     public var selectedCameraID: String?
 

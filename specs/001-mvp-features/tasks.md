@@ -88,11 +88,11 @@ FloweaseUITests/          # UIテスト
 
 ### Implementation for User Story 4
 
-- [ ] T021 [US4] Flowease/App/AppDelegate.swift に NSStatusBar/NSPopover 管理を実装
-- [ ] T022 [US4] Flowease/App/FloweaseApp.swift に @main エントリーポイントを実装（Settings Scene含む）
-- [ ] T023 [P] [US4] Flowease/Views/MenuBar/StatusBarView.swift にステータスバーアイコン管理を実装
-- [ ] T024 [US4] Flowease/Views/MenuBar/PopoverView.swift にポップオーバーUIを実装（姿勢スコア、次の休憩時間、ストレッチボタン、設定ボタン）
-- [ ] T025 [US4] Flowease/Views/Settings/SettingsView.swift に設定画面を実装（カメラ選択、休憩間隔、姿勢感度）
+- [x] T021 [US4] Flowease/App/AppDelegate.swift に NSStatusBar/NSPopover 管理を実装
+- [x] T022 [US4] Flowease/App/FloweaseApp.swift に @main エントリーポイントを実装（Settings Scene含む）
+- [x] T023 [P] [US4] Flowease/Views/MenuBar/StatusBarView.swift にステータスバーアイコン管理を実装
+- [x] T024 [US4] Flowease/Views/MenuBar/PopoverView.swift にポップオーバーUIを実装（姿勢スコア、次の休憩時間、ストレッチボタン、設定ボタン）
+- [x] T025 [US4] Flowease/Views/Settings/SettingsView.swift に設定画面を実装（カメラ選択、休憩間隔、姿勢感度）
 
 **Checkpoint**: メニューバーUI完成 - アイコンクリックでポップオーバー表示可能
 
