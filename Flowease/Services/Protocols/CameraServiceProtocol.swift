@@ -35,7 +35,7 @@ public protocol CameraServiceProtocol: AnyObject {
     func startCamera(deviceID: String?) async throws
 
     /// カメラを停止
-    func stopCamera()
+    func stopCamera() async
 
     /// カメラを切り替え
     /// - Parameter deviceID: 新しいカメラのデバイスID

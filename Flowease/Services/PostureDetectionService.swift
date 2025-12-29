@@ -109,7 +109,9 @@ public final class PostureDetectionService: PostureDetectionServiceProtocol, Pos
     /// 姿勢検知を停止
     public func stopDetection() {
         cancellables.removeAll()
-        cameraService.stopCamera()
+        Task {
+            await cameraService.stopCamera()
+        }
         isDetecting = false
         lastDetectionTime = nil
         badPostureStartTime = nil

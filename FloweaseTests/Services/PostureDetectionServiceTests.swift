@@ -234,7 +234,7 @@ final class MockCameraService: CameraServiceProtocol {
         isActive = true
     }
 
-    func stopCamera() {
+    func stopCamera() async {
         isActive = false
     }
 

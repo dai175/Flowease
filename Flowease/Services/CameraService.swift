@@ -124,12 +124,15 @@ public final class CameraService: NSObject, CameraServiceProtocol {
     }
 
     /// カメラを停止
-    public func stopCamera() {
-        sessionQueue.async { [weak self] in
-            self?.captureSession?.stopRunning()
-            Task { @MainActor in
-                self?.isActive = false
-                self?.currentCamera = nil
+    public func stopCamera() async {
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            sessionQueue.async { [weak self] in
+                self?.captureSession?.stopRunning()
+                Task { @MainActor in
+                    self?.isActive = false
+                    self?.currentCamera = nil
+                    continuation.resume()
+                }
             }
         }
     }
@@ -137,7 +140,7 @@ public final class CameraService: NSObject, CameraServiceProtocol {
     /// カメラを切り替え
     /// - Parameter deviceID: 新しいカメラのデバイスID
     public func switchCamera(to deviceID: String) async throws {
-        stopCamera()
+        await stopCamera()
         try await startCamera(deviceID: deviceID)
     }
 
