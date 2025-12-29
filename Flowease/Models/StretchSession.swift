@@ -48,7 +48,7 @@ public struct StretchSession: Sendable {
         let totalDuration = stretches.reduce(0) { $0 + $1.durationSeconds }
         guard totalDuration > 0 else { return 0.0 }
         let completedDuration = stretches.prefix(currentIndex).reduce(0) { $0 + $1.durationSeconds }
-        return Double(completedDuration + elapsedSeconds) / Double(totalDuration)
+        return min(1.0, Double(completedDuration + elapsedSeconds) / Double(totalDuration))
     }
 
     /// 現在のストレッチの進捗率（0.0〜1.0）
