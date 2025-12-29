@@ -20,9 +20,7 @@ struct SettingsView: View {
     @State private var selectedTab: SettingsTab = .general
 
     /// 利用可能なカメラリスト（Phase 4 で CameraService から取得）
-    @State private var availableCameras = [
-        (id: "default", name: "自動選択（デフォルトカメラ）"),
-    ]
+    @State private var availableCameras: [(id: String, name: String)] = []
 
     // MARK: - Body
 
