@@ -9,7 +9,7 @@ public enum PostureDetectionError: Error, LocalizedError, Sendable {
     case cameraNotFound
 
     /// Vision Frameworkのエラー
-    case visionFrameworkError(Error)
+    case visionFrameworkError(any Error & Sendable)
 
     /// ポーズが検出されなかった
     case noPoseDetected

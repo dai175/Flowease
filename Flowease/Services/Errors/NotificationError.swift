@@ -9,7 +9,7 @@ public enum AuthorizationError: Error, LocalizedError, Sendable {
     case restricted
 
     /// システムエラー
-    case systemError(Error)
+    case systemError(any Error & Sendable)
 
     public var errorDescription: String? {
         switch self {
@@ -53,7 +53,7 @@ extension AuthorizationError: Equatable {
 /// 通知送信時のエラー
 public enum NotificationError: Error, LocalizedError, Sendable {
     /// 通知の配信に失敗した
-    case deliveryFailed(Error)
+    case deliveryFailed(any Error & Sendable)
 
     /// 通知のコンテンツが無効
     case invalidContent

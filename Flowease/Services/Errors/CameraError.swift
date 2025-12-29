@@ -15,7 +15,7 @@ public enum CameraError: Error, LocalizedError, Sendable {
     case alreadyRunning
 
     /// カメラの開始に失敗した
-    case startFailed(Error)
+    case startFailed(any Error & Sendable)
 
     /// 入力の追加に失敗した
     case inputAddFailed
