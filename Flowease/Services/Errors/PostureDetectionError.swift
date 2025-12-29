@@ -74,8 +74,8 @@ extension PostureDetectionError: Equatable {
             (.alreadyRunning, .alreadyRunning),
             (.notRunning, .notRunning):
             return true
-        case (.visionFrameworkError(let lhsError), .visionFrameworkError(let rhsError)):
-            return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.visionFrameworkError, .visionFrameworkError):
+            return true
         default:
             return false
         }

@@ -73,8 +73,8 @@ extension CameraError: Equatable {
             return true
         case (.deviceNotFound(let lhsID), .deviceNotFound(let rhsID)):
             return lhsID == rhsID
-        case (.startFailed(let lhsError), .startFailed(let rhsError)):
-            return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.startFailed, .startFailed):
+            return true
         default:
             return false
         }

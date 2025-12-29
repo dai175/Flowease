@@ -42,8 +42,8 @@ extension AuthorizationError: Equatable {
         case (.denied, .denied),
             (.restricted, .restricted):
             return true
-        case (.systemError(let lhsError), .systemError(let rhsError)):
-            return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.systemError, .systemError):
+            return true
         default:
             return false
         }
@@ -92,8 +92,8 @@ extension NotificationError: Equatable {
         case (.invalidContent, .invalidContent),
             (.notAuthorized, .notAuthorized):
             return true
-        case (.deliveryFailed(let lhsError), .deliveryFailed(let rhsError)):
-            return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.deliveryFailed, .deliveryFailed):
+            return true
         default:
             return false
         }
