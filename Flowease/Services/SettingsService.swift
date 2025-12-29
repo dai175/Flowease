@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import os
 
 /// ユーザー設定を管理するサービス
 public final class SettingsService: SettingsServiceProtocol {
@@ -12,6 +13,7 @@ public final class SettingsService: SettingsServiceProtocol {
     private let userDefaults: UserDefaults
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.flowease", category: "SettingsService")
 
     // MARK: - Initialization
 
@@ -35,7 +37,7 @@ public final class SettingsService: SettingsServiceProtocol {
                 let loadedSettings = try decoder.decode(UserSettings.self, from: data)
                 settings.send(loadedSettings)
             } catch {
-                print("Failed to decode UserSettings: \(error)")
+                logger.error("Failed to decode UserSettings: \(error.localizedDescription)")
                 settings.send(.default)
             }
         }
@@ -46,7 +48,7 @@ public final class SettingsService: SettingsServiceProtocol {
                 let loadedReminder = try decoder.decode(BreakReminder.self, from: data)
                 breakReminder.send(loadedReminder)
             } catch {
-                print("Failed to decode BreakReminder: \(error)")
+                logger.error("Failed to decode BreakReminder: \(error.localizedDescription)")
                 breakReminder.send(.default)
             }
         }
@@ -58,7 +60,7 @@ public final class SettingsService: SettingsServiceProtocol {
             userDefaults.set(data, forKey: Constants.UserDefaultsKeys.userSettings)
             settings.send(newSettings)
         } catch {
-            print("Failed to encode UserSettings: \(error)")
+            logger.error("Failed to encode UserSettings: \(error.localizedDescription)")
         }
     }
 
@@ -68,7 +70,7 @@ public final class SettingsService: SettingsServiceProtocol {
             userDefaults.set(data, forKey: Constants.UserDefaultsKeys.breakReminder)
             breakReminder.send(reminder)
         } catch {
-            print("Failed to encode BreakReminder: \(error)")
+            logger.error("Failed to encode BreakReminder: \(error.localizedDescription)")
         }
     }
 
