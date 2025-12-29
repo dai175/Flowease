@@ -119,11 +119,15 @@ public final class PostureDetectionService: PostureDetectionServiceProtocol, Pos
 
     /// 姿勢判定の閾値を更新
     /// - Parameters:
-    ///   - forwardLeanThreshold: 前かがみ閾値（度）
-    ///   - neckTiltThreshold: 首傾き閾値（度）
+    ///   - forwardLeanThreshold: 前かがみ閾値（度）。0以下の場合はデフォルト値を使用
+    ///   - neckTiltThreshold: 首傾き閾値（度）。0以下の場合はデフォルト値を使用
     public func updateThresholds(forwardLeanThreshold: Double, neckTiltThreshold: Double) {
-        self.forwardLeanThreshold = forwardLeanThreshold
-        self.neckTiltThreshold = neckTiltThreshold
+        self.forwardLeanThreshold = forwardLeanThreshold > 0
+            ? forwardLeanThreshold
+            : Constants.PostureDetection.defaultForwardLeanThreshold
+        self.neckTiltThreshold = neckTiltThreshold > 0
+            ? neckTiltThreshold
+            : Constants.PostureDetection.defaultNeckTiltThreshold
     }
 
     // MARK: - PostureDetectionServiceTestable
