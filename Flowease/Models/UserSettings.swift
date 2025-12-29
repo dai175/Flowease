@@ -48,6 +48,40 @@ public struct UserSettings: Codable, Sendable {
         self.neckTiltThreshold = max(10.0, min(40.0, neckTiltThreshold))
         self.badPostureAlertDelay = max(3.0, min(10.0, badPostureAlertDelay))
     }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let selectedCameraID = try container.decodeIfPresent(String.self, forKey: .selectedCameraID)
+        let breakIntervalMinutes = try container.decode(Int.self, forKey: .breakIntervalMinutes)
+        let postureSensitivity = try container.decode(Double.self, forKey: .postureSensitivity)
+        let notificationsEnabled = try container.decode(Bool.self, forKey: .notificationsEnabled)
+        let postureMonitoringEnabled = try container.decode(Bool.self, forKey: .postureMonitoringEnabled)
+        let forwardLeanThreshold = try container.decode(Double.self, forKey: .forwardLeanThreshold)
+        let neckTiltThreshold = try container.decode(Double.self, forKey: .neckTiltThreshold)
+        let badPostureAlertDelay = try container.decode(TimeInterval.self, forKey: .badPostureAlertDelay)
+
+        self.init(
+            selectedCameraID: selectedCameraID,
+            breakIntervalMinutes: breakIntervalMinutes,
+            postureSensitivity: postureSensitivity,
+            notificationsEnabled: notificationsEnabled,
+            postureMonitoringEnabled: postureMonitoringEnabled,
+            forwardLeanThreshold: forwardLeanThreshold,
+            neckTiltThreshold: neckTiltThreshold,
+            badPostureAlertDelay: badPostureAlertDelay
+        )
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case selectedCameraID
+        case breakIntervalMinutes
+        case postureSensitivity
+        case notificationsEnabled
+        case postureMonitoringEnabled
+        case forwardLeanThreshold
+        case neckTiltThreshold
+        case badPostureAlertDelay
+    }
 }
 
 // MARK: - Default Values
