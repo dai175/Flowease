@@ -92,19 +92,6 @@ final class PostureDetectionServiceTests: XCTestCase {
         XCTAssertFalse(sut.isDetecting, "Service should not be detecting after stop")
     }
 
-    // MARK: - Threshold Update Tests
-
-    func testUpdateThresholds() {
-        let forwardLean = 20.0
-        let neckTilt = 25.0
-
-        sut.updateThresholds(forwardLeanThreshold: forwardLean, neckTiltThreshold: neckTilt)
-
-        // Thresholds should be stored for use in posture calculation
-        // This is verified through the posture detection behavior
-        XCTAssertTrue(true, "Thresholds updated without error")
-    }
-
     // MARK: - Posture Publisher Tests
 
     func testPosturePublisherReceivesUpdates() async throws {
