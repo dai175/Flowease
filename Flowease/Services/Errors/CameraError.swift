@@ -27,13 +27,13 @@ public enum CameraError: Error, LocalizedError, Sendable {
         switch self {
         case .accessDenied:
             return "カメラへのアクセスが拒否されました。"
-        case .deviceNotFound(let deviceID):
+        case let .deviceNotFound(deviceID):
             return "カメラデバイス '\(deviceID)' が見つかりません。"
         case .sessionConfigurationFailed:
             return "カメラセッションの設定に失敗しました。"
         case .alreadyRunning:
             return "カメラは既に実行中です。"
-        case .startFailed(let error):
+        case let .startFailed(error):
             return "カメラの開始に失敗しました: \(error.localizedDescription)"
         case .inputAddFailed:
             return "カメラ入力の追加に失敗しました。"
@@ -66,10 +66,10 @@ extension CameraError: Equatable {
     public static func == (lhs: CameraError, rhs: CameraError) -> Bool {
         switch (lhs, rhs) {
         case (.accessDenied, .accessDenied),
-            (.sessionConfigurationFailed, .sessionConfigurationFailed),
-            (.alreadyRunning, .alreadyRunning),
-            (.inputAddFailed, .inputAddFailed),
-            (.outputAddFailed, .outputAddFailed):
+             (.sessionConfigurationFailed, .sessionConfigurationFailed),
+             (.alreadyRunning, .alreadyRunning),
+             (.inputAddFailed, .inputAddFailed),
+             (.outputAddFailed, .outputAddFailed):
             return true
         case let (.deviceNotFound(lhsID), .deviceNotFound(rhsID)):
             return lhsID == rhsID

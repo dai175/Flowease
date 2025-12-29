@@ -29,10 +29,10 @@ public struct CameraDevice: Identifiable, Sendable {
 
     /// AVCaptureDeviceから初期化
     public init(from device: AVCaptureDevice) {
-        self.id = device.uniqueID
-        self.name = device.localizedName
-        self.isBuiltIn = device.deviceType == .builtInWideAngleCamera
-        self.position = device.position
+        id = device.uniqueID
+        name = device.localizedName
+        isBuiltIn = device.deviceType == .builtInWideAngleCamera
+        position = device.position
     }
 }
 

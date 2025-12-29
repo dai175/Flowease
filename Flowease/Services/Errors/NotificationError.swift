@@ -17,7 +17,7 @@ public enum AuthorizationError: Error, LocalizedError, Sendable {
             return "通知の権限が拒否されました。"
         case .restricted:
             return "通知の権限が制限されています。"
-        case .systemError(let error):
+        case let .systemError(error):
             return "通知の権限リクエストでエラーが発生しました: \(error.localizedDescription)"
         }
     }
@@ -40,7 +40,7 @@ extension AuthorizationError: Equatable {
     public static func == (lhs: AuthorizationError, rhs: AuthorizationError) -> Bool {
         switch (lhs, rhs) {
         case (.denied, .denied),
-            (.restricted, .restricted):
+             (.restricted, .restricted):
             return true
         case (.systemError, .systemError):
             return true
@@ -63,7 +63,7 @@ public enum NotificationError: Error, LocalizedError, Sendable {
 
     public var errorDescription: String? {
         switch self {
-        case .deliveryFailed(let error):
+        case let .deliveryFailed(error):
             return "通知の送信に失敗しました: \(error.localizedDescription)"
         case .invalidContent:
             return "通知の内容が無効です。"
@@ -90,7 +90,7 @@ extension NotificationError: Equatable {
     public static func == (lhs: NotificationError, rhs: NotificationError) -> Bool {
         switch (lhs, rhs) {
         case (.invalidContent, .invalidContent),
-            (.notAuthorized, .notAuthorized):
+             (.notAuthorized, .notAuthorized):
             return true
         case (.deliveryFailed, .deliveryFailed):
             return true

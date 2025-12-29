@@ -29,7 +29,7 @@ public enum PostureDetectionError: Error, LocalizedError, Sendable {
             return "カメラへのアクセスが拒否されました。システム設定からカメラへのアクセスを許可してください。"
         case .cameraNotFound:
             return "カメラが見つかりません。カメラが接続されているか確認してください。"
-        case .visionFrameworkError(let error):
+        case let .visionFrameworkError(error):
             return "姿勢検知でエラーが発生しました: \(error.localizedDescription)"
         case .noPoseDetected:
             return "姿勢を検出できませんでした。カメラに上半身が映るよう調整してください。"
@@ -68,11 +68,11 @@ extension PostureDetectionError: Equatable {
     public static func == (lhs: PostureDetectionError, rhs: PostureDetectionError) -> Bool {
         switch (lhs, rhs) {
         case (.cameraAccessDenied, .cameraAccessDenied),
-            (.cameraNotFound, .cameraNotFound),
-            (.noPoseDetected, .noPoseDetected),
-            (.insufficientConfidence, .insufficientConfidence),
-            (.alreadyRunning, .alreadyRunning),
-            (.notRunning, .notRunning):
+             (.cameraNotFound, .cameraNotFound),
+             (.noPoseDetected, .noPoseDetected),
+             (.insufficientConfidence, .insufficientConfidence),
+             (.alreadyRunning, .alreadyRunning),
+             (.notRunning, .notRunning):
             return true
         case (.visionFrameworkError, .visionFrameworkError):
             return true

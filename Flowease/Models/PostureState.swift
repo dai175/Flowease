@@ -3,9 +3,9 @@ import SwiftUI
 
 /// 姿勢の判定レベル
 public enum PostureLevel: String, Codable, CaseIterable, Sendable {
-    case good       // 良い姿勢
-    case warning    // 注意
-    case bad        // 悪い姿勢
+    case good // 良い姿勢
+    case warning // 注意
+    case bad // 悪い姿勢
 
     /// メニューバーアイコンの色
     public var color: Color {

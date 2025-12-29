@@ -2,10 +2,10 @@ import Foundation
 
 /// ストレッチカテゴリ
 public enum StretchCategory: String, Codable, CaseIterable, Sendable {
-    case neck        // 首
-    case shoulder    // 肩
-    case back        // 腰・背中
-    case fullBody    // 全身
+    case neck // 首
+    case shoulder // 肩
+    case back // 腰・背中
+    case fullBody // 全身
 
     public var displayName: String {
         switch self {
@@ -87,7 +87,7 @@ public extension Stretch {
                 "正面を向いて姿勢を正します",
                 "ゆっくりと首を右に回します",
                 "正面に戻り、左に回します",
-                "3回繰り返します"
+                "3回繰り返します",
             ],
             animationAsset: "stretch_neck_rotation"
         ),
@@ -101,7 +101,7 @@ public extension Stretch {
                 "正面を向いて姿勢を正します",
                 "右手で頭を右に傾けます",
                 "15秒キープします",
-                "反対側も同様に行います"
+                "反対側も同様に行います",
             ],
             animationAsset: "stretch_neck_side"
         ),
@@ -114,7 +114,7 @@ public extension Stretch {
             steps: [
                 "両肩をすくめるように上げます",
                 "後ろに回しながら下げます",
-                "前回し5回、後ろ回し5回行います"
+                "前回し5回、後ろ回し5回行います",
             ],
             animationAsset: "stretch_shoulder_rotation"
         ),
@@ -127,7 +127,7 @@ public extension Stretch {
             steps: [
                 "両手を後ろで組みます",
                 "胸を張りながら肩甲骨を寄せます",
-                "15秒キープします"
+                "15秒キープします",
             ],
             animationAsset: "stretch_shoulder_blade"
         ),
@@ -141,7 +141,7 @@ public extension Stretch {
                 "椅子に深く座ります",
                 "右手を左膝に置き、体を左にひねります",
                 "15秒キープします",
-                "反対側も同様に行います"
+                "反対側も同様に行います",
             ],
             animationAsset: "stretch_back_twist"
         ),
@@ -155,10 +155,10 @@ public extension Stretch {
                 "両手を頭の上で組みます",
                 "息を吸いながら上に伸びます",
                 "5秒キープして息を吐きます",
-                "3回繰り返します"
+                "3回繰り返します",
             ],
             animationAsset: "stretch_full_body"
-        )
+        ),
     ]
 
     /// カテゴリ別のストレッチを取得

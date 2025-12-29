@@ -73,6 +73,10 @@ opt_in_rules:
 # 無効にするルール
 disabled_rules: []
 
+# trailing_comma設定（trailing commaを必須に）
+trailing_comma:
+  mandatory_comma: true
+
 # カスタムルール設定
 line_length:
   warning: 120

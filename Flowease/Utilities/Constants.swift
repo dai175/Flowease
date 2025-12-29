@@ -17,25 +17,25 @@ public enum Constants {
         public static let detectionInterval: TimeInterval = 2.0
 
         /// 前かがみ警告のデフォルト閾値（度）
-        public static let defaultForwardLeanThreshold: Double = 15.0
+        public static let defaultForwardLeanThreshold = 15.0
 
         /// 首傾き警告のデフォルト閾値（度）
-        public static let defaultNeckTiltThreshold: Double = 20.0
+        public static let defaultNeckTiltThreshold = 20.0
 
         /// 悪い姿勢が続いたときに通知するまでの時間（秒）
         public static let badPostureAlertDelay: TimeInterval = 5.0
 
         /// 姿勢判定のデフォルト感度（0.0〜1.0）
-        public static let defaultSensitivity: Double = 0.5
+        public static let defaultSensitivity = 0.5
 
         /// 姿勢スコアの閾値
         public enum ScoreThreshold {
             /// 良い姿勢の下限スコア
-            public static let good: Double = 0.8
+            public static let good = 0.8
             /// 警告状態の下限スコア
-            public static let warning: Double = 0.6
+            public static let warning = 0.6
             /// それ以下は悪い姿勢
-            public static let bad: Double = 0.4
+            public static let bad = 0.4
         }
 
         /// Vision Framework の信頼度閾値
@@ -56,13 +56,13 @@ public enum Constants {
 
     public enum BreakReminder {
         /// デフォルトの休憩間隔（分）
-        public static let defaultIntervalMinutes: Int = 30
+        public static let defaultIntervalMinutes = 30
 
         /// 最小休憩間隔（分）
-        public static let minimumIntervalMinutes: Int = 30
+        public static let minimumIntervalMinutes = 30
 
         /// 最大休憩間隔（分）
-        public static let maximumIntervalMinutes: Int = 60
+        public static let maximumIntervalMinutes = 60
 
         /// スヌーズ時間（秒）
         public static let snoozeDelaySeconds: TimeInterval = 300 // 5分
@@ -72,13 +72,13 @@ public enum Constants {
 
     public enum Stretch {
         /// デフォルトのストレッチ時間（秒）
-        public static let defaultDurationSeconds: Int = 30
+        public static let defaultDurationSeconds = 30
 
         /// 最小ストレッチ時間（秒）
-        public static let minimumDurationSeconds: Int = 10
+        public static let minimumDurationSeconds = 10
 
         /// 最大ストレッチ時間（秒）
-        public static let maximumDurationSeconds: Int = 120
+        public static let maximumDurationSeconds = 120
     }
 
     // MARK: - UI

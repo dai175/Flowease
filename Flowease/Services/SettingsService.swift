@@ -20,8 +20,8 @@ public final class SettingsService: SettingsServiceProtocol {
         self.userDefaults = userDefaults
 
         // 初期値をデフォルトに設定（loadSettingsで上書きされる）
-        self.settings = CurrentValueSubject<UserSettings, Never>(.default)
-        self.breakReminder = CurrentValueSubject<BreakReminder, Never>(.default)
+        settings = CurrentValueSubject<UserSettings, Never>(.default)
+        breakReminder = CurrentValueSubject<BreakReminder, Never>(.default)
 
         // 保存された設定を読み込み
         loadSettings()
