@@ -42,7 +42,7 @@ opt_in_rules:
   - legacy_random
   - literal_expression_end_indentation
   - lower_acl_than_parent
-  - modifier_order
+  # - modifier_order  # SwiftFormatと競合するため無効化
   - multiline_arguments
   - multiline_function_chains
   - multiline_literal_brackets
@@ -71,7 +71,9 @@ opt_in_rules:
   - yoda_condition
 
 # 無効にするルール
-disabled_rules: []
+disabled_rules:
+  - opening_brace  # SwiftFormatのwrapMultilineStatementBracesと競合
+  - todo  # TODOコメントは開発中に残す
 
 # trailing_comma設定（trailing commaを必須に）
 trailing_comma:
