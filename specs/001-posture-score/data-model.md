@@ -124,14 +124,8 @@ enum PauseReason: Sendable, Equatable {
     /// 人物が検出されない
     case noPersonDetected
 
-    /// カメラが他のアプリで使用中（共有不可の場合）
+    /// カメラが他のアプリで使用中
     case cameraInUse
-
-    /// カメラが物理的に遮蔽されている
-    case cameraObstructed
-
-    /// 照明条件が悪く検出不能
-    case poorLighting
 }
 ```
 
@@ -214,50 +208,6 @@ struct BodyPose: Sendable, Equatable {
 
 ---
 
-### 8. IconColor
-
-メニューバーアイコンの色。
-
-```swift
-/// アイコンの表示色
-struct IconColor: Sendable, Equatable {
-    /// 色相 (0.0 = 赤, 0.33 = 緑)
-    let hue: Double
-
-    /// 彩度 (0.0 〜 1.0)
-    let saturation: Double
-
-    /// 明度 (0.0 〜 1.0)
-    let brightness: Double
-
-    /// グレー表示かどうか
-    let isGray: Bool
-
-    /// スコアから色を生成
-    /// - Parameter score: 0〜100の範囲のスコア（範囲外の値は自動的にクランプされる）
-    static func from(score: Int) -> IconColor {
-        let clampedScore = min(max(score, 0), 100)
-        let hue = Double(clampedScore) / 100.0 * 0.33 // 0° 〜 120°
-        return IconColor(
-            hue: hue,
-            saturation: 0.8,
-            brightness: 0.9,
-            isGray: false
-        )
-    }
-
-    /// グレー状態
-    static let gray = IconColor(
-        hue: 0,
-        saturation: 0,
-        brightness: 0.5,
-        isGray: true
-    )
-}
-```
-
----
-
 ## ViewModel State
 
 ### PostureMonitorState
@@ -270,9 +220,6 @@ UI 層で管理するアプリ全体の状態。
 final class PostureMonitorState: @unchecked Sendable {
     /// 現在の監視状態
     var monitoringState: MonitoringState = .paused(.cameraInitializing)
-
-    /// 現在のアイコン色
-    var iconColor: IconColor = .gray
 
     /// スコア履歴 (スムージング用、最大10件)
     var scoreHistory: [PostureScore] = []
@@ -299,7 +246,6 @@ final class PostureMonitorState: @unchecked Sendable {
 | DisableReason | No | Yes | 無効化理由 |
 | JointPosition | No | Yes | 関節座標 |
 | BodyPose | No | Yes | 検出された姿勢 |
-| IconColor | No | Yes | アイコン色 |
 | PostureMonitorState | No | No* | ViewModel状態 |
 
 \* `@unchecked Sendable` - メインスレッドでのみアクセス
