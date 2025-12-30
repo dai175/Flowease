@@ -45,16 +45,15 @@
 
 - [X] T007 [P] JointPosition 構造体を作成 in Flowease/Models/JointPosition.swift
 - [X] T008 [P] BodyPose 構造体を作成 in Flowease/Models/BodyPose.swift
-- [ ] T009 [P] ScoreBreakdown 構造体を作成 in Flowease/Models/ScoreBreakdown.swift
-- [ ] T010 [P] PostureScore 構造体を作成 in Flowease/Models/PostureScore.swift
-- [ ] T011 [P] PauseReason 列挙型を作成 in Flowease/Models/PauseReason.swift
-- [ ] T012 [P] DisableReason 列挙型を作成 in Flowease/Models/DisableReason.swift
-- [ ] T013 [P] MonitoringState 列挙型を作成 in Flowease/Models/MonitoringState.swift
-- [ ] T014 [P] IconColor 構造体を作成 in Flowease/Models/IconColor.swift
+- [X] T009 [P] ScoreBreakdown 構造体を作成 in Flowease/Models/ScoreBreakdown.swift
+- [X] T010 [P] PostureScore 構造体を作成 in Flowease/Models/PostureScore.swift
+- [X] T011 [P] PauseReason 列挙型を作成 in Flowease/Models/PauseReason.swift
+- [X] T012 [P] DisableReason 列挙型を作成 in Flowease/Models/DisableReason.swift
+- [X] T013 [P] MonitoringState 列挙型を作成 in Flowease/Models/MonitoringState.swift
 
 ### ユーティリティ
 
-- [ ] T015 ColorGradient ヘルパーを作成（スコア→SwiftUI Color 変換） in Flowease/Utilities/ColorGradient.swift
+- [X] T015 ColorGradient ヘルパーを作成（スコア→SwiftUI Color 変換） in Flowease/Utilities/ColorGradient.swift
 
 **Checkpoint**: Foundation ready - ユーザーストーリーの実装を開始可能
 
