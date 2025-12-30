@@ -20,8 +20,8 @@ struct JointPosition: Sendable, Equatable {
     ///   - y: Y座標 (0.0〜1.0、範囲外の値はクランプされる)
     ///   - confidence: 検出の信頼度 (0.0〜1.0、範囲外の値はクランプされる)
     init(x: Double, y: Double, confidence: Double) {
-        self.x = min(max(x, 0.0), 1.0)
-        self.y = min(max(y, 0.0), 1.0)
-        self.confidence = min(max(confidence, 0.0), 1.0)
+        self.x = x.isNaN ? 0.0 : min(max(x, 0.0), 1.0)
+        self.y = y.isNaN ? 0.0 : min(max(y, 0.0), 1.0)
+        self.confidence = confidence.isNaN ? 0.0 : min(max(confidence, 0.0), 1.0)
     }
 }
