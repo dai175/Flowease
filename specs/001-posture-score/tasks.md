@@ -27,11 +27,11 @@
 **Purpose**: プロジェクト初期化と基本構造
 
 - [X] T001 Info.plist に NSCameraUsageDescription と LSUIElement を設定 in Flowease/Info.plist
-- [ ] T002 [P] Models ディレクトリを作成 in Flowease/Models/
-- [ ] T003 [P] Services ディレクトリを作成 in Flowease/Services/
-- [ ] T004 [P] ViewModels ディレクトリを作成 in Flowease/ViewModels/
-- [ ] T005 [P] Views ディレクトリを作成 in Flowease/Views/
-- [ ] T006 [P] Utilities ディレクトリを作成 in Flowease/Utilities/
+- [X] T002 [P] Models ディレクトリを作成 in Flowease/Models/
+- [X] T003 [P] Services ディレクトリを作成 in Flowease/Services/
+- [X] T004 [P] ViewModels ディレクトリを作成 in Flowease/ViewModels/
+- [X] T005 [P] Views ディレクトリを作成 in Flowease/Views/
+- [X] T006 [P] Utilities ディレクトリを作成 in Flowease/Utilities/
 
 ---
 

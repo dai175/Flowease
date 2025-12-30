@@ -30,10 +30,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		7ED7E9E02F03900000F845A6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		7ED7E9E02F03900000F845A6 /* Exceptions for "Flowease" folder in "Flowease" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Flowease.entitlements,
 				Info.plist,
 			);
 			target = 7ED7E9AD2F03828700F845A6 /* Flowease */;
@@ -44,7 +43,7 @@
 		7ED7E9B02F03828700F845A6 /* Flowease */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				7ED7E9E02F03900000F845A6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+				7ED7E9E02F03900000F845A6 /* Exceptions for "Flowease" folder in "Flowease" target */,
 			);
 			path = Flowease;
 			sourceTree = "<group>";
