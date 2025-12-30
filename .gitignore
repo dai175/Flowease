@@ -48,6 +48,9 @@ Carthage/Checkouts/
 .claude/plans/
 .claude/settings.local.json
 
+# Serena
+.serena/
+
 # Environment / Secrets
 .env
 .env.local
