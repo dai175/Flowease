@@ -1,0 +1,41 @@
+# Pre-commit hooks configuration for Flowease
+# See https://pre-commit.com for more information
+
+repos:
+  # ローカルフック（システムにインストールされたツールを使用）
+  - repo: local
+    hooks:
+      # SwiftFormat - コードフォーマット（自動修正）
+      - id: swiftformat
+        name: SwiftFormat
+        entry: swiftformat
+        language: system
+        types: [swift]
+        args: []
+
+      # SwiftLint - 静的解析（チェックのみ）
+      - id: swiftlint
+        name: SwiftLint
+        entry: swiftlint lint --strict --quiet
+        language: system
+        types: [swift]
+
+  # 一般的なフック
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # 末尾の空白を削除
+      - id: trailing-whitespace
+        exclude: '\.swift$'
+      # ファイル末尾に改行を追加
+      - id: end-of-file-fixer
+        exclude: '\.swift$'
+      # 大きなファイルの追加を防止
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      # マージコンフリクトマーカーのチェック
+      - id: check-merge-conflict
+      # YAMLの構文チェック
+      - id: check-yaml
+      # JSONの構文チェック
+      - id: check-json

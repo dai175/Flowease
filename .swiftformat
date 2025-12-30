@@ -1,0 +1,45 @@
+# SwiftFormat Configuration for Flowease
+
+# インデント設定
+--indent 4
+--indentcase false
+--ifdef indent
+--xcodeindentation disabled
+
+# 行の長さ
+--maxwidth 120
+
+# 引数/コレクションの折り返し
+--wraparguments before-first
+--wrapparameters before-first
+--wrapcollections before-first
+--wrapreturntype preserve
+--wrapconditions preserve
+
+# 空白行
+--trimwhitespace always
+--stripunusedargs closure-only
+
+# インポート
+--importgrouping testable-last
+
+# その他のフォーマット
+--self remove
+--semicolons never
+--commas always
+--voidtype void
+--extensionacl on-declarations
+--swiftversion 6.0
+
+# 除外ディレクトリ
+--exclude FloweaseTests,FloweaseUITests,build,DerivedData,.build,Pods
+
+# 無効にするルール（SwiftLintとの競合回避）
+--disable redundantReturn
+--disable trailingCommas
+--disable wrapMultilineStatementBraces
+
+# 有効にするルール
+--enable isEmpty
+--enable sortImports
+--enable markTypes
