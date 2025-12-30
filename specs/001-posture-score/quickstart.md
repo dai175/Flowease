@@ -15,7 +15,7 @@
 
 ```bash
 # リポジトリをクローン
-git clone <repository-url>
+git clone git@github.com:dai175/Flowease.git
 cd Flowease
 
 # feature ブランチに切り替え
