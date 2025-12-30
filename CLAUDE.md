@@ -36,3 +36,10 @@ SwiftUI App with standard macOS structure:
 - Code: English
 - Comments/Documentation: Japanese acceptable
 - Respond in Japanese
+
+## Active Technologies
+- Swift 6.0 + SwiftUI, AVFoundation (カメラキャプチャ), Vision (姿勢検出/ボディポーズ推定) (001-posture-score)
+- N/A（永続化不要、インメモリ状態管理のみ） (001-posture-score)
+
+## Recent Changes
+- 001-posture-score: Added Swift 6.0 + SwiftUI, AVFoundation (カメラキャプチャ), Vision (姿勢検出/ボディポーズ推定)
