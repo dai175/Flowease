@@ -43,7 +43,7 @@
 
 ### モデル定義（全ストーリー共通）
 
-- [ ] T007 [P] JointPosition 構造体を作成 in Flowease/Models/JointPosition.swift
+- [X] T007 [P] JointPosition 構造体を作成 in Flowease/Models/JointPosition.swift
 - [ ] T008 [P] BodyPose 構造体を作成 in Flowease/Models/BodyPose.swift
 - [ ] T009 [P] ScoreBreakdown 構造体を作成 in Flowease/Models/ScoreBreakdown.swift
 - [ ] T010 [P] PostureScore 構造体を作成 in Flowease/Models/PostureScore.swift
