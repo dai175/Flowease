@@ -1,50 +1,155 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+  ============================================================================
+  SYNC IMPACT REPORT
+  ============================================================================
+  Version change: 0.0.0 → 1.0.0 (MAJOR - initial constitution ratification)
+
+  Modified principles: N/A (initial version)
+
+  Added sections:
+    - I. SwiftUI-First Architecture
+    - II. Type Safety & Memory Safety
+    - III. Test-Driven Development
+    - IV. User Experience Excellence
+    - V. Observability & Debugging
+    - VI. Code Quality Gates
+    - Development Workflow
+    - Governance
+
+  Removed sections: N/A (initial version)
+
+  Templates requiring updates:
+    - .specify/templates/plan-template.md ✅ (Constitution Check section exists)
+    - .specify/templates/spec-template.md ✅ (Compatible structure)
+    - .specify/templates/tasks-template.md ✅ (Compatible structure)
+
+  Follow-up TODOs: None
+  ============================================================================
+-->
+
+# Flowease Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. SwiftUI-First Architecture
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+すべての UI コンポーネントは SwiftUI を使用して宣言的に構築する。
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- View は状態から純粋に派生する: `View = f(State)`
+- 副作用は `@Observable` または `@StateObject` 内に閉じ込める
+- View の責務は描画のみ; ビジネスロジックは ViewModel または Service に分離
+- `PreviewProvider` を活用し、すべての View に Preview を提供する
+- 複雑な View は小さな再利用可能コンポーネントに分割する（最大 50 行目安）
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+**根拠**: 宣言的 UI は予測可能性とテスタビリティを向上させ、
+macOS/iOS 間のコード共有を容易にする。
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### II. Type Safety & Memory Safety
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Swift の型システムを最大限に活用し、コンパイル時にエラーを検出する。
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- Force unwrap (`!`) の使用禁止 - `guard let` または `if let` を使用する
+- 暗黙的アンラップオプショナル (`String!`) の使用禁止
+- `Result<Success, Failure>` または Swift Concurrency (`async throws`) でエラーを明示的に扱う
+- `Sendable` 準拠を適切に適用し、データ競合を防止する
+- 必須のプロパティには非オプショナル型を使用する
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**根拠**: Swift の型安全性は実行時クラッシュを防ぎ、
+コードの意図を明確にする。
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### III. Test-Driven Development
+
+テストファーストアプローチにより品質を担保する。
+
+- 新機能実装前に XCTest でテストケースを記述する
+- Red-Green-Refactor サイクルを遵守する
+- ユニットテストはビジネスロジックとデータ変換に焦点を当てる
+- UI テストは主要なユーザーフローをカバーする
+- テストカバレッジ目標: ビジネスロジック 80% 以上
+
+**根拠**: TDD は仕様の明確化とリグレッション防止を両立し、
+自信を持ってリファクタリングできる基盤を提供する。
+
+### IV. User Experience Excellence
+
+macOS ネイティブの体験を提供し、ユーザーの期待に応える。
+
+- Human Interface Guidelines (HIG) に準拠する
+- キーボードショートカットとアクセシビリティを標準サポートする
+- メニューバーアプリとして適切なライフサイクル管理を行う
+- システム設定（ダークモード、アクセント色等）を尊重する
+- レスポンシブな UI: ユーザー操作に 100ms 以内で視覚的フィードバック
+
+**根拠**: ネイティブ体験はユーザーの信頼を獲得し、
+アプリの長期的な採用に直結する。
+
+### V. Observability & Debugging
+
+プロダクション環境での問題診断を容易にする。
+
+- `print()` ではなく `Logger` (OSLog) を使用する
+- ログレベルを適切に使い分ける: debug, info, error, fault
+- 構造化ログでコンテキスト情報を含める
+- クラッシュレポートとエラートラッキングを計画する
+- メモリと CPU 使用量のプロファイリングを定期実施する
+
+**根拠**: 適切なログとモニタリングは問題の早期発見と
+迅速な解決を可能にする。
+
+### VI. Code Quality Gates
+
+一貫したコード品質を自動的に維持する。
+
+- SwiftLint: すべてのコードはリントエラーなしで通過する
+- SwiftFormat: コードスタイルの自動統一
+- pre-commit hooks: コミット前に lint と format を実行
+- 行長: 120 文字（警告）、150 文字（エラー）
+- 関数本体: 50 行以下（警告）
+
+**根拠**: 自動化されたコード品質チェックはコードレビューの負担を減らし、
+チーム全体で一貫したコードベースを維持する。
+
+## Development Workflow
+
+### ブランチ戦略
+
+- `main`: 常にリリース可能な状態を維持
+- `feature/*`: 機能開発用ブランチ
+- `fix/*`: バグ修正用ブランチ
+
+### コミット規約
+
+- 意味のある単位でコミットする
+- コミットメッセージは変更の「なぜ」を説明する
+- 大きな変更は小さなコミットに分割する
+
+### コードレビュー
+
+- すべての変更は Pull Request を通じてマージする
+- Constitution への準拠を確認する
+- パフォーマンスとメモリ影響を考慮する
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### 最高規範
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+この Constitution はプロジェクトの最高規範であり、
+他のすべてのガイドラインに優先する。
+
+### 改訂プロセス
+
+1. 改訂提案は文書化し、理由を明記する
+2. 既存コードへの影響評価を実施する
+3. チームレビューと承認を経て適用する
+4. バージョン番号を適切に更新する:
+   - MAJOR: 後方互換性のない原則の変更・削除
+   - MINOR: 新原則の追加・既存原則の拡張
+   - PATCH: 文言の明確化・誤字修正
+
+### 準拠確認
+
+- すべての PR で Constitution 準拠をチェックする
+- 複雑さの追加は明確な正当化が必要
+- 開発ガイダンスは CLAUDE.md を参照する
+
+**Version**: 1.0.0 | **Ratified**: 2025-12-30 | **Last Amended**: 2025-12-30
