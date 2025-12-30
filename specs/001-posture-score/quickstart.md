@@ -126,7 +126,7 @@ make format
 Console.app を開き、Flowease で検索:
 
 ```
-subsystem:com.example.Flowease
+subsystem:cc.focuswave.Flowease
 ```
 
 ### カメラが動作しない場合
