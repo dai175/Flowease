@@ -234,8 +234,10 @@ struct IconColor: Sendable, Equatable {
     let isGray: Bool
 
     /// スコアから色を生成
+    /// - Parameter score: 0〜100の範囲のスコア（範囲外の値は自動的にクランプされる）
     static func from(score: Int) -> IconColor {
-        let hue = Double(score) / 100.0 * 0.33 // 0° 〜 120°
+        let clampedScore = min(max(score, 0), 100)
+        let hue = Double(clampedScore) / 100.0 * 0.33 // 0° 〜 120°
         return IconColor(
             hue: hue,
             saturation: 0.8,
