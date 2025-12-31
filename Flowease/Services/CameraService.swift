@@ -56,6 +56,10 @@ protocol CameraServiceProtocol: AnyObject, Sendable {
     /// カメラデバイスが利用可能かチェック
     /// - Returns: カメラが利用可能な場合は true
     func checkCameraAvailability() -> Bool
+
+    /// 現在の権限状態を MonitoringState に変換
+    /// - Returns: 対応する MonitoringState
+    func toMonitoringState() -> MonitoringState
 }
 
 // MARK: - CameraService
