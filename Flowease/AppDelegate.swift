@@ -7,6 +7,8 @@ import AppKit
 import OSLog
 import SwiftUI
 
+// MARK: - AppDelegate
+
 /// アプリケーションデリゲート
 ///
 /// NSStatusItem を使用してメニューバーアイコンを管理する。
@@ -71,6 +73,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func createMenu(viewModel: PostureViewModel) -> NSMenu {
         let menu = NSMenu()
+        menu.delegate = self
 
         // SwiftUI ビューを NSMenuItem に埋め込む
         let hostingView = NSHostingView(rootView: StatusMenuView(viewModel: viewModel))
@@ -92,5 +95,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(quitItem)
 
         return menu
+    }
+}
+
+// MARK: NSMenuDelegate
+
+extension AppDelegate: NSMenuDelegate {
+    /// メニューが開く直前にホスティングビューのサイズを更新
+    func menuWillOpen(_ menu: NSMenu) {
+        // 最初のアイテムの view (NSHostingView) のサイズを更新
+        if let hostingView = menu.items.first?.view as? NSHostingView<StatusMenuView> {
+            hostingView.frame.size = hostingView.fittingSize
+        }
     }
 }

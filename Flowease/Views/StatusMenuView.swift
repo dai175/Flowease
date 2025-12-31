@@ -13,7 +13,7 @@ import SwiftUI
 /// メニューバーアイコンクリック時に表示されるメニュー
 ///
 /// `PostureViewModel` の `monitoringState` に応じた UI を表示する。
-/// - `active`: 姿勢モニタリング中（スコア表示は Phase 5 で追加）
+/// - `active`: 姿勢モニタリング中（スコア表示）
 /// - `paused`: 一時停止理由を表示
 /// - `disabled`: `CameraPermissionView` でエラーメッセージを表示
 struct StatusMenuView: View {
@@ -29,6 +29,9 @@ struct StatusMenuView: View {
             // 監視状態に応じた表示
             switch viewModel.monitoringState {
             case .active:
+                Text("\(viewModel.smoothedScore)")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundStyle(viewModel.iconColor)
                 Text("姿勢モニタリング中")
                     .foregroundStyle(.secondary)
 
@@ -112,13 +115,21 @@ private struct MockPostureAnalyzer: PostureAnalyzing {
 @MainActor
 private func makePreviewViewModel(
     cameraStatus: CameraAuthorizationStatus,
-    cameraAvailable: Bool = true
+    cameraAvailable: Bool = true,
+    score: Int? = nil
 ) -> PostureViewModel {
-    PostureViewModel(
+    let viewModel = PostureViewModel(
         cameraService: MockCameraService(status: cameraStatus, cameraAvailable: cameraAvailable),
         postureAnalyzer: MockPostureAnalyzer(),
         scoreCalculator: ScoreCalculator()
     )
+    // スコアが指定されている場合は active 状態にする
+    if let score {
+        let breakdown = ScoreBreakdown(headTilt: score, shoulderBalance: score, forwardLean: score, symmetry: score)
+        let postureScore = PostureScore(value: score, timestamp: Date(), breakdown: breakdown, confidence: 1.0)
+        viewModel.addScore(postureScore)
+    }
+    return viewModel
 }
 
 #Preview("初期化中") {
@@ -131,4 +142,16 @@ private func makePreviewViewModel(
 
 #Preview("カメラなし") {
     StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, cameraAvailable: false))
+}
+
+#Preview("スコア良好 (85)") {
+    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 85))
+}
+
+#Preview("スコア中程度 (50)") {
+    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 50))
+}
+
+#Preview("スコア低下 (25)") {
+    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 25))
 }

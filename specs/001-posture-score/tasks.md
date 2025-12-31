@@ -118,7 +118,7 @@
 - [X] T028 [US1] ScoreCalculator を作成（姿勢→スコア変換ロジック） in Flowease/Services/ScoreCalculator.swift
 - [X] T029 [US1] PostureViewModel にスコア更新・アイコン色管理を追加 in Flowease/ViewModels/PostureViewModel.swift
 - [X] T030 [US1] MenuBarView にスコア連動アイコン色表示を実装 in Flowease/Views/MenuBarView.swift
-- [ ] T031 [US1] StatusMenuView に現在スコア表示を追加 in Flowease/Views/StatusMenuView.swift
+- [X] T031 [US1] StatusMenuView に現在スコア表示を追加 in Flowease/Views/StatusMenuView.swift
 
 **Checkpoint**: User Story 1 完了 - リアルタイムで姿勢スコアが計算され、アイコン色が変化する
 
