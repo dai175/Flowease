@@ -252,11 +252,17 @@ final class CameraService: NSObject, CameraServiceProtocol {
             return
         }
 
-        captureSession?.stopRunning()
+        // 先にフラグを下げて新しいフレーム処理を止める
+        isCapturing = false
+        let session = captureSession
         captureSession = nil
         videoOutput = nil
-        isCapturing = false
         frameCounter.withLock { $0 = 0 }
+
+        // stopRunning() はブロッキング呼び出しなのでバックグラウンドで実行
+        captureQueue.async {
+            session?.stopRunning()
+        }
         logger.info("フレームキャプチャを停止しました")
     }
 
