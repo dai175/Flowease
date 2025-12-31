@@ -40,6 +40,9 @@ final class PostureViewModel {
     /// 初期化済みフラグ（重複初期化を防止）
     private var isInitialized = false
 
+    /// フレーム処理中フラグ（バックプレッシャー制御）
+    private var isProcessingFrame = false
+
     // MARK: - Constants
 
     /// スコア履歴の最大保持件数
@@ -214,6 +217,13 @@ final class PostureViewModel {
         guard cameraService.isCapturing else {
             return
         }
+
+        // 処理中の場合はスキップ（バックプレッシャー制御）
+        guard !isProcessingFrame else {
+            return
+        }
+        isProcessingFrame = true
+        defer { isProcessingFrame = false }
 
         // 姿勢を分析
         guard let bodyPose = await postureAnalyzer.analyze(pixelBuffer: pixelBuffer) else {
