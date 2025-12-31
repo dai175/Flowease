@@ -45,9 +45,7 @@ struct StatusMenuView: View {
             }
         }
         .padding()
-        .task {
-            await viewModel.initialize()
-        }
+        // 初期化は AppDelegate で実行するため .task は不要
     }
 }
 
