@@ -222,13 +222,18 @@ final class CameraService: NSObject, CameraServiceProtocol {
             return
         }
 
+        // 先にフラグを立てて重複呼び出しを防ぐ（競合状態対策）
+        isCapturing = true
+
         guard authorizationStatus == .authorized else {
+            isCapturing = false
             logger.warning("カメラ権限がないためキャプチャを開始できません")
             frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.permissionDenied)
             return
         }
 
         guard checkCameraAvailability() else {
+            isCapturing = false
             logger.warning("カメラデバイスが利用できないためキャプチャを開始できません")
             frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.noCameraAvailable)
             return
@@ -241,11 +246,11 @@ final class CameraService: NSObject, CameraServiceProtocol {
             captureQueue.async { [weak self] in
                 session?.startRunning()
                 Task { @MainActor in
-                    self?.isCapturing = true
                     self?.logger.info("フレームキャプチャを開始しました")
                 }
             }
         } catch {
+            isCapturing = false
             logger.error("キャプチャセッションのセットアップに失敗: \(error.localizedDescription)")
             frameDelegate?.cameraService(self, didEncounterError: error)
         }
