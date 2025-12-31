@@ -11,17 +11,16 @@ import SwiftUI
 ///
 /// メニューバーに常駐し、姿勢をモニタリングするアプリケーション。
 /// `LSUIElement=true` により Dock には表示されない。
+/// NSStatusItem を使用してメニューバーアイコンを動的に更新する。
 @main
 struct FloweaseApp: App {
-    /// 姿勢監視の状態を管理する ViewModel
-    @State private var viewModel = PostureViewModel()
+    /// AppDelegate を使用して NSStatusItem を管理
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        MenuBarExtra {
-            StatusMenuView(viewModel: viewModel)
-        } label: {
-            MenuBarView(viewModel: viewModel)
+        // 空の Settings シーン（将来の設定画面用）
+        Settings {
+            EmptyView()
         }
-        .menuBarExtraStyle(.menu)
     }
 }
