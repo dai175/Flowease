@@ -5,9 +5,11 @@
 //  姿勢監視状態を管理する ViewModel
 //
 
+import CoreVideo
 import Foundation
 import Observation
 import OSLog
+import SwiftUI
 
 // MARK: - PostureViewModel
 
@@ -29,6 +31,8 @@ final class PostureViewModel {
     // MARK: - Dependencies
 
     private let cameraService: CameraServiceProtocol
+    private let postureAnalyzer: PostureAnalyzing
+    private let scoreCalculator: ScoreCalculator
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureViewModel")
 
     // MARK: - Private State
@@ -52,21 +56,48 @@ final class PostureViewModel {
         return sum / scoreHistory.count
     }
 
+    /// 現在のアイコン色
+    ///
+    /// `monitoringState` に基づいて色を返す。
+    /// - active: スコアに応じた緑〜赤のグラデーション
+    /// - paused / disabled: グレー
+    var iconColor: Color {
+        switch monitoringState {
+        case .active:
+            return ColorGradient.color(fromScore: smoothedScore)
+        case .paused, .disabled:
+            return ColorGradient.gray
+        }
+    }
+
     // MARK: - Initialization
 
     /// イニシャライザ
     ///
-    /// - Parameter cameraService: カメラサービス（依存注入によりテスト可能）
-    init(cameraService: CameraServiceProtocol) {
+    /// - Parameters:
+    ///   - cameraService: カメラサービス（依存注入によりテスト可能）
+    ///   - postureAnalyzer: 姿勢分析サービス
+    ///   - scoreCalculator: スコア計算サービス
+    init(
+        cameraService: CameraServiceProtocol,
+        postureAnalyzer: PostureAnalyzing,
+        scoreCalculator: ScoreCalculator
+    ) {
         self.cameraService = cameraService
+        self.postureAnalyzer = postureAnalyzer
+        self.scoreCalculator = scoreCalculator
         logger.debug("PostureViewModel 初期化完了")
     }
 
     /// 本番用イニシャライザ
     ///
-    /// デフォルトの `CameraService` を使用する。
+    /// デフォルトのサービスを使用する。
     convenience init() {
-        self.init(cameraService: CameraService())
+        self.init(
+            cameraService: CameraService(),
+            postureAnalyzer: PostureAnalyzer(),
+            scoreCalculator: ScoreCalculator()
+        )
     }
 
     // MARK: - Public Methods
@@ -144,5 +175,98 @@ final class PostureViewModel {
     func clearScoreHistory() {
         scoreHistory.removeAll()
         logger.debug("スコア履歴をクリア")
+    }
+
+    /// 姿勢監視を開始
+    ///
+    /// カメラ権限が許可されている場合、フレームキャプチャを開始する。
+    /// 権限がない場合は何もしない。
+    func startMonitoring() {
+        guard cameraService.authorizationStatus == .authorized else {
+            logger.warning("カメラ権限がないため監視を開始できません")
+            return
+        }
+
+        // デリゲートを設定してキャプチャ開始
+        cameraService.frameDelegate = self
+        cameraService.startCapturing()
+        logger.info("姿勢監視を開始しました")
+    }
+
+    /// 姿勢監視を停止
+    ///
+    /// フレームキャプチャを停止し、状態をリセットする。
+    func stopMonitoring() {
+        cameraService.stopCapturing()
+        cameraService.frameDelegate = nil
+        clearScoreHistory()
+        monitoringState = .paused(.cameraInitializing)
+        logger.info("姿勢監視を停止しました")
+    }
+
+    // MARK: - Private Methods
+
+    /// フレームから姿勢を分析してスコアを更新
+    ///
+    /// - Parameter pixelBuffer: カメラからのフレームデータ
+    private func processFrame(_ pixelBuffer: CVPixelBuffer) async {
+        // 停止後に飛んできたフレームは無視
+        guard cameraService.isCapturing else {
+            return
+        }
+
+        // 姿勢を分析
+        guard let bodyPose = await postureAnalyzer.analyze(pixelBuffer: pixelBuffer) else {
+            // 人物が検出されない場合
+            if case .active = monitoringState {
+                // active から paused への遷移
+                monitoringState = .paused(.noPersonDetected)
+                clearScoreHistory()
+                logger.debug("人物未検出のため一時停止")
+            }
+            return
+        }
+
+        // 姿勢分析中に停止された場合は無視
+        guard cameraService.isCapturing else {
+            return
+        }
+
+        // スコアを計算
+        guard let score = scoreCalculator.calculate(from: bodyPose) else {
+            logger.debug("スコア計算に失敗（姿勢が無効）")
+            return
+        }
+
+        // スコアを追加（状態は addScore 内で active に更新される）
+        addScore(score)
+    }
+}
+
+// MARK: CameraFrameDelegate
+
+extension PostureViewModel: CameraFrameDelegate {
+    func cameraService(_: any CameraServiceProtocol, didCaptureFrame pixelBuffer: CVPixelBuffer) {
+        Task {
+            await processFrame(pixelBuffer)
+        }
+    }
+
+    func cameraService(_: any CameraServiceProtocol, didEncounterError error: Error) {
+        logger.error("カメラエラー: \(error.localizedDescription)")
+
+        // エラーの種類に応じて状態を更新
+        if let cameraError = error as? CameraServiceError {
+            switch cameraError {
+            case .noCameraAvailable:
+                monitoringState = .disabled(.noCameraAvailable)
+            case .permissionDenied:
+                monitoringState = .disabled(.cameraPermissionDenied)
+            case .cameraInUse:
+                monitoringState = .paused(.cameraInUse)
+            case .sessionConfigurationFailed:
+                monitoringState = .paused(.cameraInitializing)
+            }
+        }
     }
 }
