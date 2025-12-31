@@ -108,8 +108,8 @@
 
 > **NOTE: テストを先に書き、実装前に FAIL することを確認**
 
-- [ ] T024 [P] [US1] ScoreCalculator のユニットテストを作成 in FloweaseTests/ScoreCalculatorTests.swift
-- [ ] T025 [P] [US1] PostureAnalyzer のモックテストを作成 in FloweaseTests/PostureAnalyzerTests.swift
+- [X] T024 [P] [US1] ScoreCalculator のユニットテストを作成 in FloweaseTests/ScoreCalculatorTests.swift
+- [X] T025 [P] [US1] PostureAnalyzer のモックテストを作成 in FloweaseTests/PostureAnalyzerTests.swift
 
 ### Implementation for User Story 1
 
