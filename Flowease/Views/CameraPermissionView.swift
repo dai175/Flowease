@@ -66,8 +66,8 @@ struct CameraPermissionView: View {
 
     /// システム設定のプライバシー > カメラを開く
     private func openSystemSettings() {
-        // macOS 13+ のシステム設定URL
-        if let url = URL(string: "x-apple.systemsettings:com.apple.settings.PrivacySecurity.extension?Privacy_Camera") {
+        // 後方互換性のある URL スキーム（macOS 14.6+ で動作確認済み）
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera") {
             NSWorkspace.shared.open(url)
         }
     }
