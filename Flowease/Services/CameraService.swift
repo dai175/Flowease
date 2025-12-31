@@ -358,7 +358,7 @@ extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
 
         // メインスレッドでデリゲートに通知
         Task { @MainActor [weak self] in
-            guard let self else { return }
+            guard let self, isCapturing else { return }
             frameDelegate?.cameraService(self, didCaptureFrame: sendableBuffer.buffer)
         }
     }
