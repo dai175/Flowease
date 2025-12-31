@@ -5,6 +5,7 @@
 //  Created by Claude on 2025/12/31.
 //
 
+import CoreVideo
 import SwiftUI
 
 // MARK: - StatusMenuView
@@ -99,23 +100,38 @@ private final class MockCameraService: CameraServiceProtocol {
     }
 }
 
-#Preview("初期化中") {
-    let viewModel = PostureViewModel(
-        cameraService: MockCameraService(status: .authorized)
+// MARK: - MockPostureAnalyzer
+
+/// Preview 用のモック PostureAnalyzer
+@MainActor
+private struct MockPostureAnalyzer: PostureAnalyzing {
+    func analyze(pixelBuffer _: CVPixelBuffer) async -> BodyPose? {
+        nil
+    }
+}
+
+// MARK: - Preview Helper
+
+@MainActor
+private func makePreviewViewModel(
+    cameraStatus: CameraAuthorizationStatus,
+    cameraAvailable: Bool = true
+) -> PostureViewModel {
+    PostureViewModel(
+        cameraService: MockCameraService(status: cameraStatus, cameraAvailable: cameraAvailable),
+        postureAnalyzer: MockPostureAnalyzer(),
+        scoreCalculator: ScoreCalculator()
     )
-    return StatusMenuView(viewModel: viewModel)
+}
+
+#Preview("初期化中") {
+    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized))
 }
 
 #Preview("権限拒否") {
-    let viewModel = PostureViewModel(
-        cameraService: MockCameraService(status: .denied)
-    )
-    return StatusMenuView(viewModel: viewModel)
+    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .denied))
 }
 
 #Preview("カメラなし") {
-    let viewModel = PostureViewModel(
-        cameraService: MockCameraService(status: .authorized, cameraAvailable: false)
-    )
-    return StatusMenuView(viewModel: viewModel)
+    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, cameraAvailable: false))
 }
