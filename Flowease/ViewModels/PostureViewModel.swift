@@ -83,7 +83,7 @@ final class PostureViewModel {
             updateMonitoringState()
         }
 
-        logger.info("PostureViewModel 初期化完了: \(String(describing: monitoringState))")
+        logger.info("PostureViewModel 初期化完了: \(String(describing: self.monitoringState))")
     }
 
     /// 監視状態を更新
@@ -101,7 +101,7 @@ final class PostureViewModel {
 
         // 状態が変化した場合のみログ出力
         if monitoringState != newState {
-            logger.debug("監視状態更新: \(String(describing: monitoringState)) → \(String(describing: newState))")
+            logger.debug("監視状態更新: \(String(describing: self.monitoringState)) → \(String(describing: newState))")
         }
 
         monitoringState = newState
@@ -123,7 +123,7 @@ final class PostureViewModel {
 
         // 状態を active に更新
         monitoringState = .active(score)
-        logger.debug("スコア追加: \(score.value), 平滑化スコア: \(smoothedScore)")
+        logger.debug("スコア追加: \(score.value), 平滑化スコア: \(self.smoothedScore)")
     }
 
     /// スコア履歴をクリア
