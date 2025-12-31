@@ -113,7 +113,7 @@
 
 ### Implementation for User Story 1
 
-- [ ] T026 [US1] CameraService にフレームキャプチャ機能を追加 in Flowease/Services/CameraService.swift
+- [X] T026 [US1] CameraService にフレームキャプチャ機能を追加 in Flowease/Services/CameraService.swift
 - [ ] T027 [US1] PostureAnalyzer を作成（Vision framework 姿勢分析） in Flowease/Services/PostureAnalyzer.swift
 - [ ] T028 [US1] ScoreCalculator を作成（姿勢→スコア変換ロジック） in Flowease/Services/ScoreCalculator.swift
 - [ ] T029 [US1] PostureViewModel にスコア更新・アイコン色管理を追加 in Flowease/ViewModels/PostureViewModel.swift
