@@ -130,6 +130,11 @@ final class PostureViewModel {
         }
 
         logger.info("PostureViewModel 初期化完了: \(String(describing: self.monitoringState))")
+
+        // 権限が許可されていれば監視を開始
+        if cameraService.authorizationStatus == .authorized {
+            startMonitoring()
+        }
     }
 
     /// 監視状態を更新

@@ -20,7 +20,7 @@ struct FloweaseApp: App {
         MenuBarExtra {
             StatusMenuView(viewModel: viewModel)
         } label: {
-            MenuBarView()
+            MenuBarView(viewModel: viewModel)
         }
         .menuBarExtraStyle(.menu)
     }

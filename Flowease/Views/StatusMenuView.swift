@@ -29,7 +29,6 @@ struct StatusMenuView: View {
             // 監視状態に応じた表示
             switch viewModel.monitoringState {
             case .active:
-                // Phase 5 で実装: スコア表示
                 Text("姿勢モニタリング中")
                     .foregroundStyle(.secondary)
 
