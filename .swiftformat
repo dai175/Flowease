@@ -24,7 +24,8 @@
 --importgrouping testable-last
 
 # その他のフォーマット
---disable redundantSelf
+--self remove
+--selfrequired log,debug,info,warning,error,critical,fault,notice,trace
 --semicolons never
 --commas always
 --voidtype void
