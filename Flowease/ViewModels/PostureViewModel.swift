@@ -31,6 +31,11 @@ final class PostureViewModel {
     private let cameraService: CameraServiceProtocol
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureViewModel")
 
+    // MARK: - Private State
+
+    /// 初期化済みフラグ（重複初期化を防止）
+    private var isInitialized = false
+
     // MARK: - Constants
 
     /// スコア履歴の最大保持件数
@@ -70,7 +75,14 @@ final class PostureViewModel {
     ///
     /// アプリ起動時に呼び出し、カメラ権限を確認して監視状態を更新する。
     /// 権限が未決定の場合は自動的にリクエストする。
+    /// 複数回呼び出されても安全（べき等）。
     func initialize() async {
+        guard !isInitialized else {
+            logger.debug("PostureViewModel は既に初期化済み")
+            return
+        }
+        isInitialized = true
+
         logger.info("PostureViewModel 初期化開始")
 
         // カメラデバイス・権限チェック
