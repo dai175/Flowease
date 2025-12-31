@@ -91,7 +91,7 @@
 
 - [X] T020 [US3] CameraService プロトコルと実装を作成（権限チェック・要求） in Flowease/Services/CameraService.swift
 - [X] T021 [US3] CameraPermissionView を作成（権限拒否時のメッセージと設定誘導） in Flowease/Views/CameraPermissionView.swift
-- [ ] T022 [US3] PostureViewModel を作成（監視状態管理） in Flowease/ViewModels/PostureViewModel.swift
+- [X] T022 [US3] PostureViewModel を作成（監視状態管理） in Flowease/ViewModels/PostureViewModel.swift
 - [ ] T023 [US3] StatusMenuView にカメラ状態表示を統合 in Flowease/Views/StatusMenuView.swift
 
 **Checkpoint**: User Story 3 完了 - カメラ権限フローが動作し、許可/拒否で適切な UI が表示される
