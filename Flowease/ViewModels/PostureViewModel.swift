@@ -277,6 +277,9 @@ extension PostureViewModel: CameraFrameDelegate {
             case .sessionConfigurationFailed:
                 monitoringState = .paused(.cameraInitializing)
             }
+        } else {
+            // 未知のエラーに対するフォールバック
+            monitoringState = .paused(.cameraInitializing)
         }
     }
 }
