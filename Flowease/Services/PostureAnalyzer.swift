@@ -27,7 +27,7 @@ protocol PostureAnalyzing: Sendable {
 /// カメラからのフレームを受け取り、VNDetectHumanBodyPoseRequest を使用して
 /// 上半身の姿勢を検出する。検出結果は BodyPose モデルに変換して返す。
 @MainActor
-final class PostureAnalyzer: PostureAnalyzing, @unchecked Sendable {
+final class PostureAnalyzer: PostureAnalyzing {
     // MARK: - Properties
 
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureAnalyzer")
