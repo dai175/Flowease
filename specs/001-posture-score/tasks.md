@@ -67,9 +67,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] FloweaseApp を MenuBarExtra ベースに更新 in Flowease/FloweaseApp.swift
-- [ ] T017 [US2] StatusMenuView を作成（メニュー内容表示） in Flowease/Views/StatusMenuView.swift
-- [ ] T018 [US2] MenuBarView を作成（アイコン＆メニュー） in Flowease/Views/MenuBarView.swift
+- [X] T016 [US2] FloweaseApp を MenuBarExtra ベースに更新 in Flowease/FloweaseApp.swift
+- [X] T017 [US2] StatusMenuView を作成（メニュー内容表示） in Flowease/Views/StatusMenuView.swift
+- [X] T018 [US2] MenuBarView を作成（アイコン＆メニュー） in Flowease/Views/MenuBarView.swift
 
 **Checkpoint**: User Story 2 完了 - アプリがメニューバーに常駐し、基本メニューが表示される
 
