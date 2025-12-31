@@ -80,7 +80,6 @@ final class ScoreCalculator {
             return nil
         }
 
-        // 必須関節を取得（isValid = true なら存在が保証される）
         guard let neck = pose.neck,
               let leftShoulder = pose.leftShoulder,
               let rightShoulder = pose.rightShoulder
