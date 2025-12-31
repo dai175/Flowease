@@ -236,9 +236,15 @@ final class CameraService: NSObject, CameraServiceProtocol {
 
         do {
             try setupCaptureSession()
-            captureSession?.startRunning()
-            isCapturing = true
-            logger.info("フレームキャプチャを開始しました")
+            let session = captureSession
+            // startRunning() はブロッキング呼び出しなのでバックグラウンドで実行
+            captureQueue.async { [weak self] in
+                session?.startRunning()
+                Task { @MainActor in
+                    self?.isCapturing = true
+                    self?.logger.info("フレームキャプチャを開始しました")
+                }
+            }
         } catch {
             logger.error("キャプチャセッションのセットアップに失敗: \(error.localizedDescription)")
             frameDelegate?.cameraService(self, didEncounterError: error)
