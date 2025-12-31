@@ -24,7 +24,7 @@
 --importgrouping testable-last
 
 # その他のフォーマット
---self remove
+--disable redundantSelf
 --semicolons never
 --commas always
 --voidtype void
