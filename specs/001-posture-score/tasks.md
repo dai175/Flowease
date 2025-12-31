@@ -85,7 +85,7 @@
 
 > **NOTE: テストを先に書き、実装前に FAIL することを確認**
 
-- [ ] T019 [P] [US3] MonitoringState の状態遷移テストを作成 in FloweaseTests/MonitoringStateTests.swift
+- [X] T019 [P] [US3] MonitoringState の状態遷移テストを作成 in FloweaseTests/MonitoringStateTests.swift
 
 ### Implementation for User Story 3
 
