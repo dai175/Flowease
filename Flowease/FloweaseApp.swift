@@ -17,10 +17,5 @@ struct FloweaseApp: App {
     /// AppDelegate を使用して NSStatusItem を管理
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-    var body: some Scene {
-        // 空の Settings シーン（将来の設定画面用）
-        Settings {
-            EmptyView()
-        }
-    }
+    var body: some Scene {}
 }
