@@ -57,6 +57,8 @@ struct StatusMenuView: View {
 @MainActor
 private final class MockCameraService: CameraServiceProtocol {
     var authorizationStatus: CameraAuthorizationStatus
+    var isCapturing = false
+    weak var frameDelegate: CameraFrameDelegate?
     private let cameraAvailable: Bool
 
     init(status: CameraAuthorizationStatus, cameraAvailable: Bool = true) {
@@ -86,6 +88,14 @@ private final class MockCameraService: CameraServiceProtocol {
         case .notDetermined:
             return .paused(.cameraInitializing)
         }
+    }
+
+    func startCapturing() {
+        isCapturing = true
+    }
+
+    func stopCapturing() {
+        isCapturing = false
     }
 }
 
