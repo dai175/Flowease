@@ -300,7 +300,8 @@ protocol PostureAnalyzing: Sendable {
 // MARK: - Mock PostureAnalyzer
 
 /// テスト用のモック PostureAnalyzer
-final class MockPostureAnalyzer: PostureAnalyzing, @unchecked Sendable {
+@MainActor
+final class MockPostureAnalyzer: PostureAnalyzing {
     /// 返却する BodyPose（nil の場合は人物未検出をシミュレート）
     var resultToReturn: BodyPose?
 
