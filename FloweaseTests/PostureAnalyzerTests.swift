@@ -284,19 +284,6 @@ final class PostureAnalyzerTests: XCTestCase {
     }
 }
 
-// MARK: - PostureAnalyzing Protocol
-
-/// 姿勢分析プロトコル
-///
-/// テスト可能性のために PostureAnalyzer の抽象化を提供する。
-/// 実装は Vision フレームワークを使用するが、テストではモック化可能。
-protocol PostureAnalyzing: Sendable {
-    /// ピクセルバッファから姿勢を分析
-    /// - Parameter pixelBuffer: カメラからのフレームデータ
-    /// - Returns: 検出された姿勢、または人物が検出されない場合は nil
-    func analyze(pixelBuffer: CVPixelBuffer) async -> BodyPose?
-}
-
 // MARK: - Mock PostureAnalyzer
 
 /// テスト用のモック PostureAnalyzer
