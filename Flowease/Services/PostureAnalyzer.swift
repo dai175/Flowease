@@ -47,11 +47,20 @@ final class PostureAnalyzer: PostureAnalyzing {
         // VNDetectHumanBodyPoseRequest を作成
         let request = VNDetectHumanBodyPoseRequest()
 
-        // VNImageRequestHandler で実行
+        // VNImageRequestHandler で実行（バックグラウンドでメインスレッドをブロックしない）
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:])
 
         do {
-            try handler.perform([request])
+            try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        try handler.perform([request])
+                        continuation.resume(returning: ())
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
         } catch {
             logger.error("姿勢検出リクエストの実行に失敗: \(error.localizedDescription)")
             return nil
