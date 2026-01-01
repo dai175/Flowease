@@ -157,11 +157,11 @@
 
 **Purpose**: 複数ユーザーストーリーにまたがる改善
 
-- [ ] T039 [P] Logger (OSLog) を全 Service/ViewModel に追加 in Flowease/Services/, Flowease/ViewModels/
-- [ ] T040 [P] スコアスムージング（移動平均）を実装 in Flowease/Services/ScoreCalculator.swift
-- [ ] T041 フレームスキップによるパフォーマンス最適化を実装 in Flowease/Services/CameraService.swift
-- [ ] T042 メモリ管理の確認（Autorelease pool） in Flowease/Services/CameraService.swift
-- [ ] T043 quickstart.md の検証を実行
+- [X] T039 [P] Logger (OSLog) を全 Service/ViewModel に追加 in Flowease/Services/, Flowease/ViewModels/
+- [X] T040 [P] スコアスムージング（移動平均）を実装 in Flowease/Services/ScoreCalculator.swift
+- [X] T041 フレームスキップによるパフォーマンス最適化を実装 in Flowease/Services/CameraService.swift
+- [X] T042 メモリ管理の確認（Autorelease pool） in Flowease/Services/CameraService.swift
+- [X] T043 quickstart.md の検証を実行
 
 ---
 
