@@ -91,14 +91,14 @@ FloweaseTests/        # テスト
 
 ### Views for User Story 1
 
-- [ ] T019 [P] [US1] CalibrationProgressViewを作成（プログレス表示コンポーネント） in Flowease/Views/CalibrationProgressView.swift
-- [ ] T020 [US1] CalibrationViewを作成（キャリブレーション画面） in Flowease/Views/CalibrationView.swift
-- [ ] T021 [US1] StatusMenuViewにキャリブレーションメニュー項目を追加 in Flowease/Views/StatusMenuView.swift
+- [X] T019 [P] [US1] CalibrationProgressViewを作成（プログレス表示コンポーネント） in Flowease/Views/CalibrationProgressView.swift
+- [X] T020 [US1] CalibrationViewを作成（キャリブレーション画面） in Flowease/Views/CalibrationView.swift
+- [X] T021 [US1] StatusMenuViewにキャリブレーションメニュー項目を追加 in Flowease/Views/StatusMenuView.swift
 
 ### Integration for User Story 1
 
-- [ ] T022 [US1] アプリ起動時にCalibrationStorageから基準姿勢を読み込み in Flowease/FloweaseApp.swift
-- [ ] T023 [US1] キャリブレーション完了後にスコア計算が基準姿勢を使用することを確認
+- [X] T022 [US1] アプリ起動時にCalibrationStorageから基準姿勢を読み込み in Flowease/FloweaseApp.swift
+- [X] T023 [US1] キャリブレーション完了後にスコア計算が基準姿勢を使用することを確認
 
 **Checkpoint**: User Story 1完了 - キャリブレーション→スコア評価のフローが動作
 

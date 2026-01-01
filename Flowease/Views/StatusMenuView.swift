@@ -10,6 +10,13 @@ import SwiftUI
 
 // MARK: - StatusMenuView
 
+/// キャリブレーションウィンドウ表示通知
+extension Notification.Name {
+    static let showCalibrationWindow = Notification.Name("showCalibrationWindow")
+}
+
+// MARK: - StatusMenuView
+
 /// メニューバーアイコンクリック時に表示されるメニュー
 ///
 /// `PostureViewModel` の `monitoringState` に応じた UI を表示する。
@@ -19,6 +26,9 @@ import SwiftUI
 struct StatusMenuView: View {
     /// 姿勢監視の状態を管理する ViewModel
     let viewModel: PostureViewModel
+
+    /// キャリブレーション ViewModel
+    let calibrationViewModel: CalibrationViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -46,9 +56,47 @@ struct StatusMenuView: View {
             case let .disabled(reason):
                 CameraPermissionView(reason: reason)
             }
+
+            Divider()
+
+            // キャリブレーション状態表示
+            CalibrationStatusRow(
+                isCalibrated: calibrationViewModel.isCalibrated
+            )
         }
         .padding()
         // 初期化は AppDelegate で実行するため .task は不要
+    }
+}
+
+// MARK: - CalibrationStatusRow
+
+/// キャリブレーション状態を表示する行
+private struct CalibrationStatusRow: View {
+    /// キャリブレーション済みかどうか
+    let isCalibrated: Bool
+
+    var body: some View {
+        HStack {
+            // 状態アイコン
+            Image(systemName: isCalibrated ? "checkmark.circle.fill" : "circle")
+                .foregroundStyle(isCalibrated ? .green : .secondary)
+
+            // 状態テキスト
+            Text(isCalibrated ? "キャリブレーション: 完了" : "キャリブレーション: 未設定")
+                .font(.subheadline)
+                .foregroundStyle(isCalibrated ? .primary : .secondary)
+
+            Spacer()
+
+            // キャリブレーションボタン
+            Button(isCalibrated ? "再設定" : "設定") {
+                // 通知を送信してAppDelegateでウィンドウを開く
+                NotificationCenter.default.post(name: .showCalibrationWindow, object: nil)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+        }
     }
 }
 
@@ -110,33 +158,51 @@ private struct MockPostureAnalyzer: PostureAnalyzing {
     }
 }
 
-// MARK: - MockCalibrationService
+// MARK: - MockCalibrationStorage
 
-/// Preview 用のモック CalibrationService
-@MainActor
-private final class MockCalibrationService: CalibrationServiceProtocol {
-    var state: CalibrationState = .notCalibrated
-    var referencePosture: ReferencePosture? { nil }
+/// Preview 用のモック CalibrationStorage
+private struct MockCalibrationStorage: CalibrationStorageProtocol {
+    var savedPosture: ReferencePosture?
 
-    func startCalibration() async throws {}
-    func cancelCalibration() {}
-    func resetCalibration() {}
-    func processFrame(_: BodyPose) {}
+    var isCalibrated: Bool { savedPosture != nil }
+    var lastCalibratedAt: Date? { savedPosture?.calibratedAt }
+    func loadReferencePosture() -> ReferencePosture? { savedPosture }
+    @discardableResult
+    func saveReferencePosture(_: ReferencePosture) -> Bool { true }
+    func deleteReferencePosture() {}
 }
 
 // MARK: - Preview Helper
 
 @MainActor
+private func makePreviewCalibrationService(isCalibrated: Bool = false) -> CalibrationService {
+    if isCalibrated {
+        // キャリブレーション済み用のダミーデータ
+        let dummyPosture = ReferencePosture(
+            neck: ReferenceJointPosition(x: 0.5, y: 0.5, confidence: 0.9),
+            leftShoulder: ReferenceJointPosition(x: 0.3, y: 0.4, confidence: 0.9),
+            rightShoulder: ReferenceJointPosition(x: 0.7, y: 0.4, confidence: 0.9),
+            frameCount: 90,
+            averageConfidence: 0.9,
+            baselineMetrics: BaselineMetrics(headTiltDeviation: 0, shoulderBalance: 0, forwardLean: 0, symmetry: 0)
+        )
+        return CalibrationService(storage: MockCalibrationStorage(savedPosture: dummyPosture))
+    }
+    return CalibrationService(storage: MockCalibrationStorage())
+}
+
+@MainActor
 private func makePreviewViewModel(
     cameraStatus: CameraAuthorizationStatus,
     cameraAvailable: Bool = true,
-    score: Int? = nil
+    score: Int? = nil,
+    isCalibrated: Bool = false
 ) -> PostureViewModel {
     let viewModel = PostureViewModel(
         cameraService: MockCameraService(status: cameraStatus, cameraAvailable: cameraAvailable),
         postureAnalyzer: MockPostureAnalyzer(),
         scoreCalculator: ScoreCalculator(),
-        calibrationService: MockCalibrationService()
+        calibrationService: makePreviewCalibrationService(isCalibrated: isCalibrated)
     )
     // スコアが指定されている場合は active 状態にする
     if let score {
@@ -147,26 +213,56 @@ private func makePreviewViewModel(
     return viewModel
 }
 
+@MainActor
+private func makePreviewCalibrationViewModel(isCalibrated: Bool = false) -> CalibrationViewModel {
+    CalibrationViewModel(calibrationService: makePreviewCalibrationService(isCalibrated: isCalibrated))
+}
+
 #Preview("初期化中") {
-    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized))
+    StatusMenuView(
+        viewModel: makePreviewViewModel(cameraStatus: .authorized),
+        calibrationViewModel: makePreviewCalibrationViewModel()
+    )
 }
 
 #Preview("権限拒否") {
-    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .denied))
+    StatusMenuView(
+        viewModel: makePreviewViewModel(cameraStatus: .denied),
+        calibrationViewModel: makePreviewCalibrationViewModel()
+    )
 }
 
 #Preview("カメラなし") {
-    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, cameraAvailable: false))
+    StatusMenuView(
+        viewModel: makePreviewViewModel(cameraStatus: .authorized, cameraAvailable: false),
+        calibrationViewModel: makePreviewCalibrationViewModel()
+    )
 }
 
 #Preview("スコア良好 (85)") {
-    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 85))
+    StatusMenuView(
+        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 85),
+        calibrationViewModel: makePreviewCalibrationViewModel()
+    )
+}
+
+#Preview("スコア良好 + キャリブレーション済み") {
+    StatusMenuView(
+        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 85),
+        calibrationViewModel: makePreviewCalibrationViewModel(isCalibrated: true)
+    )
 }
 
 #Preview("スコア中程度 (50)") {
-    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 50))
+    StatusMenuView(
+        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 50),
+        calibrationViewModel: makePreviewCalibrationViewModel()
+    )
 }
 
 #Preview("スコア低下 (25)") {
-    StatusMenuView(viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 25))
+    StatusMenuView(
+        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 25),
+        calibrationViewModel: makePreviewCalibrationViewModel()
+    )
 }

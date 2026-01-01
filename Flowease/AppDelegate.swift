@@ -4,6 +4,7 @@
 // アプリケーションのライフサイクル管理と NSStatusItem の設定
 
 import AppKit
+import Combine
 import OSLog
 import SwiftUI
 
@@ -25,14 +26,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// 姿勢監視 ViewModel
     private var viewModel: PostureViewModel?
 
+    /// キャリブレーション ViewModel
+    private var calibrationViewModel: CalibrationViewModel?
+
     /// ステータスアイテム管理
     private var statusItemManager: StatusItemManager?
+
+    /// キャリブレーションウィンドウ
+    private var calibrationWindow: NSWindow?
 
     // MARK: - NSApplicationDelegate
 
     func applicationDidFinishLaunching(_: Notification) {
         logger.info("アプリケーション起動")
         setupStatusItem()
+        setupNotificationObservers()
     }
 
     func applicationWillTerminate(_: Notification) {
@@ -46,9 +54,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Private Methods
 
     private func setupStatusItem() {
+        // サービスを作成
+        let storage = CalibrationStorage()
+        let calibrationService = CalibrationService(storage: storage)
+
         // ViewModel を作成
-        let viewModel = PostureViewModel()
+        let viewModel = PostureViewModel(
+            cameraService: CameraService(),
+            postureAnalyzer: PostureAnalyzer(),
+            scoreCalculator: ScoreCalculator(),
+            calibrationService: calibrationService
+        )
         self.viewModel = viewModel
+
+        // CalibrationViewModel を作成
+        let calibrationViewModel = CalibrationViewModel(calibrationService: calibrationService)
+        self.calibrationViewModel = calibrationViewModel
 
         // NSStatusItem を作成
         let statusItem = NSStatusBar.system.statusItem(
@@ -64,7 +85,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItemManager = manager
 
         // メニューを設定
-        statusItem.menu = createMenu(viewModel: viewModel)
+        statusItem.menu = createMenu(viewModel: viewModel, calibrationViewModel: calibrationViewModel)
 
         logger.debug("NSStatusItem をセットアップしました")
 
@@ -74,12 +95,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func createMenu(viewModel: PostureViewModel) -> NSMenu {
+    private func createMenu(viewModel: PostureViewModel, calibrationViewModel: CalibrationViewModel) -> NSMenu {
         let menu = NSMenu()
         menu.delegate = self
 
         // SwiftUI ビューを NSMenuItem に埋め込む
-        let hostingView = NSHostingView(rootView: StatusMenuView(viewModel: viewModel))
+        let hostingView = NSHostingView(
+            rootView: StatusMenuView(viewModel: viewModel, calibrationViewModel: calibrationViewModel)
+        )
         hostingView.frame.size = hostingView.fittingSize
 
         let menuItem = NSMenuItem()
@@ -99,6 +122,56 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         return menu
     }
+
+    private func setupNotificationObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleShowCalibrationWindow),
+            name: .showCalibrationWindow,
+            object: nil
+        )
+    }
+
+    @objc private func handleShowCalibrationWindow() {
+        showCalibrationWindow()
+    }
+
+    private func showCalibrationWindow() {
+        // 既存のウィンドウがあれば前面に
+        if let window = calibrationWindow {
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        guard let calibrationViewModel else {
+            logger.error("CalibrationViewModel が未初期化です")
+            return
+        }
+
+        // ウィンドウを作成
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 280),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "姿勢キャリブレーション"
+        window.center()
+        window.isReleasedWhenClosed = false
+        window.delegate = self
+
+        // SwiftUI ビューを設定
+        let hostingView = NSHostingView(rootView: CalibrationWindowView(viewModel: calibrationViewModel))
+        window.contentView = hostingView
+
+        // ウィンドウを表示
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+
+        calibrationWindow = window
+        logger.debug("キャリブレーションウィンドウを表示")
+    }
 }
 
 // MARK: NSMenuDelegate
@@ -110,5 +183,189 @@ extension AppDelegate: NSMenuDelegate {
         if let hostingView = menu.items.first?.view as? NSHostingView<StatusMenuView> {
             hostingView.frame.size = hostingView.fittingSize
         }
+    }
+}
+
+// MARK: NSWindowDelegate
+
+extension AppDelegate: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        if let window = notification.object as? NSWindow, window === calibrationWindow {
+            calibrationWindow = nil
+            logger.debug("キャリブレーションウィンドウを閉じました")
+        }
+    }
+}
+
+// MARK: - CalibrationWindowView
+
+/// キャリブレーションウィンドウ用のビュー
+///
+/// CalibrationViewをラップし、ウィンドウを閉じる機能を提供する。
+private struct CalibrationWindowView: View {
+    @Bindable var viewModel: CalibrationViewModel
+
+    /// タイマーで進捗を更新（0.1秒ごと）
+    @State private var timerTick = 0
+
+    /// 進捗更新用タイマー
+    private let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        VStack(spacing: 16) {
+            // 状態に応じたコンテンツ
+            contentView
+
+            Divider()
+
+            // アクションボタン
+            actionButtons
+        }
+        .padding()
+        .frame(width: 280, height: 240)
+        .onReceive(timer) { _ in
+            // タイマーでビューを再描画（進捗更新用）
+            if viewModel.isInProgress {
+                timerTick += 1
+            }
+        }
+    }
+
+    // MARK: - Content View
+
+    @ViewBuilder
+    private var contentView: some View {
+        switch viewModel.state {
+        case .notCalibrated:
+            notCalibratedView
+
+        case .inProgress:
+            inProgressView
+
+        case .completed:
+            completedView
+
+        case let .failed(failure):
+            failedView(failure: failure)
+        }
+    }
+
+    // MARK: - Not Calibrated View
+
+    private var notCalibratedView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "person.crop.circle")
+                .font(.system(size: 40))
+                .foregroundStyle(.secondary)
+
+            Text("良い姿勢を取ってください")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            Text("3秒間、カメラに向かって正面を向き、リラックスした良い姿勢を維持してください。")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+                .multilineTextAlignment(.center)
+        }
+        .padding(.vertical, 8)
+    }
+
+    // MARK: - In Progress View
+
+    private var inProgressView: some View {
+        VStack(spacing: 16) {
+            // timerTickを使って再描画をトリガー（見えない形で）
+            CalibrationProgressView(
+                progress: viewModel.progress,
+                remainingSeconds: viewModel.remainingSeconds
+            )
+            .id(timerTick)
+
+            Text("そのままの姿勢を維持...")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 8)
+    }
+
+    // MARK: - Completed View
+
+    private var completedView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 40))
+                .foregroundStyle(.green)
+
+            Text("キャリブレーション完了")
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+
+            Text("あなたの良い姿勢が基準として記録されました。")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding(.vertical, 8)
+    }
+
+    // MARK: - Failed View
+
+    private func failedView(failure: CalibrationFailure) -> some View {
+        VStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 40))
+                .foregroundStyle(.orange)
+
+            Text("キャリブレーション失敗")
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+
+            if !failure.userMessage.isEmpty {
+                Text(failure.userMessage)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding(.vertical, 8)
+    }
+
+    // MARK: - Action Buttons
+
+    @ViewBuilder
+    private var actionButtons: some View {
+        switch viewModel.state {
+        case .notCalibrated, .failed:
+            HStack(spacing: 12) {
+                Button("閉じる") {
+                    closeWindow()
+                }
+                .buttonStyle(.bordered)
+
+                Button("開始") {
+                    Task {
+                        await viewModel.startCalibration()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+            }
+
+        case .inProgress:
+            Button("キャンセル") {
+                viewModel.cancelCalibration()
+            }
+            .buttonStyle(.bordered)
+
+        case .completed:
+            Button("閉じる") {
+                closeWindow()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+
+    private func closeWindow() {
+        NSApp.keyWindow?.close()
     }
 }

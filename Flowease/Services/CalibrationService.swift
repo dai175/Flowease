@@ -7,6 +7,7 @@
 // T014: CalibrationErrorを作成
 
 import Foundation
+import Observation
 import OSLog
 
 // MARK: - CalibrationError
@@ -63,6 +64,7 @@ protocol CalibrationServiceProtocol: AnyObject {
 /// ユーザーの「良い姿勢」を基準として記録し、永続化する。
 /// 3秒間（約90フレーム）の複数フレームを平均化して基準姿勢を生成。
 @MainActor
+@Observable
 final class CalibrationService: CalibrationServiceProtocol {
     // MARK: - Properties
 
@@ -75,8 +77,8 @@ final class CalibrationService: CalibrationServiceProtocol {
     /// ロガー
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "CalibrationService")
 
-    /// 信頼度閾値（0.7以上で有効フレーム）
-    private let confidenceThreshold: Double = 0.7
+    /// 信頼度閾値（BodyPose.minimumConfidenceと同じ0.5を使用）
+    private let confidenceThreshold: Double = 0.5
 
     // MARK: - Calibration Data Collection
 
@@ -85,6 +87,9 @@ final class CalibrationService: CalibrationServiceProtocol {
 
     /// 収集中の進捗情報
     private var currentProgress: CalibrationProgress?
+
+    /// 最初のフレームを受け取ったかどうか
+    private var hasReceivedFirstFrame = false
 
     // MARK: - Computed Properties
 
@@ -119,14 +124,14 @@ final class CalibrationService: CalibrationServiceProtocol {
             throw CalibrationError.alreadyInProgress
         }
 
-        // 進捗情報を初期化
-        let progress = CalibrationProgress()
-        currentProgress = progress
+        // 進捗情報を初期化（タイマーは最初のフレーム受信時に開始）
         accumulatedPositions = AccumulatedPositions()
+        hasReceivedFirstFrame = false
+        currentProgress = nil // 最初のフレーム受信時に作成
 
-        // 状態を更新
-        state = .inProgress(progress)
-        logger.info("キャリブレーション開始")
+        // 状態を更新（ダミーの進捗で開始）
+        state = .inProgress(CalibrationProgress())
+        logger.info("キャリブレーション開始（フレーム待機中）")
     }
 
     func cancelCalibration() {
@@ -139,6 +144,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         state = .failed(.cancelled)
         currentProgress = nil
         accumulatedPositions = nil
+        hasReceivedFirstFrame = false
         logger.info("キャリブレーションをキャンセルしました")
     }
 
@@ -147,6 +153,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         if state.isInProgress {
             currentProgress = nil
             accumulatedPositions = nil
+            hasReceivedFirstFrame = false
         }
 
         // ストレージから削除
@@ -160,9 +167,19 @@ final class CalibrationService: CalibrationServiceProtocol {
     func processFrame(_ pose: BodyPose) {
         // 実行中でなければ無視
         guard state.isInProgress,
-              var progress = currentProgress,
               var accumulated = accumulatedPositions
         else {
+            return
+        }
+
+        // 最初のフレーム受信時にタイマーを開始
+        if !hasReceivedFirstFrame {
+            hasReceivedFirstFrame = true
+            currentProgress = CalibrationProgress()
+            logger.debug("キャリブレーション: フレーム収集開始")
+        }
+
+        guard var progress = currentProgress else {
             return
         }
 

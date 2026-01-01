@@ -49,8 +49,8 @@ struct ReferencePosture: Codable, Sendable, Equatable {
     /// 最低必要フレーム数（約1秒分）
     static let minimumFrameCount = 30
 
-    /// 最低必要信頼度
-    static let minimumConfidence = 0.7
+    /// 最低必要信頼度（BodyPose.minimumConfidenceと同じ0.5を使用）
+    static let minimumConfidence = 0.5
 
     // MARK: - Private Helpers
 
