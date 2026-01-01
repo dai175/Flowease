@@ -33,7 +33,9 @@ final class PostureViewModel {
     private let cameraService: CameraServiceProtocol
     private let postureAnalyzer: PostureAnalyzing
     private let scoreCalculator: ScoreCalculator
-    private let calibrationService: CalibrationServiceProtocol
+    /// キャリブレーションサービス
+    /// Note: @Observableの追跡を有効にするため、具象型で保持
+    private let calibrationService: CalibrationService
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureViewModel")
 
     // MARK: - Private State
@@ -88,7 +90,7 @@ final class PostureViewModel {
         cameraService: CameraServiceProtocol,
         postureAnalyzer: PostureAnalyzing,
         scoreCalculator: ScoreCalculator,
-        calibrationService: CalibrationServiceProtocol
+        calibrationService: CalibrationService
     ) {
         self.cameraService = cameraService
         self.postureAnalyzer = postureAnalyzer
