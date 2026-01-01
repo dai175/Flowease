@@ -74,8 +74,8 @@ FloweaseTests/        # テスト
 
 > **NOTE: テストを先に書き、実装前に失敗することを確認**
 
-- [ ] T011 [P] [US1] CalibrationServiceのテストを作成 in FloweaseTests/CalibrationServiceTests.swift
-- [ ] T012 [P] [US1] ScoreCalculatorのキャリブレーション対応テストを追加 in FloweaseTests/ScoreCalculatorTests.swift
+- [X] T011 [P] [US1] CalibrationServiceのテストを作成 in FloweaseTests/CalibrationServiceTests.swift
+- [X] T012 [P] [US1] ScoreCalculatorのキャリブレーション対応テストを追加 in FloweaseTests/ScoreCalculatorTests.swift
 
 ### Services for User Story 1
 

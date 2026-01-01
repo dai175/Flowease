@@ -426,4 +426,256 @@ final class ScoreCalculatorTests: XCTestCase {
             XCTAssertLessThanOrEqual(score.confidence, 1.0, "信頼度は1.0以下であるべき")
         }
     }
+
+    // MARK: - Calibration Support Tests (T012)
+
+    // MARK: - Reference Posture Property Tests
+
+    func testReferencePosture_initiallyNil() {
+        // Given: 新しい ScoreCalculator
+
+        // Then: referencePosture は nil
+        XCTAssertNil(sut.referencePosture, "初期状態では referencePosture は nil であるべき")
+    }
+
+    func testSetReferencePosture_storesValue() {
+        // Given: 有効な ReferencePosture
+        let posture = makeReferencePosture()
+
+        // When: referencePosture を設定
+        sut.setReferencePosture(posture)
+
+        // Then: 値が保存される
+        XCTAssertNotNil(sut.referencePosture, "referencePosture が設定されるべき")
+        XCTAssertEqual(sut.referencePosture?.frameCount, posture.frameCount)
+    }
+
+    func testSetReferencePosture_nil_clearsValue() {
+        // Given: referencePosture が設定されている
+        let posture = makeReferencePosture()
+        sut.setReferencePosture(posture)
+        XCTAssertNotNil(sut.referencePosture)
+
+        // When: nil を設定
+        sut.setReferencePosture(nil)
+
+        // Then: 値がクリアされる
+        XCTAssertNil(sut.referencePosture, "nil 設定後は referencePosture が nil になるべき")
+    }
+
+    // MARK: - isCalibrated Property Tests
+
+    func testIsCalibrated_returnsFalse_whenNoReferencePosture() {
+        // Given: referencePosture が nil
+
+        // Then: isCalibrated は false
+        XCTAssertFalse(sut.isCalibrated, "referencePosture がなければ isCalibrated は false")
+    }
+
+    func testIsCalibrated_returnsTrue_whenReferencePostureSet() {
+        // Given: referencePosture が設定されている
+        let posture = makeReferencePosture()
+        sut.setReferencePosture(posture)
+
+        // Then: isCalibrated は true
+        XCTAssertTrue(sut.isCalibrated, "referencePosture があれば isCalibrated は true")
+    }
+
+    // MARK: - Calibration Mode Score Calculation Tests
+
+    func testCalculate_withReferencePosture_usesCalibratedScoring() {
+        // Given: 基準姿勢と同じ姿勢（逸脱なし）
+        let referencePosture = makeReferencePosture()
+        sut.setReferencePosture(referencePosture)
+        let pose = makeGoodPosture()
+
+        // When: スコアを計算
+        let result = sut.calculate(from: pose)
+
+        // Then: 高スコアを返す（基準姿勢とほぼ同じなので）
+        XCTAssertNotNil(result)
+        if let score = result {
+            XCTAssertGreaterThanOrEqual(score.value, 85, "基準姿勢に近いとき高スコアであるべき")
+        }
+    }
+
+    func testCalculate_withReferencePosture_detectsDeviationFromBaseline() {
+        // Given: 基準姿勢を設定
+        let referencePosture = makeReferencePosture()
+        sut.setReferencePosture(referencePosture)
+
+        // 基準姿勢と異なる姿勢（頭が傾いている）
+        let deviatedPose = makeTiltedHeadPosture()
+
+        // When: スコアを計算
+        let result = sut.calculate(from: deviatedPose)
+
+        // Then: 基準姿勢からの逸脱でスコアが下がる
+        XCTAssertNotNil(result)
+        if let score = result {
+            XCTAssertLessThan(score.value, 90, "基準姿勢から逸脱するとスコアが下がるべき")
+        }
+    }
+
+    func testCalculate_withReferencePosture_headTiltDeviationAffectsScore() {
+        // Given: 頭が真っ直ぐな基準姿勢
+        let referencePosture = makeReferencePosture()
+        sut.setReferencePosture(referencePosture)
+
+        // 頭が傾いた姿勢
+        let tiltedPose = makeTiltedHeadPosture()
+
+        // When: スコアを計算
+        let result = sut.calculate(from: tiltedPose)
+
+        // Then: headTilt スコアが下がる
+        XCTAssertNotNil(result)
+        if let score = result {
+            XCTAssertLessThan(score.breakdown.headTilt, 80, "頭傾きで headTilt スコアが下がるべき")
+        }
+    }
+
+    func testCalculate_withReferencePosture_shoulderBalanceDeviationAffectsScore() {
+        // Given: 肩が水平な基準姿勢
+        let referencePosture = makeReferencePosture()
+        sut.setReferencePosture(referencePosture)
+
+        // 肩が傾いた姿勢
+        let unevenPose = makeUnevenShouldersPosture()
+
+        // When: スコアを計算
+        let result = sut.calculate(from: unevenPose)
+
+        // Then: shoulderBalance スコアが下がる
+        XCTAssertNotNil(result)
+        if let score = result {
+            XCTAssertLessThan(score.breakdown.shoulderBalance, 80, "肩傾きで shoulderBalance スコアが下がるべき")
+        }
+    }
+
+    func testCalculate_withReferencePosture_forwardLeanDeviationAffectsScore() {
+        // Given: 前傾していない基準姿勢
+        let referencePosture = makeReferencePosture()
+        sut.setReferencePosture(referencePosture)
+
+        // 前傾姿勢
+        let leanPose = makeForwardLeanPosture()
+
+        // When: スコアを計算
+        let result = sut.calculate(from: leanPose)
+
+        // Then: forwardLean スコアが下がる
+        XCTAssertNotNil(result)
+        if let score = result {
+            XCTAssertLessThan(score.breakdown.forwardLean, 80, "前傾で forwardLean スコアが下がるべき")
+        }
+    }
+
+    // MARK: - Backward Compatibility Tests
+
+    func testCalculate_withoutReferencePosture_usesFixedThresholds() {
+        // Given: referencePosture が設定されていない（固定しきい値モード）
+        XCTAssertNil(sut.referencePosture)
+        let pose = makeGoodPosture()
+
+        // When: スコアを計算
+        let result = sut.calculate(from: pose)
+
+        // Then: 既存の固定しきい値でスコアが計算される（高スコア）
+        XCTAssertNotNil(result)
+        if let score = result {
+            XCTAssertGreaterThanOrEqual(score.value, 90, "良い姿勢は固定しきい値モードでも高スコア")
+        }
+    }
+
+    func testCalculate_backwardCompatibility_existingTestsStillPass() {
+        // Given: referencePosture なし（デフォルト状態）
+        // 既存のテストケースと同じ条件
+
+        // When: 良い姿勢のスコアを計算
+        let goodPose = makeGoodPosture()
+        let goodResult = sut.calculate(from: goodPose)
+
+        // When: 悪い姿勢のスコアを計算
+        let badPose = makeBadPosture()
+        let badResult = sut.calculate(from: badPose)
+
+        // Then: 既存のテストと同じ期待値
+        XCTAssertNotNil(goodResult)
+        XCTAssertNotNil(badResult)
+        if let goodScore = goodResult, let badScore = badResult {
+            XCTAssertGreaterThanOrEqual(goodScore.value, 90, "良い姿勢は90点以上")
+            XCTAssertLessThan(badScore.value, 50, "悪い姿勢は50点未満")
+        }
+    }
+
+    // MARK: - Deviation Calculation Tests
+
+    func testCalculate_relativeDeviationFromBaseline() {
+        // Given: 特定の基準姿勢（若干頭が傾いている状態を基準として設定）
+        let tiltedBaseline = makeReferencePostureWithTilt()
+        sut.setReferencePosture(tiltedBaseline)
+
+        // 基準姿勢と同じ程度に傾いた姿勢
+        let pose = makeTiltedHeadPosture()
+
+        // When: スコアを計算
+        let result = sut.calculate(from: pose)
+
+        // Then: 基準姿勢と同程度なので高スコア
+        // （絶対的には傾いているが、相対的には基準に近い）
+        XCTAssertNotNil(result)
+        if let score = result {
+            // 基準姿勢からの相対的な逸脱が小さければ高スコア
+            XCTAssertGreaterThanOrEqual(
+                score.value,
+                70,
+                "基準姿勢と同程度の傾きならスコアは高めであるべき"
+            )
+        }
+    }
+
+    // MARK: - Test Helpers for Calibration Tests
+
+    /// 標準的な ReferencePosture を作成
+    private func makeReferencePosture() -> ReferencePosture {
+        ReferencePosture(
+            neck: ReferenceJointPosition(x: 0.5, y: 0.6, confidence: 0.9),
+            leftShoulder: ReferenceJointPosition(x: 0.35, y: 0.4, confidence: 0.9),
+            rightShoulder: ReferenceJointPosition(x: 0.65, y: 0.4, confidence: 0.9),
+            nose: ReferenceJointPosition(x: 0.5, y: 0.8, confidence: 0.9),
+            leftEar: ReferenceJointPosition(x: 0.45, y: 0.82, confidence: 0.9),
+            rightEar: ReferenceJointPosition(x: 0.55, y: 0.82, confidence: 0.9),
+            calibratedAt: Date(),
+            frameCount: 90,
+            averageConfidence: 0.9,
+            baselineMetrics: BaselineMetrics(
+                headTiltDeviation: 0.0,     // 頭は真っ直ぐ
+                shoulderBalance: 0.0,        // 肩は水平
+                forwardLean: 0.2,            // 少し後傾（neck.y - nose.y）
+                symmetry: 0.0                // 完全対称
+            )
+        )
+    }
+
+    /// 頭が傾いた状態を基準とした ReferencePosture を作成
+    private func makeReferencePostureWithTilt() -> ReferencePosture {
+        ReferencePosture(
+            neck: ReferenceJointPosition(x: 0.5, y: 0.6, confidence: 0.9),
+            leftShoulder: ReferenceJointPosition(x: 0.35, y: 0.4, confidence: 0.9),
+            rightShoulder: ReferenceJointPosition(x: 0.65, y: 0.4, confidence: 0.9),
+            nose: ReferenceJointPosition(x: 0.6, y: 0.75, confidence: 0.9), // 右に傾いている
+            leftEar: ReferenceJointPosition(x: 0.55, y: 0.8, confidence: 0.9),
+            rightEar: ReferenceJointPosition(x: 0.65, y: 0.78, confidence: 0.9),
+            calibratedAt: Date(),
+            frameCount: 90,
+            averageConfidence: 0.9,
+            baselineMetrics: BaselineMetrics(
+                headTiltDeviation: 0.1,      // 頭が傾いている状態を基準
+                shoulderBalance: 0.0,
+                forwardLean: 0.15,
+                symmetry: 0.02
+            )
+        )
+    }
 }
