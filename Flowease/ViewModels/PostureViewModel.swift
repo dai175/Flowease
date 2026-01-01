@@ -40,8 +40,9 @@ final class PostureViewModel {
     /// 初期化済みフラグ（重複初期化を防止）
     private var isInitialized = false
 
-    /// フレーム処理中フラグ（バックプレッシャー制御）
-    private var isProcessingFrame = false
+    /// 現在進行中のフレーム処理タスク（終了時にキャンセル用）
+    /// nil = 処理中でない、非nil = 処理中
+    private var processingTask: Task<Void, Never>?
 
     // MARK: - Constants
 
@@ -204,7 +205,12 @@ final class PostureViewModel {
     /// 姿勢監視を停止
     ///
     /// フレームキャプチャを停止し、状態をリセットする。
+    /// 進行中のフレーム処理タスクもキャンセルする。
     func stopMonitoring() {
+        // 進行中のタスクをキャンセル
+        processingTask?.cancel()
+        processingTask = nil
+
         cameraService.stopCapturing()
         cameraService.frameDelegate = nil
         clearScoreHistory()
@@ -218,17 +224,13 @@ final class PostureViewModel {
     ///
     /// - Parameter pixelBuffer: カメラからのフレームデータ
     private func processFrame(_ pixelBuffer: CVPixelBuffer) async {
+        // タスク完了時に参照をクリア（次のフレーム処理を許可）
+        defer { processingTask = nil }
+
         // 停止後に飛んできたフレームは無視
         guard cameraService.isCapturing else {
             return
         }
-
-        // 処理中の場合はスキップ（バックプレッシャー制御）
-        guard !isProcessingFrame else {
-            return
-        }
-        isProcessingFrame = true
-        defer { isProcessingFrame = false }
 
         // 姿勢を分析
         guard let bodyPose = await postureAnalyzer.analyze(pixelBuffer: pixelBuffer) else {
@@ -262,7 +264,11 @@ final class PostureViewModel {
 
 extension PostureViewModel: CameraFrameDelegate {
     func cameraService(_: any CameraServiceProtocol, didCaptureFrame pixelBuffer: CVPixelBuffer) {
-        Task {
+        // 処理中はタスクを作成しない（既存タスクの参照を上書きしない）
+        // これにより stopMonitoring で実行中のタスクを確実にキャンセルできる
+        guard processingTask == nil else { return }
+
+        processingTask = Task {
             await processFrame(pixelBuffer)
         }
     }

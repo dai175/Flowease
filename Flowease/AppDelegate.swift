@@ -37,6 +37,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_: Notification) {
         logger.info("アプリケーション終了")
+        // 観察タスクを停止
+        statusItemManager?.stopObserving()
+        // 姿勢監視を停止（カメラリソースを解放）
         viewModel?.stopMonitoring()
     }
 

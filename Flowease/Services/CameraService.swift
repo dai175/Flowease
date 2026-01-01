@@ -136,6 +136,9 @@ final class CameraService: NSObject, CameraServiceProtocol {
     /// ビデオ出力
     private var videoOutput: AVCaptureVideoDataOutput?
 
+    /// キャプチャ入力（クリーンアップ時に削除するために保持）
+    private var captureInput: AVCaptureDeviceInput?
+
     /// キャプチャ処理用の専用キュー
     private let captureQueue = DispatchQueue(
         label: "cc.focuswave.Flowease.CameraCapture",
@@ -274,12 +277,30 @@ final class CameraService: NSObject, CameraServiceProtocol {
         // 先にフラグを下げて新しいフレーム処理を止める
         isCapturing = false
         let session = captureSession
+        let output = videoOutput
+        let input = captureInput
+
         captureSession = nil
         videoOutput = nil
+        captureInput = nil
         frameCounter.withLock { $0 = 0 }
 
-        // stopRunning() はブロッキング呼び出しなのでバックグラウンドで実行
+        // クリーンアップ処理はバックグラウンドで実行（stopRunning() はブロッキング呼び出し）
         captureQueue.async {
+            // デリゲート参照を削除してコールバックを停止
+            output?.setSampleBufferDelegate(nil, queue: nil)
+
+            // セッションの入出力を原子的に削除
+            session?.beginConfiguration()
+            if let input {
+                session?.removeInput(input)
+            }
+            if let output {
+                session?.removeOutput(output)
+            }
+            session?.commitConfiguration()
+
+            // セッションを停止
             session?.stopRunning()
         }
         logger.info("フレームキャプチャを停止しました")
@@ -311,6 +332,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
             throw CameraServiceError.sessionConfigurationFailed
         }
         session.addInput(input)
+        captureInput = input
 
         // 出力を追加
         let output = AVCaptureVideoDataOutput()

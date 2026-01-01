@@ -132,9 +132,9 @@
 
 ### Implementation for User Story 4
 
-- [ ] T032 [US4] StatusMenuView に「終了」メニュー項目を追加 in Flowease/Views/StatusMenuView.swift
-- [ ] T033 [US4] CameraService にクリーンアップ処理を追加 in Flowease/Services/CameraService.swift
-- [ ] T034 [US4] PostureViewModel に終了処理を追加 in Flowease/ViewModels/PostureViewModel.swift
+- [X] T032 [US4] StatusMenuView に「終了」メニュー項目を追加 in Flowease/Views/StatusMenuView.swift
+- [X] T033 [US4] CameraService にクリーンアップ処理を追加 in Flowease/Services/CameraService.swift
+- [X] T034 [US4] PostureViewModel に終了処理を追加 in Flowease/ViewModels/PostureViewModel.swift
 
 **Checkpoint**: User Story 4 完了 - アプリが適切に終了し、リソースが解放される
 
