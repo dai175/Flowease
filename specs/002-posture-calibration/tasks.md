@@ -53,12 +53,12 @@ FloweaseTests/        # テスト
 
 ### Storage
 
-- [ ] T008 CalibrationStorageProtocolとCalibrationStorageを作成 in Flowease/Services/CalibrationStorage.swift
+- [X] T008 CalibrationStorageProtocolとCalibrationStorageを作成 in Flowease/Services/CalibrationStorage.swift
 
 ### Tests for Foundational Models
 
-- [ ] T009 [P] ReferencePostureのCodableテストを作成 in FloweaseTests/ReferencePostureTests.swift
-- [ ] T010 [P] CalibrationStorageのテストを作成 in FloweaseTests/CalibrationStorageTests.swift
+- [X] T009 [P] ReferencePostureのCodableテストを作成 in FloweaseTests/ReferencePostureTests.swift
+- [X] T010 [P] CalibrationStorageのテストを作成 in FloweaseTests/CalibrationStorageTests.swift
 
 **Checkpoint**: 基盤モデル完了 - ユーザーストーリーの実装開始可能
 
