@@ -33,6 +33,7 @@ final class PostureViewModel {
     private let cameraService: CameraServiceProtocol
     private let postureAnalyzer: PostureAnalyzing
     private let scoreCalculator: ScoreCalculator
+    private let calibrationService: CalibrationServiceProtocol
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureViewModel")
 
     // MARK: - Private State
@@ -82,14 +83,17 @@ final class PostureViewModel {
     ///   - cameraService: カメラサービス（依存注入によりテスト可能）
     ///   - postureAnalyzer: 姿勢分析サービス
     ///   - scoreCalculator: スコア計算サービス
+    ///   - calibrationService: キャリブレーションサービス
     init(
         cameraService: CameraServiceProtocol,
         postureAnalyzer: PostureAnalyzing,
-        scoreCalculator: ScoreCalculator
+        scoreCalculator: ScoreCalculator,
+        calibrationService: CalibrationServiceProtocol
     ) {
         self.cameraService = cameraService
         self.postureAnalyzer = postureAnalyzer
         self.scoreCalculator = scoreCalculator
+        self.calibrationService = calibrationService
         logger.debug("PostureViewModel 初期化完了")
     }
 
@@ -97,10 +101,13 @@ final class PostureViewModel {
     ///
     /// デフォルトのサービスを使用する。
     convenience init() {
+        let storage = CalibrationStorage()
+        let calibrationService = CalibrationService(storage: storage)
         self.init(
             cameraService: CameraService(),
             postureAnalyzer: PostureAnalyzer(),
-            scoreCalculator: ScoreCalculator()
+            scoreCalculator: ScoreCalculator(),
+            calibrationService: calibrationService
         )
     }
 
@@ -119,6 +126,12 @@ final class PostureViewModel {
         isInitialized = true
 
         logger.info("PostureViewModel 初期化開始")
+
+        // キャリブレーション済みの場合、基準姿勢をScoreCalculatorに設定
+        if let referencePosture = calibrationService.referencePosture {
+            scoreCalculator.setReferencePosture(referencePosture)
+            logger.info("キャリブレーション済み: 基準姿勢をScoreCalculatorに設定")
+        }
 
         // カメラデバイス・権限チェック
         updateMonitoringState()
@@ -239,6 +252,19 @@ final class PostureViewModel {
         case let .success(bodyPose):
             // 姿勢分析中に停止された場合は無視
             guard cameraService.isCapturing else {
+                return
+            }
+
+            // キャリブレーション中であればフレームを渡す
+            if calibrationService.state.isInProgress {
+                calibrationService.processFrame(bodyPose)
+
+                // キャリブレーション完了後、基準姿勢を設定
+                if calibrationService.state.isCompleted,
+                   let referencePosture = calibrationService.referencePosture {
+                    scoreCalculator.setReferencePosture(referencePosture)
+                    logger.info("キャリブレーション完了: 基準姿勢をScoreCalculatorに設定")
+                }
                 return
             }
 
