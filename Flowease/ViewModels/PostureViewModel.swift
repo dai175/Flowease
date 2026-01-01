@@ -233,30 +233,40 @@ final class PostureViewModel {
         }
 
         // 姿勢を分析
-        guard let bodyPose = await postureAnalyzer.analyze(pixelBuffer: pixelBuffer) else {
+        let result = await postureAnalyzer.analyze(pixelBuffer: pixelBuffer)
+
+        switch result {
+        case let .success(bodyPose):
+            // 姿勢分析中に停止された場合は無視
+            guard cameraService.isCapturing else {
+                return
+            }
+
+            // スコアを計算
+            guard let score = scoreCalculator.calculate(from: bodyPose) else {
+                logger.debug("スコア計算に失敗（姿勢が無効）")
+                return
+            }
+
+            // スコアを追加（状態は addScore 内で active に更新される）
+            addScore(score)
+
+        case .noPersonDetected:
             // 人物が検出されない場合
             if case .active = monitoringState {
-                // active から paused への遷移
                 monitoringState = .paused(.noPersonDetected)
                 clearScoreHistory()
                 logger.debug("人物未検出のため一時停止")
             }
-            return
-        }
 
-        // 姿勢分析中に停止された場合は無視
-        guard cameraService.isCapturing else {
-            return
+        case .lowDetectionQuality:
+            // 検出精度が低下している場合
+            if case .active = monitoringState {
+                monitoringState = .paused(.lowDetectionQuality)
+                clearScoreHistory()
+                logger.debug("検出精度低下のため一時停止")
+            }
         }
-
-        // スコアを計算
-        guard let score = scoreCalculator.calculate(from: bodyPose) else {
-            logger.debug("スコア計算に失敗（姿勢が無効）")
-            return
-        }
-
-        // スコアを追加（状態は addScore 内で active に更新される）
-        addScore(score)
     }
 }
 

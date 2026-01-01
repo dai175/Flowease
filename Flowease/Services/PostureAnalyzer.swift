@@ -7,6 +7,28 @@ import CoreVideo
 import OSLog
 import Vision
 
+// MARK: - AnalysisResult
+
+/// 姿勢分析の結果
+///
+/// PostureAnalyzer の分析結果を表す列挙型。
+/// 成功時は BodyPose を、失敗時は原因を区別して返す。
+enum AnalysisResult: Sendable, Equatable {
+    /// 姿勢が正常に検出された
+    case success(BodyPose)
+
+    /// 人物が検出されなかった
+    ///
+    /// カメラに人物が映っていない場合。
+    case noPersonDetected
+
+    /// 検出精度が低下している
+    ///
+    /// 人物は検出されるが、必須関節の精度が低い場合。
+    /// 照明条件、姿勢、距離など様々な原因が考えられる。
+    case lowDetectionQuality
+}
+
 // MARK: - PostureAnalyzing
 
 /// 姿勢分析プロトコル
@@ -16,8 +38,8 @@ import Vision
 protocol PostureAnalyzing: Sendable {
     /// ピクセルバッファから姿勢を分析
     /// - Parameter pixelBuffer: カメラからのフレームデータ
-    /// - Returns: 検出された姿勢、または人物が検出されない場合は nil
-    func analyze(pixelBuffer: CVPixelBuffer) async -> BodyPose?
+    /// - Returns: 分析結果（成功時は BodyPose、失敗時は原因を含む）
+    func analyze(pixelBuffer: CVPixelBuffer) async -> AnalysisResult
 }
 
 // MARK: - PostureAnalyzer
@@ -42,8 +64,8 @@ final class PostureAnalyzer: PostureAnalyzing {
 
     /// ピクセルバッファから姿勢を分析
     /// - Parameter pixelBuffer: カメラからのフレームデータ
-    /// - Returns: 検出された姿勢、または人物が検出されない場合は nil
-    func analyze(pixelBuffer: CVPixelBuffer) async -> BodyPose? {
+    /// - Returns: 分析結果（成功時は BodyPose、失敗時は原因を含む）
+    func analyze(pixelBuffer: CVPixelBuffer) async -> AnalysisResult {
         // VNDetectHumanBodyPoseRequest を作成
         let request = VNDetectHumanBodyPoseRequest()
 
@@ -63,13 +85,13 @@ final class PostureAnalyzer: PostureAnalyzing {
             }
         } catch {
             logger.error("姿勢検出リクエストの実行に失敗: \(error.localizedDescription)")
-            return nil
+            return .noPersonDetected
         }
 
         // 結果を取得（最初の検出結果のみ使用）
         guard let observation = request.results?.first else {
             logger.debug("人物が検出されませんでした")
-            return nil
+            return .noPersonDetected
         }
 
         // VNHumanBodyPoseObservation を BodyPose に変換
@@ -77,11 +99,12 @@ final class PostureAnalyzer: PostureAnalyzing {
 
         if bodyPose.isValid {
             logger.debug("姿勢を検出しました")
-        } else {
-            logger.debug("検出された姿勢が無効です（必須関節が不足または低信頼度）")
+            return .success(bodyPose)
         }
 
-        return bodyPose
+        // 人物は検出されたが必須関節の精度が低い
+        logger.debug("検出された姿勢が無効です（必須関節が不足または低信頼度）")
+        return .lowDetectionQuality
     }
 
     // MARK: - Private Methods

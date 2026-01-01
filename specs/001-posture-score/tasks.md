@@ -147,7 +147,7 @@
 - [X] T035 [P] カメラ利用不可時のグレーアイコン表示を実装 in Flowease/ViewModels/PostureViewModel.swift
 - [X] T036 [P] 人物未検出時のグレーアイコン表示を実装 in Flowease/ViewModels/PostureViewModel.swift
 - [X] T037 他のアプリがカメラ使用中の検出と待機状態表示を実装 in Flowease/Services/CameraService.swift
-- [ ] T038 照明条件不良時の検出と表示を実装 in Flowease/Services/PostureAnalyzer.swift
+- [X] T038 照明条件不良時の検出と表示を実装 in Flowease/Services/PostureAnalyzer.swift
 
 **Checkpoint**: 全エッジケースがハンドリングされ、適切な UI フィードバックが表示される
 

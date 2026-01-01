@@ -22,6 +22,12 @@ enum PauseReason: Sendable, Equatable {
     /// 他のアプリケーションがカメラを排他的に使用している場合。
     /// AVCaptureSession.InterruptionReason.videoDeviceInUseByAnotherClient で検出。
     case cameraInUse
+
+    /// 検出精度が低下している
+    ///
+    /// カメラに人物が映っているが、照明条件や姿勢などの理由で
+    /// 関節の検出精度が低い場合。
+    case lowDetectionQuality
 }
 
 // MARK: CustomStringConvertible
@@ -36,6 +42,8 @@ extension PauseReason: CustomStringConvertible {
             "人物が検出されません"
         case .cameraInUse:
             "カメラが他のアプリで使用中です"
+        case .lowDetectionQuality:
+            "検出精度が低下しています"
         }
     }
 }
