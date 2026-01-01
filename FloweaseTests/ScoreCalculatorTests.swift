@@ -89,12 +89,17 @@ final class ScoreCalculatorTests: XCTestCase {
     /// 前傾姿勢の BodyPose を作成
     private func makeForwardLeanPosture(timestamp: Date = Date()) -> BodyPose {
         BodyPose(
-            nose: makeJoint(x: 0.4, y: 0.75), // 前に出ている（X座標が小さい = 前）
+            // 前傾姿勢: 鼻が下がってneckに近づく（Y座標で表現）
+            // Vision座標系: Y=0が下端、Y=1が上端
+            // 良い姿勢: nose.y=0.8 (首より0.2上)
+            // 前傾姿勢: nose.y=0.50 (首と同じ高さ) → forwardLean = 0.1
+            // スコア計算: threshold=0.03, max=0.15 → 偏差0.1でスコア約42
+            nose: makeJoint(x: 0.5, y: 0.50),
             neck: makeJoint(x: 0.5, y: 0.6),
             leftShoulder: makeJoint(x: 0.35, y: 0.4),
             rightShoulder: makeJoint(x: 0.65, y: 0.4),
-            leftEar: makeJoint(x: 0.35, y: 0.78),
-            rightEar: makeJoint(x: 0.45, y: 0.78),
+            leftEar: makeJoint(x: 0.45, y: 0.52),
+            rightEar: makeJoint(x: 0.55, y: 0.52),
             root: makeJoint(x: 0.5, y: 0.2),
             timestamp: timestamp
         )
@@ -650,9 +655,9 @@ final class ScoreCalculatorTests: XCTestCase {
             frameCount: 90,
             averageConfidence: 0.9,
             baselineMetrics: BaselineMetrics(
-                headTiltDeviation: 0.0,     // 頭は真っ直ぐ
-                shoulderBalance: 0.0,        // 肩は水平
-                forwardLean: 0.2,            // 少し後傾（neck.y - nose.y）
+                headTiltDeviation: 0.0,     // 頭は真っ直ぐ（nose.x - neck.x = 0）
+                shoulderBalance: 0.0,        // 肩は水平（leftShoulder.y - rightShoulder.y = 0）
+                forwardLean: 0.0,            // max(0, neck.y - nose.y) = max(0, 0.6 - 0.8) = 0（鼻が首より上）
                 symmetry: 0.0                // 完全対称
             )
         )
@@ -671,9 +676,9 @@ final class ScoreCalculatorTests: XCTestCase {
             frameCount: 90,
             averageConfidence: 0.9,
             baselineMetrics: BaselineMetrics(
-                headTiltDeviation: 0.1,      // 頭が傾いている状態を基準
+                headTiltDeviation: 0.1,      // 頭が傾いている状態を基準（nose.x - neck.x = 0.1）
                 shoulderBalance: 0.0,
-                forwardLean: 0.15,
+                forwardLean: 0.0,            // max(0, neck.y - nose.y) = max(0, 0.6 - 0.75) = 0
                 symmetry: 0.02
             )
         )
