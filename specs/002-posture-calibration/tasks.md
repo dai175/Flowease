@@ -45,11 +45,11 @@ FloweaseTests/        # テスト
 ### Models（全ストーリー共通）
 
 - [X] T002 [P] ReferenceJointPosition構造体を作成 in Flowease/Models/ReferenceJointPosition.swift
-- [ ] T003 [P] BaselineMetrics構造体を作成 in Flowease/Models/BaselineMetrics.swift
-- [ ] T004 [P] CalibrationProgress構造体を作成 in Flowease/Models/CalibrationProgress.swift
-- [ ] T005 [P] CalibrationFailure列挙型を作成 in Flowease/Models/CalibrationFailure.swift
-- [ ] T006 CalibrationState列挙型を作成（CalibrationProgress/Failureに依存） in Flowease/Models/CalibrationState.swift
-- [ ] T007 ReferencePosture構造体を作成（ReferenceJointPosition/BaselineMetricsに依存） in Flowease/Models/ReferencePosture.swift
+- [X] T003 [P] BaselineMetrics構造体を作成 in Flowease/Models/BaselineMetrics.swift
+- [X] T004 [P] CalibrationProgress構造体を作成 in Flowease/Models/CalibrationProgress.swift
+- [X] T005 [P] CalibrationFailure列挙型を作成 in Flowease/Models/CalibrationFailure.swift
+- [X] T006 CalibrationState列挙型を作成（CalibrationProgress/Failureに依存） in Flowease/Models/CalibrationState.swift
+- [X] T007 ReferencePosture構造体を作成（ReferenceJointPosition/BaselineMetricsに依存） in Flowease/Models/ReferencePosture.swift
 
 ### Storage
 
