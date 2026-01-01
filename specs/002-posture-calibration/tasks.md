@@ -86,8 +86,8 @@ FloweaseTests/        # テスト
 
 ### ViewModels for User Story 1
 
-- [ ] T017 [US1] CalibrationViewModelを作成 in Flowease/ViewModels/CalibrationViewModel.swift
-- [ ] T018 [US1] PostureMonitorViewModelにキャリブレーション状態を連携 in Flowease/ViewModels/PostureMonitorViewModel.swift
+- [X] T017 [US1] CalibrationViewModelを作成 in Flowease/ViewModels/CalibrationViewModel.swift
+- [X] T018 [US1] PostureViewModelにキャリブレーション状態を連携 in Flowease/ViewModels/PostureViewModel.swift
 
 ### Views for User Story 1
 

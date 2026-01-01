@@ -110,6 +110,20 @@ private struct MockPostureAnalyzer: PostureAnalyzing {
     }
 }
 
+// MARK: - MockCalibrationService
+
+/// Preview 用のモック CalibrationService
+@MainActor
+private final class MockCalibrationService: CalibrationServiceProtocol {
+    var state: CalibrationState = .notCalibrated
+    var referencePosture: ReferencePosture? { nil }
+
+    func startCalibration() async throws {}
+    func cancelCalibration() {}
+    func resetCalibration() {}
+    func processFrame(_: BodyPose) {}
+}
+
 // MARK: - Preview Helper
 
 @MainActor
@@ -121,7 +135,8 @@ private func makePreviewViewModel(
     let viewModel = PostureViewModel(
         cameraService: MockCameraService(status: cameraStatus, cameraAvailable: cameraAvailable),
         postureAnalyzer: MockPostureAnalyzer(),
-        scoreCalculator: ScoreCalculator()
+        scoreCalculator: ScoreCalculator(),
+        calibrationService: MockCalibrationService()
     )
     // スコアが指定されている場合は active 状態にする
     if let score {
