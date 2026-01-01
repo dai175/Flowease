@@ -32,7 +32,7 @@ FloweaseTests/        # テスト
 
 **Purpose**: 新規ファイルの作成と基本構造の準備
 
-- [ ] T001 ブランチ`002-posture-calibration`がアクティブであることを確認
+- [X] T001 ブランチ`002-posture-calibration`がアクティブであることを確認
 
 ---
 
@@ -44,12 +44,12 @@ FloweaseTests/        # テスト
 
 ### Models（全ストーリー共通）
 
-- [ ] T002 [P] ReferenceJoint構造体を作成 in Flowease/Models/ReferenceJoint.swift
+- [X] T002 [P] ReferenceJointPosition構造体を作成 in Flowease/Models/ReferenceJointPosition.swift
 - [ ] T003 [P] BaselineMetrics構造体を作成 in Flowease/Models/BaselineMetrics.swift
 - [ ] T004 [P] CalibrationProgress構造体を作成 in Flowease/Models/CalibrationProgress.swift
 - [ ] T005 [P] CalibrationFailure列挙型を作成 in Flowease/Models/CalibrationFailure.swift
 - [ ] T006 CalibrationState列挙型を作成（CalibrationProgress/Failureに依存） in Flowease/Models/CalibrationState.swift
-- [ ] T007 ReferencePosture構造体を作成（ReferenceJoint/BaselineMetricsに依存） in Flowease/Models/ReferencePosture.swift
+- [ ] T007 ReferencePosture構造体を作成（ReferenceJointPosition/BaselineMetricsに依存） in Flowease/Models/ReferencePosture.swift
 
 ### Storage
 
@@ -193,7 +193,7 @@ FloweaseTests/        # テスト
 Phase 2の並列タスク:
 ```bash
 # 以下のモデルを並列作成可能:
-T002: ReferenceJoint.swift
+T002: ReferenceJointPosition.swift
 T003: BaselineMetrics.swift
 T004: CalibrationProgress.swift
 T005: CalibrationFailure.swift

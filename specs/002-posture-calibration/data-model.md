@@ -9,13 +9,13 @@
 ┌─────────────────────────┐
 │   ReferencePosture      │
 ├─────────────────────────┤
-│ + nose: ReferenceJoint? │
-│ + neck: ReferenceJoint  │
+│ + nose: ReferenceJointPosition? │
+│ + neck: ReferenceJointPosition  │
 │ + leftShoulder: Ref...  │
 │ + rightShoulder: Ref... │
 │ + leftEar: ReferenceJ.? │
 │ + rightEar: ReferenceJ.?│
-│ + root: ReferenceJoint? │
+│ + root: ReferenceJointPosition? │
 │ + calibratedAt: Date    │
 │ + frameCount: Int       │
 │ + averageConfidence: Dbl│
@@ -33,7 +33,7 @@
 └─────────────────────────┘
 
 ┌─────────────────────────┐
-│   ReferenceJoint        │
+│   ReferenceJointPosition        │
 ├─────────────────────────┤
 │ + x: Double             │
 │ + y: Double             │
@@ -76,13 +76,13 @@
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| nose | ReferenceJoint? | No | 鼻の平均位置 |
-| neck | ReferenceJoint | Yes | 首の平均位置（必須） |
-| leftShoulder | ReferenceJoint | Yes | 左肩の平均位置（必須） |
-| rightShoulder | ReferenceJoint | Yes | 右肩の平均位置（必須） |
-| leftEar | ReferenceJoint? | No | 左耳の平均位置 |
-| rightEar | ReferenceJoint? | No | 右耳の平均位置 |
-| root | ReferenceJoint? | No | 体の中心の平均位置 |
+| nose | ReferenceJointPosition? | No | 鼻の平均位置 |
+| neck | ReferenceJointPosition | Yes | 首の平均位置（必須） |
+| leftShoulder | ReferenceJointPosition | Yes | 左肩の平均位置（必須） |
+| rightShoulder | ReferenceJointPosition | Yes | 右肩の平均位置（必須） |
+| leftEar | ReferenceJointPosition? | No | 左耳の平均位置 |
+| rightEar | ReferenceJointPosition? | No | 右耳の平均位置 |
+| root | ReferenceJointPosition? | No | 体の中心の平均位置 |
 | calibratedAt | Date | Yes | キャリブレーション完了日時 |
 | frameCount | Int | Yes | 平均化に使用したフレーム数 |
 | averageConfidence | Double | Yes | 全フレームの平均信頼度 |
@@ -95,7 +95,7 @@
 
 **Codable**: Yes (UserDefaults永続化用)
 
-### ReferenceJoint
+### ReferenceJointPosition
 
 基準姿勢における関節の平均位置。
 
