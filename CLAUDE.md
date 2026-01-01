@@ -27,9 +27,12 @@ make setup          # Install pre-commit hooks
 
 ## Architecture
 
-SwiftUI App with standard macOS structure:
-- `FloweaseApp.swift` - App entry point (`@main`)
-- `ContentView.swift` - Main view
+SwiftUI App with MVVM architecture for macOS menu bar:
+- `Models/` - Data models (PostureScore, BodyPose, MonitoringState, etc.)
+- `ViewModels/` - View models for state management
+- `Views/` - SwiftUI views (StatusMenuView, CameraPermissionView)
+- `Services/` - Business logic (CameraService, PostureAnalyzer, ScoreCalculator)
+- `Utilities/` - Helper functions (ColorGradient)
 
 ## Language
 
@@ -37,9 +40,16 @@ SwiftUI App with standard macOS structure:
 - Comments/Documentation: Japanese acceptable
 - Respond in Japanese
 
-## Active Technologies
-- Swift 6.0 + SwiftUI, AVFoundation (カメラキャプチャ), Vision (姿勢検出/ボディポーズ推定) (001-posture-score)
-- N/A（永続化不要、インメモリ状態管理のみ） (001-posture-score)
+## Technologies
 
-## Recent Changes
-- 001-posture-score: Added Swift 6.0 + SwiftUI, AVFoundation (カメラキャプチャ), Vision (姿勢検出/ボディポーズ推定)
+- **UI**: Swift 6.0 + SwiftUI
+- **Camera**: AVFoundation (video capture, CMSampleBuffer)
+- **Pose Detection**: Vision framework (VNDetectHumanBodyPoseRequest)
+- **Persistence**: None (in-memory state only)
+
+## Features
+
+- **姿勢スコア表示**: カメラ映像からリアルタイムで姿勢を分析し、0〜100のスコアで評価
+- **メニューバー常駐**: Dockに表示されず、メニューバーからのみアクセス可能
+- **色グラデーション**: スコアに応じてアイコンの色が変化（緑=良好、赤=要改善）
+- **エッジケース対応**: カメラ利用不可、人物未検出時はグレーアイコンで表示

@@ -1,6 +1,18 @@
 # Flowease
 
-macOS メニューバー常駐アプリケーション
+macOS メニューバー常駐の姿勢モニタリングアプリケーション
+
+## 概要
+
+Flowease は、カメラを使用してリアルタイムで姿勢を分析し、メニューバーアイコンの色でフィードバックを提供するmacOSアプリです。デスクワーク中の姿勢改善をサポートします。
+
+## 主な機能
+
+- **リアルタイム姿勢分析**: Vision フレームワークを使用して上半身の姿勢を検出
+- **姿勢スコア**: 0〜100 のスコアで姿勢の良さを評価
+- **視覚的フィードバック**: スコアに応じたグラデーション色でアイコン表示（緑=良好、赤=要改善）
+- **プライバシー重視**: カメラ映像はローカル処理のみ、保存・送信なし
+- **エッジケース対応**: カメラ利用不可、人物未検出時は適切に処理
 
 ## 必要条件
 
@@ -76,16 +88,47 @@ fi
 
 ```
 Flowease/
-├── Flowease/              # メインアプリケーション
-│   ├── FloweaseApp.swift  # アプリエントリーポイント
-│   ├── ContentView.swift  # メインビュー
-│   └── Assets.xcassets/   # アセット
-├── FloweaseTests/         # ユニットテスト
-├── FloweaseUITests/       # UI テスト
-├── .swiftlint.yml         # SwiftLint 設定
-├── .swiftformat           # SwiftFormat 設定
-├── .pre-commit-config.yaml # pre-commit 設定
-├── .gitignore             # Git 除外設定
-├── Makefile               # 開発コマンド
-└── README.md              # このファイル
+├── Flowease/                      # メインアプリケーション
+│   ├── FloweaseApp.swift          # アプリエントリーポイント
+│   ├── AppDelegate.swift          # アプリライフサイクル管理
+│   ├── ContentView.swift          # メインビュー
+│   ├── Info.plist                 # アプリ設定
+│   ├── Models/                    # データモデル
+│   │   ├── BodyPose.swift         # ボディポーズ検出結果
+│   │   ├── JointPosition.swift    # 関節位置データ
+│   │   ├── PostureScore.swift     # 姿勢スコア
+│   │   ├── ScoreBreakdown.swift   # スコア内訳
+│   │   ├── MonitoringState.swift  # 監視状態
+│   │   ├── PauseReason.swift      # 一時停止理由
+│   │   └── DisableReason.swift    # 無効化理由
+│   ├── ViewModels/
+│   │   └── PostureViewModel.swift # 姿勢監視ビューモデル
+│   ├── Views/
+│   │   ├── StatusMenuView.swift      # メニューバードロップダウン
+│   │   └── CameraPermissionView.swift # カメラ許可リクエストUI
+│   ├── Services/
+│   │   ├── CameraService.swift       # カメラキャプチャ
+│   │   ├── PostureAnalyzer.swift     # 姿勢分析（Vision）
+│   │   ├── ScoreCalculator.swift     # スコア計算
+│   │   └── StatusItemManager.swift   # ステータスアイテム管理
+│   ├── Utilities/
+│   │   └── ColorGradient.swift       # 色グラデーション
+│   └── Assets.xcassets/           # アセット
+├── FloweaseTests/                 # ユニットテスト
+├── FloweaseUITests/               # UI テスト
+├── specs/                         # 仕様書
+│   └── 001-posture-score/         # 姿勢スコア機能仕様
+├── .swiftlint.yml                 # SwiftLint 設定
+├── .swiftformat                   # SwiftFormat 設定
+├── .pre-commit-config.yaml        # pre-commit 設定
+├── .gitignore                     # Git 除外設定
+├── Makefile                       # 開発コマンド
+├── CLAUDE.md                      # Claude Code 設定
+└── README.md                      # このファイル
 ```
+
+## 使用技術
+
+- **Swift 6.0 + SwiftUI**: UI フレームワーク
+- **AVFoundation**: カメラキャプチャ
+- **Vision**: 人体ポーズ検出（VNDetectHumanBodyPoseRequest）
