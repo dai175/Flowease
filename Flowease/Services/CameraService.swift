@@ -285,6 +285,15 @@ final class CameraService: NSObject, CameraServiceProtocol {
         captureInput = nil
         frameCounter.withLock { $0 = 0 }
 
+        // セッション通知のオブザーバーを削除
+        if let session {
+            NotificationCenter.default.removeObserver(
+                self,
+                name: AVCaptureSession.runtimeErrorNotification,
+                object: session
+            )
+        }
+
         // クリーンアップ処理はバックグラウンドで実行（stopRunning() はブロッキング呼び出し）
         captureQueue.async {
             // デリゲート参照を削除してコールバックを停止
@@ -351,7 +360,66 @@ final class CameraService: NSObject, CameraServiceProtocol {
         captureSession = session
         videoOutput = output
 
+        // セッションランタイムエラーの通知を購読
+        // macOS では wasInterruptedNotification が利用できないため、runtimeErrorNotification を使用
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(sessionRuntimeError(_:)),
+            name: AVCaptureSession.runtimeErrorNotification,
+            object: session
+        )
+
         logger.debug("キャプチャセッションをセットアップしました")
+    }
+
+    // MARK: - Session Error Handlers
+
+    /// セッションでランタイムエラーが発生した時に呼ばれる
+    ///
+    /// カメラが他のアプリで使用中の場合や、デバイスエラーが発生した場合に発火する。
+    /// macOS では wasInterruptedNotification が利用できないため、この通知でエラーを検出する。
+    @objc private func sessionRuntimeError(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let error = userInfo[AVCaptureSessionErrorKey] as? AVError else {
+            return
+        }
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+
+            // エラーの内容をログ出力
+            logger.warning("カメラセッションでエラーが発生しました: code=\(error.code.rawValue), \(error.localizedDescription)")
+
+            // セッションが停止している場合はリカバリーのためにクリーンアップ
+            if let session = captureSession, !session.isRunning {
+                // キャプチャ状態をリセットして再開可能にする
+                isCapturing = false
+
+                // セッションの参照をクリア（次回 startCapturing で新しいセッションを作成）
+                captureSession = nil
+                videoOutput = nil
+                captureInput = nil
+                frameCounter.withLock { $0 = 0 }
+
+                // オブザーバーを削除
+                NotificationCenter.default.removeObserver(
+                    self,
+                    name: AVCaptureSession.runtimeErrorNotification,
+                    object: session
+                )
+
+                logger.info("セッションエラーによりキャプチャ状態をリセットしました")
+                frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.cameraInUse)
+            } else if captureSession != nil {
+                // セッションが実行中でもエラーが発生した場合は停止してクリーンアップ
+                logger.warning("セッション実行中にエラーが発生したため停止します")
+                stopCapturing()
+                frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.sessionConfigurationFailed)
+            } else {
+                // セッションが既に nil の場合（すでにクリーンアップ済み）
+                frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.sessionConfigurationFailed)
+            }
+        }
     }
 }
 
