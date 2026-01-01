@@ -18,7 +18,7 @@
 ### Phase 1: Models（データモデル）
 
 ```
-1. ReferenceJoint.swift     - 基準関節位置（Codable）
+1. ReferenceJointPosition.swift     - 基準関節位置（Codable）
 2. BaselineMetrics.swift    - 基準評価項目値（Codable）
 3. ReferencePosture.swift   - 基準姿勢（Codable）
 4. CalibrationState.swift   - キャリブレーション状態（Enum）
