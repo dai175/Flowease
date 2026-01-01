@@ -390,6 +390,16 @@ final class CameraService: NSObject, CameraServiceProtocol {
             // エラーの内容をログ出力
             logger.warning("カメラセッションでエラーが発生しました: code=\(error.code.rawValue), \(error.localizedDescription)")
 
+            // エラーコードに基づいて適切な CameraServiceError を決定
+            let cameraError: CameraServiceError = switch error.code {
+            case .deviceInUseByAnotherApplication:
+                // 他のアプリがカメラを使用中
+                .cameraInUse
+            default:
+                // その他のエラー（セッション設定エラーとして扱う）
+                .sessionConfigurationFailed
+            }
+
             // セッションが停止している場合はリカバリーのためにクリーンアップ
             if let session = captureSession, !session.isRunning {
                 // キャプチャ状態をリセットして再開可能にする
@@ -409,15 +419,15 @@ final class CameraService: NSObject, CameraServiceProtocol {
                 )
 
                 logger.info("セッションエラーによりキャプチャ状態をリセットしました")
-                frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.cameraInUse)
+                frameDelegate?.cameraService(self, didEncounterError: cameraError)
             } else if captureSession != nil {
                 // セッションが実行中でもエラーが発生した場合は停止してクリーンアップ
                 logger.warning("セッション実行中にエラーが発生したため停止します")
                 stopCapturing()
-                frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.sessionConfigurationFailed)
+                frameDelegate?.cameraService(self, didEncounterError: cameraError)
             } else {
                 // セッションが既に nil の場合（すでにクリーンアップ済み）
-                frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.sessionConfigurationFailed)
+                frameDelegate?.cameraService(self, didEncounterError: cameraError)
             }
         }
     }
