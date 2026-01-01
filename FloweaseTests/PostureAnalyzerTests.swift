@@ -289,60 +289,14 @@ final class PostureAnalyzerTests: XCTestCase {
 /// テスト用のモック PostureAnalyzer
 @MainActor
 final class MockPostureAnalyzer: PostureAnalyzing {
-    /// 返却する BodyPose（nil の場合は人物未検出をシミュレート）
-    var resultToReturn: BodyPose?
+    /// 返却する AnalysisResult
+    var resultToReturn: AnalysisResult = .noPersonDetected
 
     /// analyze が呼ばれた回数
     private(set) var analyzeCallCount = 0
 
-    func analyze(pixelBuffer _: CVPixelBuffer) async -> BodyPose? {
+    func analyze(pixelBuffer _: CVPixelBuffer) async -> AnalysisResult {
         analyzeCallCount += 1
         return resultToReturn
-    }
-}
-
-// MARK: - MockPostureAnalyzer Tests
-
-@MainActor
-final class MockPostureAnalyzerTests: XCTestCase {
-    func testMockAnalyzer_returnsConfiguredResult() async {
-        // Given: 結果を設定したモック
-        let mock = MockPostureAnalyzer()
-        let expectedPose = BodyPose(
-            nose: JointPosition(x: 0.5, y: 0.8, confidence: 0.9),
-            neck: JointPosition(x: 0.5, y: 0.6, confidence: 0.9),
-            leftShoulder: JointPosition(x: 0.35, y: 0.4, confidence: 0.9),
-            rightShoulder: JointPosition(x: 0.65, y: 0.4, confidence: 0.9),
-            leftEar: nil,
-            rightEar: nil,
-            root: nil,
-            timestamp: Date()
-        )
-        mock.resultToReturn = expectedPose
-
-        // When: analyze を呼び出す
-        // Note: 実際のテストでは CVPixelBuffer のモックが必要
-        // let result = await mock.analyze(pixelBuffer: mockBuffer)
-
-        // Then: 設定した結果が返される
-        // XCTAssertEqual(result, expectedPose)
-        XCTAssertEqual(mock.resultToReturn, expectedPose)
-    }
-
-    func testMockAnalyzer_returnsNil_whenNoPersonDetected() async {
-        // Given: 結果が nil のモック（人物未検出）
-        let mock = MockPostureAnalyzer()
-        mock.resultToReturn = nil
-
-        // When / Then: nil が返される
-        XCTAssertNil(mock.resultToReturn, "人物未検出時は nil を返すべき")
-    }
-
-    func testMockAnalyzer_tracksCallCount() async {
-        // Given: モック
-        let mock = MockPostureAnalyzer()
-
-        // When: 初期状態
-        XCTAssertEqual(mock.analyzeCallCount, 0, "初期状態では呼び出し回数は 0")
     }
 }

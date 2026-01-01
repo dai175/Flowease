@@ -105,8 +105,8 @@ private final class MockCameraService: CameraServiceProtocol {
 /// Preview 用のモック PostureAnalyzer
 @MainActor
 private struct MockPostureAnalyzer: PostureAnalyzing {
-    func analyze(pixelBuffer _: CVPixelBuffer) async -> BodyPose? {
-        nil
+    func analyze(pixelBuffer _: CVPixelBuffer) async -> AnalysisResult {
+        .noPersonDetected
     }
 }
 
