@@ -464,13 +464,4 @@ final class MockCalibrationStorage: CalibrationStorageProtocol {
     }
 }
 
-// MARK: - CalibrationError (Placeholder for Tests)
-
-/// CalibrationError の定義（実装前のプレースホルダー）
-/// Note: 実際の実装が完了したらこの定義は削除する
-enum CalibrationError: Error, Equatable {
-    case alreadyInProgress
-    case noPersonDetected
-    case lowConfidence
-    case insufficientFrames
-}
+// Note: CalibrationError は Flowease/Services/CalibrationService.swift で定義されています

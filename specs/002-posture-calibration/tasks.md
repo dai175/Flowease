@@ -79,10 +79,10 @@ FloweaseTests/        # テスト
 
 ### Services for User Story 1
 
-- [ ] T013 [US1] CalibrationServiceProtocolとCalibrationServiceを作成 in Flowease/Services/CalibrationService.swift
-- [ ] T014 [US1] CalibrationErrorを作成 in Flowease/Services/CalibrationService.swift
-- [ ] T015 [US1] ScoreCalculatorにreferencePostureプロパティを追加 in Flowease/Services/ScoreCalculator.swift
-- [ ] T016 [US1] ScoreCalculatorのcalculateメソッドを基準姿勢からの逸脱度計算に対応 in Flowease/Services/ScoreCalculator.swift
+- [X] T013 [US1] CalibrationServiceProtocolとCalibrationServiceを作成 in Flowease/Services/CalibrationService.swift
+- [X] T014 [US1] CalibrationErrorを作成 in Flowease/Services/CalibrationService.swift
+- [X] T015 [US1] ScoreCalculatorにreferencePostureプロパティを追加 in Flowease/Services/ScoreCalculator.swift
+- [X] T016 [US1] ScoreCalculatorのcalculateメソッドを基準姿勢からの逸脱度計算に対応 in Flowease/Services/ScoreCalculator.swift
 
 ### ViewModels for User Story 1
 
