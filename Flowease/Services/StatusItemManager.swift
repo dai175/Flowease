@@ -20,6 +20,9 @@ final class StatusItemManager {
     private let viewModel: PostureViewModel
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "StatusItemManager")
 
+    /// 観察が有効かどうか（終了時に false にして観察を停止）
+    private var isObserving = true
+
     // MARK: - Initialization
 
     init(statusItem: NSStatusItem, viewModel: PostureViewModel) {
@@ -70,14 +73,28 @@ final class StatusItemManager {
 
     /// ViewModel の状態変化を監視（再帰的に呼び出し）
     private func observeChanges() {
+        // 観察が無効になっている場合は再帰を停止
+        guard isObserving else { return }
+
         withObservationTracking {
             _ = self.viewModel.monitoringState
             _ = self.viewModel.smoothedScore
         } onChange: {
             Task { @MainActor [weak self] in
-                self?.updateIcon()
-                self?.observeChanges()
+                guard let self, isObserving else { return }
+                updateIcon()
+                observeChanges()
             }
         }
+    }
+
+    // MARK: - Public Methods
+
+    /// 観察を停止
+    ///
+    /// アプリ終了時に呼び出して、観察の再帰呼び出しを停止する。
+    func stopObserving() {
+        isObserving = false
+        logger.debug("StatusItemManager 観察を停止")
     }
 }
