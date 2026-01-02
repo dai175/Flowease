@@ -4,6 +4,7 @@
 // 顔検出ベースのスコア計算サービス
 //
 // T007: FaceScoreCalculatorサービススタブ作成（Phase 2 Foundational）
+// T015-T017: スコア計算ロジック実装（Phase 3 User Story 1）
 
 import Foundation
 import OSLog
@@ -90,7 +91,7 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     /// - Parameter face: 検出された顔位置データ
     /// - Returns: 姿勢スコア、または基準姿勢が未設定の場合は nil
     ///
-    /// NOTE: Phase 2スタブ実装。US1で詳細ロジックを実装予定。
+    /// US1 (T015-T017): TDDテストに基づく実装済み
     func calculate(from face: FacePosition) -> PostureScore? {
         // 基準姿勢が未設定の場合はスコア計算不可
         guard let reference = referencePosture else {
@@ -136,10 +137,10 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
         )
     }
 
-    // MARK: - Private Score Calculation Methods (スタブ)
+    // MARK: - Private Score Calculation Methods (T015-T017)
 
     /// 垂直位置スコアを計算（片方向：Y低下のみ）
-    /// NOTE: T015で詳細実装
+    /// T015: 実装済み
     private func calculateVerticalPositionScore(face: FacePosition, baseline: FaceBaselineMetrics) -> Int {
         let yDeviation = max(0, baseline.baselineY - face.centerY)
         return calculateScoreFromDeviation(
@@ -150,7 +151,7 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     }
 
     /// サイズ変化スコアを計算（片方向：増加のみ）
-    /// NOTE: T016で詳細実装
+    /// T016: 実装済み
     private func calculateSizeChangeScore(face: FacePosition, baseline: FaceBaselineMetrics) -> Int {
         guard baseline.baselineArea > 0 else { return 100 }
         let sizeRatio = (face.area - baseline.baselineArea) / baseline.baselineArea
@@ -163,7 +164,7 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     }
 
     /// 傾きスコアを計算（両方向、ラップアラウンド考慮）
-    /// NOTE: T017で詳細実装
+    /// T017: 実装済み
     private func calculateTiltScore(face: FacePosition, baseline: FaceBaselineMetrics) -> Int {
         guard let roll = face.roll else {
             return 70 // roll未取得時のデフォルト
