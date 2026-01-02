@@ -133,9 +133,9 @@ FloweaseTests/        # テスト
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] CalibrationViewModelに状態表示用のプロパティを追加 in Flowease/ViewModels/CalibrationViewModel.swift
-- [ ] T030 [US3] StatusMenuViewにキャリブレーション状態ラベルを追加 in Flowease/Views/StatusMenuView.swift
-- [ ] T031 [US3] 未キャリブレーション時の推奨メッセージを表示 in Flowease/Views/StatusMenuView.swift
+- [X] T029 [US3] CalibrationViewModelに状態表示用のプロパティを追加 in Flowease/ViewModels/CalibrationViewModel.swift
+- [X] T030 [US3] StatusMenuViewにキャリブレーション状態ラベルを追加 in Flowease/Views/StatusMenuView.swift
+- [X] T031 [US3] 未キャリブレーション時の推奨メッセージを表示 in Flowease/Views/StatusMenuView.swift
 
 **Checkpoint**: User Story 3完了 - 状態表示が動作
 

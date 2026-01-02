@@ -63,6 +63,8 @@ struct StatusMenuView: View {
             // キャリブレーション状態表示
             CalibrationStatusRow(
                 isCalibrated: calibrationViewModel.isCalibrated,
+                statusSummary: calibrationViewModel.statusSummary,
+                recommendationMessage: calibrationViewModel.recommendationMessage,
                 onReset: {
                     calibrationViewModel.resetCalibration()
                 }
@@ -80,41 +82,57 @@ private struct CalibrationStatusRow: View {
     /// キャリブレーション済みかどうか
     let isCalibrated: Bool
 
+    /// キャリブレーション状態のサマリー（日時含む）
+    let statusSummary: String
+
+    /// 推奨メッセージ（未キャリブレーション時のみ）
+    let recommendationMessage: String?
+
     /// リセットアクション
     let onReset: () -> Void
 
     var body: some View {
-        HStack {
-            // 状態アイコン
-            Image(systemName: isCalibrated ? "checkmark.circle.fill" : "circle")
-                .foregroundStyle(isCalibrated ? .green : .secondary)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                // 状態アイコン
+                Image(systemName: isCalibrated ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(isCalibrated ? .green : .secondary)
 
-            // 状態テキスト
-            Text(isCalibrated ? "キャリブレーション: 完了" : "キャリブレーション: 未設定")
-                .font(.subheadline)
-                .foregroundStyle(isCalibrated ? .primary : .secondary)
+                // 状態テキスト
+                Text("キャリブレーション: \(statusSummary)")
+                    .font(.subheadline)
+                    .foregroundStyle(isCalibrated ? .primary : .secondary)
 
-            Spacer()
+                Spacer()
 
-            // リセットボタン（キャリブレーション済みの場合のみ表示）
-            if isCalibrated {
-                Button("リセット") {
-                    onReset()
-                    // 通知を送信してPostureViewModelでScoreCalculatorをクリア
-                    NotificationCenter.default.post(name: .calibrationReset, object: nil)
+                // リセットボタン（キャリブレーション済みの場合のみ表示）
+                if isCalibrated {
+                    Button("リセット") {
+                        onReset()
+                        // 通知を送信してPostureViewModelでScoreCalculatorをクリア
+                        NotificationCenter.default.post(name: .calibrationReset, object: nil)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.secondary)
+                    .controlSize(.small)
                 }
-                .buttonStyle(.borderless)
-                .foregroundStyle(.secondary)
+
+                // キャリブレーションボタン
+                Button(isCalibrated ? "再設定" : "設定") {
+                    // 通知を送信してAppDelegateでウィンドウを開く
+                    NotificationCenter.default.post(name: .showCalibrationWindow, object: nil)
+                }
+                .buttonStyle(.bordered)
                 .controlSize(.small)
             }
 
-            // キャリブレーションボタン
-            Button(isCalibrated ? "再設定" : "設定") {
-                // 通知を送信してAppDelegateでウィンドウを開く
-                NotificationCenter.default.post(name: .showCalibrationWindow, object: nil)
+            // 未キャリブレーション時の推奨メッセージ
+            if let message = recommendationMessage {
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, 24) // アイコンの幅に合わせてインデント
             }
-            .buttonStyle(.bordered)
-            .controlSize(.small)
         }
     }
 }

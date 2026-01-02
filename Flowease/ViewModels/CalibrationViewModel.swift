@@ -122,4 +122,40 @@ final class CalibrationViewModel {
             return failure.userMessage
         }
     }
+
+    // MARK: - Status Display Properties
+
+    /// キャリブレーション推奨メッセージ
+    /// 未キャリブレーション時かつ実行中でない場合にユーザーに推奨を表示するためのテキスト
+    var recommendationMessage: String? {
+        guard shouldShowRecommendation else { return nil }
+        return "キャリブレーションを設定すると、より正確な姿勢評価ができます"
+    }
+
+    /// 推奨メッセージを表示すべきかどうか
+    var shouldShowRecommendation: Bool {
+        !isCalibrated && !isInProgress
+    }
+
+    /// キャリブレーション完了日時のフォーマット済みテキスト
+    var calibratedAtText: String? {
+        guard let date = referencePosture?.calibratedAt else { return nil }
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        formatter.locale = Locale(identifier: "ja_JP")
+        return formatter.string(from: date)
+    }
+
+    /// キャリブレーション状態の短い説明
+    var statusSummary: String {
+        if isCalibrated {
+            if let dateText = calibratedAtText {
+                return "完了 (\(dateText))"
+            }
+            return "完了"
+        } else {
+            return "未設定"
+        }
+    }
 }
