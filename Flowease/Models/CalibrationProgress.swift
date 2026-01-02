@@ -18,9 +18,9 @@ struct CalibrationProgress: Sendable, Equatable {
     /// 信頼度0.5未満のフレームが連続した回数を記録
     private(set) var lowConfidenceStreak: Int
 
-    /// 人物未検出の連続フレーム数
-    /// 必須関節（首、両肩）が検出されなかったフレームが連続した回数を記録
-    private(set) var noPersonStreak: Int
+    /// 顔未検出の連続フレーム数
+    /// 顔が検出されなかったフレームが連続した回数を記録
+    private(set) var noFaceStreak: Int
 
     /// 失敗判定のしきい値（約1秒 = 30フレーム）
     static let failureThreshold = 30
@@ -34,19 +34,19 @@ struct CalibrationProgress: Sendable, Equatable {
     ///   - collectedFrames: 収集済みフレーム数（デフォルト: 0）
     ///   - targetDuration: 目標時間（デフォルト: 3.0秒）
     ///   - lowConfidenceStreak: 低信頼度連続フレーム数（デフォルト: 0）
-    ///   - noPersonStreak: 人物未検出連続フレーム数（デフォルト: 0）
+    ///   - noFaceStreak: 顔未検出連続フレーム数（デフォルト: 0）
     init(
         startTime: Date = Date(),
         collectedFrames: Int = 0,
         targetDuration: TimeInterval = CalibrationProgress.defaultTargetDuration,
         lowConfidenceStreak: Int = 0,
-        noPersonStreak: Int = 0
+        noFaceStreak: Int = 0
     ) {
         self.startTime = startTime
         self.collectedFrames = max(0, collectedFrames)
         self.targetDuration = max(0, targetDuration)
         self.lowConfidenceStreak = max(0, lowConfidenceStreak)
-        self.noPersonStreak = max(0, noPersonStreak)
+        self.noFaceStreak = max(0, noFaceStreak)
     }
 
     // MARK: - Computed Properties
@@ -70,15 +70,15 @@ struct CalibrationProgress: Sendable, Equatable {
     }
 
     /// 失敗すべきかどうか
-    /// 低信頼度または人物未検出が約1秒（30フレーム）連続したら失敗
+    /// 低信頼度または顔未検出が約1秒（30フレーム）連続したら失敗
     var shouldFail: Bool {
         lowConfidenceStreak >= CalibrationProgress.failureThreshold ||
-            noPersonStreak >= CalibrationProgress.failureThreshold
+            noFaceStreak >= CalibrationProgress.failureThreshold
     }
 
-    /// 人物未検出で失敗すべきかどうか
-    var shouldFailNoPersonDetected: Bool {
-        noPersonStreak >= CalibrationProgress.failureThreshold
+    /// 顔未検出で失敗すべきかどうか
+    var shouldFailNoFaceDetected: Bool {
+        noFaceStreak >= CalibrationProgress.failureThreshold
     }
 
     /// 低信頼度で失敗すべきかどうか
@@ -93,11 +93,11 @@ struct CalibrationProgress: Sendable, Equatable {
     }
 
     /// 現在の検出品質レベル
-    /// 低信頼度または人物未検出の連続フレーム数に応じて品質を判定
+    /// 低信頼度または顔未検出の連続フレーム数に応じて品質を判定
     var currentQualityLevel: QualityLevel {
-        // 人物未検出が10フレーム以上連続
-        if noPersonStreak >= 10 {
-            return .noPersonDetected
+        // 顔未検出が10フレーム以上連続
+        if noFaceStreak >= 10 {
+            return .noFaceDetected
         }
         // 低信頼度が10フレーム以上連続
         if lowConfidenceStreak >= 10 {
@@ -112,20 +112,20 @@ struct CalibrationProgress: Sendable, Equatable {
         case good
         /// 低信頼度（検出されているが信頼度が低い）
         case lowConfidence
-        /// 人物未検出（必須関節が検出されていない）
-        case noPersonDetected
+        /// 顔未検出（顔が検出されていない）
+        case noFaceDetected
     }
 
     // MARK: - Mutating Methods
 
     /// フレームの品質レベル
     enum FrameQuality {
-        /// 高信頼度（必須関節が検出され、信頼度が0.5以上）
+        /// 高信頼度（顔が検出され、信頼度が0.5以上）
         case highConfidence
-        /// 低信頼度（必須関節は検出されたが信頼度が0.5未満）
+        /// 低信頼度（顔は検出されたが信頼度が0.5未満）
         case lowConfidence
-        /// 人物未検出（必須関節が検出されなかった）
-        case noPersonDetected
+        /// 顔未検出（顔が検出されなかった）
+        case noFaceDetected
     }
 
     /// フレームを追加
@@ -135,12 +135,12 @@ struct CalibrationProgress: Sendable, Equatable {
         case .highConfidence:
             collectedFrames += 1
             lowConfidenceStreak = 0
-            noPersonStreak = 0
+            noFaceStreak = 0
         case .lowConfidence:
             lowConfidenceStreak += 1
-            noPersonStreak = 0
-        case .noPersonDetected:
-            noPersonStreak += 1
+            noFaceStreak = 0
+        case .noFaceDetected:
+            noFaceStreak += 1
             lowConfidenceStreak = 0
         }
     }

@@ -89,11 +89,14 @@ final class ScoreCalculator {
             rightShoulder: rightShoulder
         )
 
-        // 加重平均で総合スコアを算出
-        let weightedScore = Double(componentScores.headTilt) * headTiltWeight
-            + Double(componentScores.shoulderBalance) * shoulderBalanceWeight
-            + Double(componentScores.forwardLean) * forwardLeanWeight
-            + Double(componentScores.symmetry) * symmetryWeight
+        // 加重平均で総合スコアを算出（新3項目: verticalPosition 40%, sizeChange 40%, tilt 20%）
+        // NOTE: Phase 2暫定実装。US1でFaceScoreCalculatorに移行後は削除
+        let verticalWeight = 0.40
+        let sizeWeight = 0.40
+        let tiltWeight = 0.20
+        let weightedScore = Double(componentScores.verticalPosition) * verticalWeight
+            + Double(componentScores.sizeChange) * sizeWeight
+            + Double(componentScores.tilt) * tiltWeight
 
         let totalScore = Int(weightedScore.rounded())
 
@@ -102,9 +105,8 @@ final class ScoreCalculator {
 
         logger.debug(
             """
-            スコア計算完了: total=\(totalScore), headTilt=\(componentScores.headTilt), \
-            shoulder=\(componentScores.shoulderBalance), lean=\(componentScores.forwardLean), \
-            symmetry=\(componentScores.symmetry), calibrated=\(self.isCalibrated)
+            スコア計算完了: total=\(totalScore), vertical=\(componentScores.verticalPosition), \
+            size=\(componentScores.sizeChange), tilt=\(componentScores.tilt), calibrated=\(self.isCalibrated)
             """
         )
 
@@ -144,30 +146,32 @@ final class ScoreCalculator {
     }
 
     /// 固定しきい値モードでのスコア計算
+    /// NOTE: Phase 2暫定実装。US1でFaceScoreCalculatorに移行後は削除
     private func calculateFixedThresholdScores(
         pose: BodyPose,
         neck: JointPosition,
         leftShoulder: JointPosition,
         rightShoulder: JointPosition
     ) -> ScoreBreakdown {
-        ScoreBreakdown(
-            headTilt: calculateHeadTiltScore(nose: pose.nose, neck: neck),
-            shoulderBalance: calculateShoulderBalanceScore(
-                leftShoulder: leftShoulder,
-                rightShoulder: rightShoulder
-            ),
-            forwardLean: calculateForwardLeanScore(nose: pose.nose, neck: neck),
-            symmetry: calculateSymmetryScore(
-                leftShoulder: leftShoulder,
-                rightShoulder: rightShoulder,
-                leftEar: pose.leftEar,
-                rightEar: pose.rightEar,
-                neck: neck
-            )
+        // 暫定: 旧4項目を新3項目にマッピング
+        let headTilt = calculateHeadTiltScore(nose: pose.nose, neck: neck)
+        let forwardLean = calculateForwardLeanScore(nose: pose.nose, neck: neck)
+        let symmetry = calculateSymmetryScore(
+            leftShoulder: leftShoulder,
+            rightShoulder: rightShoulder,
+            leftEar: pose.leftEar,
+            rightEar: pose.rightEar,
+            neck: neck
+        )
+        return ScoreBreakdown(
+            verticalPosition: forwardLean,
+            sizeChange: headTilt,
+            tilt: symmetry
         )
     }
 
     /// キャリブレーションモードでのスコア計算
+    /// NOTE: Phase 2暫定実装。US1でFaceScoreCalculatorに移行後は削除
     private func calculateCalibratedScores(
         pose: BodyPose,
         neck: JointPosition,
@@ -175,27 +179,26 @@ final class ScoreCalculator {
         rightShoulder: JointPosition,
         baseline: BaselineMetrics
     ) -> ScoreBreakdown {
-        ScoreBreakdown(
-            headTilt: calculateCalibratedHeadTiltScore(
-                nose: pose.nose,
-                neck: neck,
-                baseline: baseline
-            ),
-            shoulderBalance: calculateCalibratedShoulderBalanceScore(
-                leftShoulder: leftShoulder,
-                rightShoulder: rightShoulder,
-                baseline: baseline
-            ),
-            forwardLean: calculateCalibratedForwardLeanScore(
-                nose: pose.nose,
-                neck: neck,
-                baseline: baseline
-            ),
-            symmetry: calculateCalibratedSymmetryScore(
-                pose: pose,
-                neck: neck,
-                baseline: baseline
-            )
+        // 暫定: 旧4項目を新3項目にマッピング
+        let headTilt = calculateCalibratedHeadTiltScore(
+            nose: pose.nose,
+            neck: neck,
+            baseline: baseline
+        )
+        let forwardLean = calculateCalibratedForwardLeanScore(
+            nose: pose.nose,
+            neck: neck,
+            baseline: baseline
+        )
+        let symmetry = calculateCalibratedSymmetryScore(
+            pose: pose,
+            neck: neck,
+            baseline: baseline
+        )
+        return ScoreBreakdown(
+            verticalPosition: forwardLean,
+            sizeChange: headTilt,
+            tilt: symmetry
         )
     }
 

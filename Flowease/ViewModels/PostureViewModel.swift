@@ -301,12 +301,12 @@ final class PostureViewModel {
             // スコアを追加（状態は addScore 内で active に更新される）
             addScore(score)
 
-        case .noPersonDetected:
-            // 人物が検出されない場合
+        case .noFaceDetected:
+            // 顔が検出されない場合
             if case .active = monitoringState {
-                monitoringState = .paused(.noPersonDetected)
+                monitoringState = .paused(.noFaceDetected)
                 clearScoreHistory()
-                logger.debug("人物未検出のため一時停止")
+                logger.debug("顔未検出のため一時停止")
             }
 
         case .lowDetectionQuality:

@@ -1,44 +1,36 @@
 import Foundation
 
-/// スコアの構成要素
+/// スコアの構成要素（顔検出ベース）
 ///
-/// 姿勢スコアの内訳を表す。各評価項目は0〜100の範囲で表現される。
-/// デバッグおよび将来の詳細表示用。
-struct ScoreBreakdown: Sendable, Equatable {
-    /// 頭部傾斜スコア (0-100)
+/// 顔検出による姿勢スコアの内訳を表す。各評価項目は0〜100の範囲で表現される。
+/// 3項目評価: 垂直位置変化(40%)、サイズ変化(40%)、傾き(20%)
+struct ScoreBreakdown: Sendable, Equatable, Codable {
+    /// 垂直位置変化スコア (0-100) - 重み40%
     ///
-    /// 首-鼻の垂直からの角度偏差を評価。
-    /// 100 = 完全に垂直、0 = 大きく傾いている
-    let headTilt: Int
+    /// 顔のY座標の下方変化（うつむき）を評価。
+    /// 100 = 基準位置と同じ、0 = 大きくうつむいている
+    let verticalPosition: Int
 
-    /// 肩バランススコア (0-100)
+    /// サイズ変化スコア (0-100) - 重み40%
     ///
-    /// 左右肩のY座標差を評価。
-    /// 100 = 完全に水平、0 = 大きく傾いている
-    let shoulderBalance: Int
+    /// 顔の面積増加（前傾による接近）を評価。
+    /// 100 = 基準サイズと同じ、0 = 大きく前傾している
+    let sizeChange: Int
 
-    /// 前傾姿勢スコア (0-100)
+    /// 傾きスコア (0-100) - 重み20%
     ///
-    /// 鼻のX座標と首/rootの前後関係を評価。
-    /// 100 = 前傾なし、0 = 大きく前傾している
-    let forwardLean: Int
-
-    /// 左右対称性スコア (0-100)
-    ///
-    /// 左右耳・肩の対称性を評価。
-    /// 100 = 完全に対称、0 = 大きく非対称
-    let symmetry: Int
+    /// 顔のroll角（首の傾き）を評価。
+    /// 100 = 傾きなし、0 = 大きく傾いている
+    let tilt: Int
 
     /// イニシャライザ
     /// - Parameters:
-    ///   - headTilt: 頭部傾斜スコア (0-100、範囲外の値はクランプされる)
-    ///   - shoulderBalance: 肩バランススコア (0-100、範囲外の値はクランプされる)
-    ///   - forwardLean: 前傾姿勢スコア (0-100、範囲外の値はクランプされる)
-    ///   - symmetry: 左右対称性スコア (0-100、範囲外の値はクランプされる)
-    init(headTilt: Int, shoulderBalance: Int, forwardLean: Int, symmetry: Int) {
-        self.headTilt = min(max(headTilt, 0), 100)
-        self.shoulderBalance = min(max(shoulderBalance, 0), 100)
-        self.forwardLean = min(max(forwardLean, 0), 100)
-        self.symmetry = min(max(symmetry, 0), 100)
+    ///   - verticalPosition: 垂直位置変化スコア (0-100、範囲外の値はクランプされる)
+    ///   - sizeChange: サイズ変化スコア (0-100、範囲外の値はクランプされる)
+    ///   - tilt: 傾きスコア (0-100、範囲外の値はクランプされる)
+    init(verticalPosition: Int, sizeChange: Int, tilt: Int) {
+        self.verticalPosition = min(max(verticalPosition, 0), 100)
+        self.sizeChange = min(max(sizeChange, 0), 100)
+        self.tilt = min(max(tilt, 0), 100)
     }
 }

@@ -290,7 +290,7 @@ final class PostureAnalyzerTests: XCTestCase {
 @MainActor
 final class MockPostureAnalyzer: PostureAnalyzing {
     /// 返却する AnalysisResult
-    var resultToReturn: AnalysisResult = .noPersonDetected
+    var resultToReturn: AnalysisResult = .noFaceDetected
 
     /// analyze が呼ばれた回数
     private(set) var analyzeCallCount = 0

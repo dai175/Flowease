@@ -17,10 +17,9 @@ final class MonitoringStateTests: XCTestCase {
         confidence: Double = 0.9
     ) -> PostureScore {
         let breakdown = ScoreBreakdown(
-            headTilt: 80,
-            shoulderBalance: 70,
-            forwardLean: 75,
-            symmetry: 75
+            verticalPosition: 80,
+            sizeChange: 70,
+            tilt: 75
         )
         return PostureScore(
             value: value,
@@ -102,8 +101,8 @@ final class MonitoringStateTests: XCTestCase {
 
     func testEquality_samePausedStates() {
         // Given / When
-        let state1 = MonitoringState.paused(.noPersonDetected)
-        let state2 = MonitoringState.paused(.noPersonDetected)
+        let state1 = MonitoringState.paused(.noFaceDetected)
+        let state2 = MonitoringState.paused(.noFaceDetected)
 
         // Then
         XCTAssertEqual(state1, state2)
@@ -142,7 +141,7 @@ final class MonitoringStateTests: XCTestCase {
 
         // When
         let activeState = MonitoringState.active(score)
-        let pausedState = MonitoringState.paused(.noPersonDetected)
+        let pausedState = MonitoringState.paused(.noFaceDetected)
         let disabledState = MonitoringState.disabled(.cameraPermissionDenied)
 
         // Then
@@ -161,12 +160,12 @@ final class MonitoringStateTests: XCTestCase {
         XCTAssertEqual(reason.description, "カメラを準備中...")
     }
 
-    func testPauseReason_noPersonDetected_description() {
+    func testPauseReason_noFaceDetected_description() {
         // Given / When
-        let reason = PauseReason.noPersonDetected
+        let reason = PauseReason.noFaceDetected
 
         // Then
-        XCTAssertEqual(reason.description, "人物が検出されません")
+        XCTAssertEqual(reason.description, "顔が検出されません")
     }
 
     func testPauseReason_cameraInUse_description() {
@@ -253,19 +252,19 @@ final class MonitoringStateTests: XCTestCase {
         }
     }
 
-    /// 状態遷移: active → paused (.noPersonDetected)
+    /// 状態遷移: active → paused (.noFaceDetected)
     /// シナリオ: 監視中にユーザーがカメラから離れた
     func testStateTransition_activeToPaused() {
         // Given: 初期状態は監視中
         let score = makePostureScore(value: 75)
         var currentState: MonitoringState = .active(score)
 
-        // When: 人物が検出されなくなった
-        currentState = .paused(.noPersonDetected)
+        // When: 顔が検出されなくなった
+        currentState = .paused(.noFaceDetected)
 
         // Then: paused 状態に遷移
         if case let .paused(reason) = currentState {
-            XCTAssertEqual(reason, .noPersonDetected)
+            XCTAssertEqual(reason, .noFaceDetected)
         } else {
             XCTFail("Expected paused state after transition")
         }
@@ -306,13 +305,13 @@ final class MonitoringStateTests: XCTestCase {
         }
     }
 
-    /// 状態遷移: paused (.noPersonDetected) → active
+    /// 状態遷移: paused (.noFaceDetected) → active
     /// シナリオ: ユーザーがカメラ前に戻ってきた
-    func testStateTransition_pausedNoPersonToActive() {
-        // Given: 初期状態は人物未検出
-        var currentState: MonitoringState = .paused(.noPersonDetected)
+    func testStateTransition_pausedNoFaceToActive() {
+        // Given: 初期状態は顔未検出
+        var currentState: MonitoringState = .paused(.noFaceDetected)
 
-        // When: 人物を再検出
+        // When: 顔を再検出
         let score = makePostureScore(value: 65)
         currentState = .active(score)
 
