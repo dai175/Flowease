@@ -69,7 +69,7 @@
 
 - [X] T008 [P] [US1] Create FacePositionTests for model validation in FloweaseTests/FacePositionTests.swift
 - [X] T009 [P] [US1] Create FaceDetectorTests for face detection logic in FloweaseTests/FaceDetectorTests.swift
-- [ ] T010 [P] [US1] Create FaceScoreCalculatorTests for score calculation in FloweaseTests/FaceScoreCalculatorTests.swift
+- [X] T010 [P] [US1] Create FaceScoreCalculatorTests for score calculation in FloweaseTests/FaceScoreCalculatorTests.swift
 
 ### Implementation for User Story 1
 
@@ -77,9 +77,9 @@
 - [X] T012 [US1] Implement FaceDetector.detect() with VNDetectFaceRectanglesRequest in Flowease/Services/FaceDetector.swift
 - [X] T013 [US1] Implement FaceDetector.findMatchingQuality() with VNDetectFaceCaptureQualityRequest in Flowease/Services/FaceDetector.swift
 - [X] T014 [US1] Implement FaceDetector.selectLargestFace() for multiple face handling in Flowease/Services/FaceDetector.swift
-- [ ] T015 [US1] Implement FaceScoreCalculator vertical position score (Y coordinate deviation) in Flowease/Services/FaceScoreCalculator.swift
-- [ ] T016 [US1] Implement FaceScoreCalculator size change score (area ratio) in Flowease/Services/FaceScoreCalculator.swift
-- [ ] T017 [US1] Implement FaceScoreCalculator tilt score with roll wrap-around in Flowease/Services/FaceScoreCalculator.swift
+- [X] T015 [US1] Implement FaceScoreCalculator vertical position score (Y coordinate deviation) in Flowease/Services/FaceScoreCalculator.swift
+- [X] T016 [US1] Implement FaceScoreCalculator size change score (area ratio) in Flowease/Services/FaceScoreCalculator.swift
+- [X] T017 [US1] Implement FaceScoreCalculator tilt score with roll wrap-around in Flowease/Services/FaceScoreCalculator.swift
 - [ ] T018 [US1] Modify PostureAnalyzer to use FaceDetector instead of body pose detection in Flowease/Services/PostureAnalyzer.swift
 - [ ] T019 [US1] Modify PostureViewModel to handle FacePosition and face-based scoring in Flowease/ViewModels/PostureViewModel.swift
 - [ ] T020 [US1] Implement pause state transition for noFaceDetected with score history clear (moving average buffer reset) in Flowease/ViewModels/PostureViewModel.swift
