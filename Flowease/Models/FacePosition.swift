@@ -31,4 +31,33 @@ struct FacePosition: Sendable, Equatable {
     var hasAcceptableQuality: Bool {
         captureQuality >= Self.minimumCaptureQuality
     }
+
+    // MARK: - Validation
+
+    /// FacePositionのすべてのプロパティが有効な範囲内にあるかを判定
+    ///
+    /// バリデーションルール（data-model.md準拠）:
+    /// - centerX, centerY: 0.0 ≤ value ≤ 1.0
+    /// - area: 0.0 < value ≤ 1.0
+    /// - roll: -π ≤ value < π (nilの場合はroll未取得として有効)
+    /// - captureQuality: 0.0 ≤ value ≤ 1.0
+    var isValid: Bool {
+        // centerX/centerY: 0.0 ≤ value ≤ 1.0
+        guard (0.0 ... 1.0).contains(centerX) else { return false }
+        guard (0.0 ... 1.0).contains(centerY) else { return false }
+
+        // area: 0.0 < value ≤ 1.0 (0は無効)
+        guard area > 0.0, area <= 1.0 else { return false }
+
+        // roll: -π ≤ value < π (半開区間) または nil
+        if let roll {
+            // -π ≤ roll < π (πは無効)
+            guard roll >= -.pi, roll < .pi else { return false }
+        }
+
+        // captureQuality: 0.0 ≤ value ≤ 1.0
+        guard (0.0 ... 1.0).contains(captureQuality) else { return false }
+
+        return true
+    }
 }

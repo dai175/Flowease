@@ -67,13 +67,13 @@
 
 > **NOTE: これらのテストを先に書き、実装前にFAILすることを確認**
 
-- [ ] T008 [P] [US1] Create FacePositionTests for model validation in FloweaseTests/FacePositionTests.swift
+- [X] T008 [P] [US1] Create FacePositionTests for model validation in FloweaseTests/FacePositionTests.swift
 - [ ] T009 [P] [US1] Create FaceDetectorTests for face detection logic in FloweaseTests/FaceDetectorTests.swift
 - [ ] T010 [P] [US1] Create FaceScoreCalculatorTests for score calculation in FloweaseTests/FaceScoreCalculatorTests.swift
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Implement FacePosition validation (centerX/Y bounds, area bounds, roll range) in Flowease/Models/FacePosition.swift
+- [X] T011 [US1] Implement FacePosition validation (centerX/Y bounds, area bounds, roll range) in Flowease/Models/FacePosition.swift
 - [ ] T012 [US1] Implement FaceDetector.detect() with VNDetectFaceRectanglesRequest in Flowease/Services/FaceDetector.swift
 - [ ] T013 [US1] Implement FaceDetector.findMatchingQuality() with VNDetectFaceCaptureQualityRequest in Flowease/Services/FaceDetector.swift
 - [ ] T014 [US1] Implement FaceDetector.selectLargestFace() for multiple face handling in Flowease/Services/FaceDetector.swift
