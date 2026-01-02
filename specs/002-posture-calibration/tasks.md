@@ -156,12 +156,12 @@ FloweaseTests/        # テスト
 
 **Purpose**: 複数のユーザーストーリーに影響する改善
 
-- [ ] T036 [P] Loggerを使用したキャリブレーションイベントのログ出力 in Flowease/Services/CalibrationService.swift
-- [ ] T037 [P] SwiftLint/SwiftFormatの適用確認 via Makefile
-- [ ] T038 [P] 検出品質フィードバックの追加（信頼度に応じた警告） in Flowease/Views/CalibrationView.swift
-- [ ] T039 make buildでビルド成功を確認 via Makefile
-- [ ] T040 make testで全テスト成功を確認 via Makefile
-- [ ] T041 quickstart.mdの手順で動作確認 per specs/002-posture-calibration/quickstart.md
+- [X] T036 [P] Loggerを使用したキャリブレーションイベントのログ出力 in Flowease/Services/CalibrationService.swift
+- [X] T037 [P] SwiftLint/SwiftFormatの適用確認 via Makefile
+- [X] T038 [P] 検出品質フィードバックの追加（信頼度に応じた警告） in Flowease/Views/CalibrationView.swift
+- [X] T039 make buildでビルド成功を確認 via Makefile
+- [X] T040 make testで全テスト成功を確認 via Makefile
+- [X] T041 quickstart.mdの手順で動作確認 per specs/002-posture-calibration/quickstart.md
 
 ---
 

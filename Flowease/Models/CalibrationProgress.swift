@@ -92,6 +92,30 @@ struct CalibrationProgress: Sendable, Equatable {
         elapsedTime >= targetDuration
     }
 
+    /// 現在の検出品質レベル
+    /// 低信頼度または人物未検出の連続フレーム数に応じて品質を判定
+    var currentQualityLevel: QualityLevel {
+        // 人物未検出が10フレーム以上連続
+        if noPersonStreak >= 10 {
+            return .noPersonDetected
+        }
+        // 低信頼度が10フレーム以上連続
+        if lowConfidenceStreak >= 10 {
+            return .lowConfidence
+        }
+        return .good
+    }
+
+    /// 検出品質レベル
+    enum QualityLevel: Sendable {
+        /// 良好（高信頼度で検出中）
+        case good
+        /// 低信頼度（検出されているが信頼度が低い）
+        case lowConfidence
+        /// 人物未検出（必須関節が検出されていない）
+        case noPersonDetected
+    }
+
     // MARK: - Mutating Methods
 
     /// フレームの品質レベル

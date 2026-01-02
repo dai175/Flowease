@@ -27,6 +27,27 @@ final class CalibrationViewModel {
         state.progress?.remainingSeconds ?? 0
     }
 
+    /// 現在の検出品質レベル
+    /// 実行中でない場合は.goodを返す
+    var qualityLevel: CalibrationProgress.QualityLevel {
+        state.progress?.currentQualityLevel ?? .good
+    }
+
+    /// 検出品質に応じた警告メッセージ
+    /// 問題がない場合はnilを返す
+    var qualityWarningMessage: String? {
+        guard isInProgress else { return nil }
+
+        switch qualityLevel {
+        case .good:
+            return nil
+        case .lowConfidence:
+            return "姿勢の検出精度が低下しています"
+        case .noPersonDetected:
+            return "カメラに上半身が映っていることを確認してください"
+        }
+    }
+
     /// キャリブレーション済みかどうか
     var isCalibrated: Bool {
         state.isCompleted
