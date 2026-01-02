@@ -191,7 +191,7 @@ private final class MockCameraService: CameraServiceProtocol {
 @MainActor
 private struct MockPostureAnalyzer: PostureAnalyzing {
     func analyze(pixelBuffer _: CVPixelBuffer) async -> AnalysisResult {
-        .noPersonDetected
+        .noFaceDetected
     }
 }
 
@@ -243,7 +243,7 @@ private func makePreviewViewModel(
     )
     // スコアが指定されている場合は active 状態にする
     if let score {
-        let breakdown = ScoreBreakdown(headTilt: score, shoulderBalance: score, forwardLean: score, symmetry: score)
+        let breakdown = ScoreBreakdown(verticalPosition: score, sizeChange: score, tilt: score)
         let postureScore = PostureScore(value: score, timestamp: Date(), breakdown: breakdown, confidence: 1.0)
         viewModel.addScore(postureScore)
     }

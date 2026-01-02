@@ -12,10 +12,10 @@ enum PauseReason: Sendable, Equatable {
     /// AVCaptureSession の初期化・設定中に発生。
     case cameraInitializing
 
-    /// 人物が検出されない
+    /// 顔が検出されない
     ///
-    /// カメラに人物が映っていない、または照明条件などにより検出に失敗した場合。
-    case noPersonDetected
+    /// カメラに顔が映っていない、または照明条件などにより検出に失敗した場合。
+    case noFaceDetected
 
     /// カメラが他のアプリで使用中
     ///
@@ -25,8 +25,8 @@ enum PauseReason: Sendable, Equatable {
 
     /// 検出精度が低下している
     ///
-    /// カメラに人物が映っているが、照明条件や姿勢などの理由で
-    /// 関節の検出精度が低い場合。
+    /// カメラに顔が映っているが、照明条件や角度などの理由で
+    /// 顔の検出品質が低い場合。
     case lowDetectionQuality
 }
 
@@ -38,8 +38,8 @@ extension PauseReason: CustomStringConvertible {
         switch self {
         case .cameraInitializing:
             "カメラを準備中..."
-        case .noPersonDetected:
-            "人物が検出されません"
+        case .noFaceDetected:
+            "顔が検出されません"
         case .cameraInUse:
             "カメラが他のアプリで使用中です"
         case .lowDetectionQuality:

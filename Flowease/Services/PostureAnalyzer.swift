@@ -5,7 +5,7 @@
 
 import CoreVideo
 import OSLog
-import Vision
+@preconcurrency import Vision
 
 // MARK: - AnalysisResult
 
@@ -17,15 +17,15 @@ enum AnalysisResult: Sendable, Equatable {
     /// 姿勢が正常に検出された
     case success(BodyPose)
 
-    /// 人物が検出されなかった
+    /// 顔が検出されなかった
     ///
-    /// カメラに人物が映っていない場合。
-    case noPersonDetected
+    /// カメラに顔が映っていない場合。
+    case noFaceDetected
 
     /// 検出精度が低下している
     ///
-    /// 人物は検出されるが、必須関節の精度が低い場合。
-    /// 照明条件、姿勢、距離など様々な原因が考えられる。
+    /// 顔は検出されるが、検出品質が低い場合。
+    /// 照明条件、角度、距離など様々な原因が考えられる。
     case lowDetectionQuality
 }
 
@@ -85,13 +85,13 @@ final class PostureAnalyzer: PostureAnalyzing {
             }
         } catch {
             logger.error("姿勢検出リクエストの実行に失敗: \(error.localizedDescription)")
-            return .noPersonDetected
+            return .noFaceDetected
         }
 
         // 結果を取得（最初の検出結果のみ使用）
         guard let observation = request.results?.first else {
-            logger.debug("人物が検出されませんでした")
-            return .noPersonDetected
+            logger.debug("顔が検出されませんでした")
+            return .noFaceDetected
         }
 
         // VNHumanBodyPoseObservation を BodyPose に変換

@@ -43,8 +43,8 @@ final class CalibrationViewModel {
             return nil
         case .lowConfidence:
             return "姿勢の検出精度が低下しています"
-        case .noPersonDetected:
-            return "カメラに上半身が映っていることを確認してください"
+        case .noFaceDetected:
+            return "カメラに顔が映っていることを確認してください"
         }
     }
 

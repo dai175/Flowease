@@ -17,8 +17,8 @@ enum CalibrationError: Error, Equatable, Sendable {
     /// 既にキャリブレーション実行中
     case alreadyInProgress
 
-    /// 人物が検出されなかった
-    case noPersonDetected
+    /// 顔が検出されなかった
+    case noFaceDetected
 
     /// 信頼度が低い状態が続いた
     case lowConfidence
@@ -194,12 +194,12 @@ final class CalibrationService: CalibrationServiceProtocol {
             accumulated.add(pose)
         }
 
-        // 失敗判定（人物未検出を優先）
-        if progress.shouldFailNoPersonDetected {
-            state = .failed(.noPersonDetected)
+        // 失敗判定（顔未検出を優先）
+        if progress.shouldFailNoFaceDetected {
+            state = .failed(.noFaceDetected)
             currentProgress = nil
             accumulatedPositions = nil
-            logger.warning("キャリブレーション失敗: 人物未検出が連続")
+            logger.warning("キャリブレーション失敗: 顔未検出が連続")
             return
         }
 
@@ -234,7 +234,7 @@ final class CalibrationService: CalibrationServiceProtocol {
               let leftShoulder = pose.leftShoulder,
               let rightShoulder = pose.rightShoulder
         else {
-            return .noPersonDetected
+            return .noFaceDetected
         }
 
         // 必須関節の信頼度が閾値以上か

@@ -48,10 +48,10 @@
 
 **Note**: TDD対象外。既存ファイル修正とサービス基本構造のみ。詳細ロジックはUS1で実装。T004/T005完了後は `make test` で既存テストの回帰確認を行うこと。
 
-- [ ] T004 Modify ScoreBreakdown to 3-item evaluation (verticalPosition, sizeChange, tilt) in Flowease/Models/ScoreBreakdown.swift
-- [ ] T005 Modify PauseReason to rename noPersonDetected to noFaceDetected and update messages in Flowease/Models/PauseReason.swift
-- [ ] T006 Create FaceDetector service stub (method signatures only) in Flowease/Services/FaceDetector.swift
-- [ ] T007 Create FaceScoreCalculator service stub (method signatures only) in Flowease/Services/FaceScoreCalculator.swift
+- [X] T004 Modify ScoreBreakdown to 3-item evaluation (verticalPosition, sizeChange, tilt) in Flowease/Models/ScoreBreakdown.swift
+- [X] T005 Modify PauseReason to rename noPersonDetected to noFaceDetected and update messages in Flowease/Models/PauseReason.swift
+- [X] T006 Create FaceDetector service stub (method signatures only) in Flowease/Services/FaceDetector.swift
+- [X] T007 Create FaceScoreCalculator service stub (method signatures only) in Flowease/Services/FaceScoreCalculator.swift
 
 **Checkpoint**: 基盤準備完了 - ユーザーストーリーの実装を開始可能
 

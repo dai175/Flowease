@@ -5,8 +5,8 @@ import Foundation
 /// キャリブレーションが完了できなかった場合の原因を表す。
 /// ユーザーへのメッセージ表示に使用。
 enum CalibrationFailure: Sendable, Equatable {
-    /// 人物が検出されなかった
-    case noPersonDetected
+    /// 顔が検出されなかった
+    case noFaceDetected
 
     /// 信頼度が低い状態が続いた（約1秒間）
     case lowConfidence
@@ -20,8 +20,8 @@ enum CalibrationFailure: Sendable, Equatable {
     /// ユーザー向けのエラーメッセージ
     var userMessage: String {
         switch self {
-        case .noPersonDetected:
-            return "カメラに映るようにしてください"
+        case .noFaceDetected:
+            return "カメラに顔が映るようにしてください"
         case .lowConfidence:
             return "照明を調整してください"
         case .insufficientFrames:
@@ -34,8 +34,8 @@ enum CalibrationFailure: Sendable, Equatable {
     /// ログ出力用の説明
     var logDescription: String {
         switch self {
-        case .noPersonDetected:
-            return "No person detected during calibration"
+        case .noFaceDetected:
+            return "No face detected during calibration"
         case .lowConfidence:
             return "Low confidence streak exceeded threshold"
         case .insufficientFrames:

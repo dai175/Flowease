@@ -241,8 +241,8 @@ private final class MockCalibrationServiceForPreview: CalibrationServiceProtocol
     CalibrationView(viewModel: makePreviewViewModel(state: .completed))
 }
 
-#Preview("失敗 - 人物未検出") {
-    CalibrationView(viewModel: makePreviewViewModel(state: .failed(.noPersonDetected)))
+#Preview("失敗 - 顔未検出") {
+    CalibrationView(viewModel: makePreviewViewModel(state: .failed(.noFaceDetected)))
 }
 
 #Preview("失敗 - 低信頼度") {
