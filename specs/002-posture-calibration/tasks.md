@@ -145,10 +145,10 @@ FloweaseTests/        # テスト
 
 **Purpose**: エッジケースとエラーハンドリングの実装
 
-- [ ] T032 [P] 人物未検出時のエラーハンドリングを実装 in Flowease/Services/CalibrationService.swift
-- [ ] T033 [P] 低信頼度連続1秒での失敗判定を実装 in Flowease/Services/CalibrationService.swift
-- [ ] T034 [P] CalibrationViewにエラーメッセージ表示を追加 in Flowease/Views/CalibrationView.swift
-- [ ] T035 エッジケースのテストを追加 in FloweaseTests/CalibrationServiceTests.swift
+- [X] T032 [P] 人物未検出時のエラーハンドリングを実装 in Flowease/Services/CalibrationService.swift
+- [X] T033 [P] 低信頼度連続1秒での失敗判定を実装 in Flowease/Services/CalibrationService.swift
+- [X] T034 [P] CalibrationViewにエラーメッセージ表示を追加 in Flowease/Views/CalibrationView.swift
+- [X] T035 エッジケースのテストを追加 in FloweaseTests/CalibrationServiceTests.swift
 
 ---
 
