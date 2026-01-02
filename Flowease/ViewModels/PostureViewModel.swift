@@ -47,6 +47,9 @@ final class PostureViewModel {
     /// nil = 処理中でない、非nil = 処理中
     private var processingTask: Task<Void, Never>?
 
+    /// キャリブレーションリセット通知の購読
+    private var calibrationResetObserver: NSObjectProtocol?
+
     // MARK: - Constants
 
     /// スコア履歴の最大保持件数
@@ -97,6 +100,25 @@ final class PostureViewModel {
         self.scoreCalculator = scoreCalculator
         self.calibrationService = calibrationService
         logger.debug("PostureViewModel 初期化完了")
+
+        // キャリブレーションリセット通知を購読
+        calibrationResetObserver = NotificationCenter.default.addObserver(
+            forName: .calibrationReset,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleCalibrationReset()
+        }
+    }
+
+    // MARK: - Calibration Reset Handler
+
+    /// キャリブレーションリセット時の処理
+    private nonisolated func handleCalibrationReset() {
+        Task { @MainActor in
+            scoreCalculator.setReferencePosture(nil)
+            logger.info("キャリブレーションリセット: ScoreCalculatorの基準姿勢をクリア")
+        }
     }
 
     /// 本番用イニシャライザ

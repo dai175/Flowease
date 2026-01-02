@@ -95,6 +95,14 @@ final class CalibrationViewModel {
         logger.info("キャリブレーションをキャンセル")
     }
 
+    /// キャリブレーションをリセット（基準姿勢を削除）
+    ///
+    /// 保存された基準姿勢を削除し、固定しきい値モードに戻る。
+    func resetCalibration() {
+        calibrationService.resetCalibration()
+        logger.info("キャリブレーションをリセット")
+    }
+
     /// エラーメッセージをクリア
     func clearError() {
         errorMessage = nil

@@ -112,14 +112,14 @@ FloweaseTests/        # テスト
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T024 [P] [US2] CalibrationServiceのリセット機能テストを追加 in FloweaseTests/CalibrationServiceTests.swift
+- [X] T024 [P] [US2] CalibrationServiceのリセット機能テストを追加 in FloweaseTests/CalibrationServiceTests.swift
 
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] CalibrationServiceにresetCalibration()を実装 in Flowease/Services/CalibrationService.swift
-- [ ] T026 [US2] CalibrationViewModelにリセット機能を追加 in Flowease/ViewModels/CalibrationViewModel.swift
-- [ ] T027 [US2] StatusMenuViewにリセットメニュー項目を追加 in Flowease/Views/StatusMenuView.swift
-- [ ] T028 [US2] リセット後のフォールバック動作を確認（固定しきい値モード）
+- [X] T025 [US2] CalibrationServiceにresetCalibration()を実装 in Flowease/Services/CalibrationService.swift
+- [X] T026 [US2] CalibrationViewModelにリセット機能を追加 in Flowease/ViewModels/CalibrationViewModel.swift
+- [X] T027 [US2] StatusMenuViewにリセットメニュー項目を追加 in Flowease/Views/StatusMenuView.swift
+- [X] T028 [US2] リセット後のフォールバック動作を確認（固定しきい値モード）
 
 **Checkpoint**: User Story 2完了 - リセット→再キャリブレーションのフローが動作
 

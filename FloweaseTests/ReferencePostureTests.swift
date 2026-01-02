@@ -116,7 +116,7 @@ final class ReferencePostureTests: XCTestCase {
     // MARK: - Validation Tests
 
     func testIsValidWithValidData() {
-        // Given: 有効なデータ (frameCount >= 30, confidence >= 0.7)
+        // Given: 有効なデータ (frameCount >= 30, confidence >= 0.5)
         let posture = createValidReferencePosture(frameCount: 90, averageConfidence: 0.85)
 
         // Then
@@ -125,7 +125,7 @@ final class ReferencePostureTests: XCTestCase {
 
     func testIsValidWithMinimumFrameCount() {
         // Given: 境界値 (frameCount == 30)
-        let posture = createValidReferencePosture(frameCount: 30, averageConfidence: 0.7)
+        let posture = createValidReferencePosture(frameCount: 30, averageConfidence: 0.5)
 
         // Then
         XCTAssertTrue(posture.isValid)
@@ -139,9 +139,17 @@ final class ReferencePostureTests: XCTestCase {
         XCTAssertFalse(posture.isValid)
     }
 
+    func testIsValidWithMinimumConfidence() {
+        // Given: 境界値 (confidence == minimumConfidence(0.5))
+        let posture = createValidReferencePosture(frameCount: 90, averageConfidence: 0.5)
+
+        // Then
+        XCTAssertTrue(posture.isValid)
+    }
+
     func testIsValidWithLowConfidence() {
-        // Given: 信頼度不足 (confidence < 0.7)
-        let posture = createValidReferencePosture(frameCount: 90, averageConfidence: 0.69)
+        // Given: 信頼度不足 (confidence < minimumConfidence(0.5))
+        let posture = createValidReferencePosture(frameCount: 90, averageConfidence: 0.49)
 
         // Then
         XCTAssertFalse(posture.isValid)
