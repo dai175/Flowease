@@ -34,9 +34,9 @@
 
 **Note**: TDD対象外。プロパティ定義とCodable/Sendable準拠のみ。詳細ロジックはUS1/US2で実装。
 
-- [ ] T001 [P] Create FacePosition struct stub (properties only) in Flowease/Models/FacePosition.swift
-- [ ] T002 [P] Create FaceBaselineMetrics struct stub (properties only) in Flowease/Models/FaceBaselineMetrics.swift
-- [ ] T003 [P] Create FaceReferencePosture struct stub (properties only) in Flowease/Models/FaceReferencePosture.swift
+- [X] T001 [P] Create FacePosition struct stub (properties only) in Flowease/Models/FacePosition.swift
+- [X] T002 [P] Create FaceBaselineMetrics struct stub (properties only) in Flowease/Models/FaceBaselineMetrics.swift
+- [X] T003 [P] Create FaceReferencePosture struct stub (properties only) in Flowease/Models/FaceReferencePosture.swift
 
 ---
 
