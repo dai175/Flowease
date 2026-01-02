@@ -375,12 +375,66 @@ final class CalibrationServiceTests: XCTestCase {
         // When: 人物未検出のフレームを処理
         sut.processFrame(pose)
 
-        // Then: クラッシュせず、lowConfidenceStreak が増加
+        // Then: クラッシュせず、noPersonStreak が増加
         guard let progress = sut.state.progress else {
             XCTFail("inProgress 状態には progress が必要")
             return
         }
         XCTAssertEqual(progress.collectedFrames, 0, "人物未検出では collectedFrames は増えない")
+        XCTAssertGreaterThan(progress.noPersonStreak, 0, "人物未検出では noPersonStreak が増加")
+    }
+
+    func testProcessFrame_noPersonStreakExceedsThreshold_failsWithNoPersonDetected() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let pose = makeNoPersonPose()
+
+        // When: 人物未検出フレームを連続で処理（しきい値を超える）
+        for _ in 0 ..< CalibrationProgress.failureThreshold {
+            sut.processFrame(pose)
+        }
+
+        // Then: failed(.noPersonDetected) 状態になる
+        XCTAssertTrue(sut.state.isFailed, "人物未検出が連続すると failed になるべき")
+        XCTAssertEqual(sut.state.failure, .noPersonDetected, "失敗理由は noPersonDetected であるべき")
+    }
+
+    func testProcessFrame_mixedHighAndLowConfidence_resetsStreak() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+
+        // When: 低信頼度フレームを処理後、高信頼度フレームを処理
+        for _ in 0 ..< 10 {
+            sut.processFrame(makeLowConfidencePose())
+        }
+        sut.processFrame(makeValidPose())
+
+        // Then: lowConfidenceStreak がリセットされる
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.lowConfidenceStreak, 0, "高信頼度フレーム後は lowConfidenceStreak がリセット")
+        XCTAssertEqual(progress.collectedFrames, 1, "高信頼度フレームが1つカウント")
+    }
+
+    func testProcessFrame_mixedNoPersonAndHighConfidence_resetsStreak() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+
+        // When: 人物未検出フレームを処理後、高信頼度フレームを処理
+        for _ in 0 ..< 10 {
+            sut.processFrame(makeNoPersonPose())
+        }
+        sut.processFrame(makeValidPose())
+
+        // Then: noPersonStreak がリセットされる
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.noPersonStreak, 0, "高信頼度フレーム後は noPersonStreak がリセット")
+        XCTAssertEqual(progress.collectedFrames, 1, "高信頼度フレームが1つカウント")
     }
 
     func testCalibration_insufficientFrames_failsCalibration() async throws {
