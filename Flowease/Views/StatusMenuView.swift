@@ -13,6 +13,7 @@ import SwiftUI
 /// キャリブレーションウィンドウ表示通知
 extension Notification.Name {
     static let showCalibrationWindow = Notification.Name("showCalibrationWindow")
+    static let calibrationReset = Notification.Name("calibrationReset")
 }
 
 // MARK: - StatusMenuView
@@ -61,7 +62,10 @@ struct StatusMenuView: View {
 
             // キャリブレーション状態表示
             CalibrationStatusRow(
-                isCalibrated: calibrationViewModel.isCalibrated
+                isCalibrated: calibrationViewModel.isCalibrated,
+                onReset: {
+                    calibrationViewModel.resetCalibration()
+                }
             )
         }
         .padding()
@@ -76,6 +80,9 @@ private struct CalibrationStatusRow: View {
     /// キャリブレーション済みかどうか
     let isCalibrated: Bool
 
+    /// リセットアクション
+    let onReset: () -> Void
+
     var body: some View {
         HStack {
             // 状態アイコン
@@ -88,6 +95,18 @@ private struct CalibrationStatusRow: View {
                 .foregroundStyle(isCalibrated ? .primary : .secondary)
 
             Spacer()
+
+            // リセットボタン（キャリブレーション済みの場合のみ表示）
+            if isCalibrated {
+                Button("リセット") {
+                    onReset()
+                    // 通知を送信してPostureViewModelでScoreCalculatorをクリア
+                    NotificationCenter.default.post(name: .calibrationReset, object: nil)
+                }
+                .buttonStyle(.borderless)
+                .foregroundStyle(.secondary)
+                .controlSize(.small)
+            }
 
             // キャリブレーションボタン
             Button(isCalibrated ? "再設定" : "設定") {
