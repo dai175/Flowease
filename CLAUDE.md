@@ -54,3 +54,10 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - **メニューバー常駐**: Dockに表示されず、メニューバーからのみアクセス可能
 - **色グラデーション**: スコアに応じてアイコンの色が変化（緑=良好、赤=要改善）
 - **エッジケース対応**: カメラ利用不可、人物未検出時はグレーアイコンで表示
+
+## Active Technologies
+- Swift 6.0 + Vision Framework (VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest), AVFoundation, SwiftUI (003-face-detection)
+- UserDefaults (既存のCalibrationStorage経由) (003-face-detection)
+
+## Recent Changes
+- 003-face-detection: Added Swift 6.0 + Vision Framework (VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest), AVFoundation, SwiftUI
