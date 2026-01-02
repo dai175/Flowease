@@ -92,6 +92,21 @@ struct CalibrationView: View {
             Text("そのままの姿勢を維持...")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+
+            // 検出品質警告
+            if let warningMessage = viewModel.qualityWarningMessage {
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                    Text(warningMessage)
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(.orange.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
         }
         .padding(.vertical, 8)
     }
