@@ -3,7 +3,7 @@
 //
 // カメラ権限の管理とフレームキャプチャを担当するサービス
 
-import AVFoundation
+@preconcurrency import AVFoundation
 import CoreVideo
 import OSLog
 
