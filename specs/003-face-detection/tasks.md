@@ -149,7 +149,7 @@
 - [X] T041 Run `make lint` and fix any SwiftLint warnings
 - [X] T042 Run `make format` and commit formatting changes
 - [X] T043 Run `make test` and verify all tests pass
-- [ ] T044 Manual validation per quickstart.md Testing Checklist
+- [X] T044 Manual validation per quickstart.md Testing Checklist
 
 ---
 
