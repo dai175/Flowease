@@ -163,7 +163,7 @@ final class MockFaceDetector: FaceDetectorProtocol, Sendable {
         self.positionToReturn = positionToReturn
     }
 
-    func detect(from _: CMSampleBuffer) async -> FacePosition? {
+    func detect(from _: sending CMSampleBuffer) async -> FacePosition? {
         await callCountActor.increment()
         return positionToReturn
     }
