@@ -42,6 +42,20 @@ protocol CalibrationStorageProtocol: Sendable {
     /// 最後にキャリブレーションが完了した日時
     /// （referencePosture?.calibratedAtから導出）
     var lastCalibratedAt: Date? { get }
+
+    // MARK: - Face-Based Calibration (T027-T029)
+
+    /// 保存された顔ベース基準姿勢を取得
+    ///
+    /// - Returns: 保存されているFaceReferencePosture、未保存の場合はnil
+    func loadFaceReferencePosture() -> FaceReferencePosture?
+
+    /// 顔ベース基準姿勢を保存
+    ///
+    /// - Parameter posture: 保存する顔ベース基準姿勢
+    /// - Returns: 保存に成功した場合true
+    @discardableResult
+    func saveFaceReferencePosture(_ posture: FaceReferencePosture) -> Bool
 }
 
 // MARK: - CalibrationStorage
@@ -132,10 +146,51 @@ final class CalibrationStorage: CalibrationStorageProtocol, @unchecked Sendable 
     }
 
     var isCalibrated: Bool {
-        loadReferencePosture() != nil
+        loadFaceReferencePosture() != nil || loadReferencePosture() != nil
     }
 
     var lastCalibratedAt: Date? {
-        loadReferencePosture()?.calibratedAt
+        loadFaceReferencePosture()?.calibratedAt ?? loadReferencePosture()?.calibratedAt
+    }
+
+    // MARK: - Face-Based Calibration (T027-T029)
+
+    func loadFaceReferencePosture() -> FaceReferencePosture? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard let data = userDefaults.data(forKey: CalibrationStorageKeys.referencePosture) else {
+            logger.debug("基準姿勢データが見つかりません")
+            return nil
+        }
+
+        do {
+            let decoder = makeDecoder()
+            // 顔ベース形式でデコード試行
+            let facePosture = try decoder.decode(FaceReferencePosture.self, from: data)
+            logger.debug("顔ベース基準姿勢データを読み込みました（フレーム数: \(facePosture.frameCount)）")
+            return facePosture
+        } catch {
+            // デコード失敗 = 旧形式または破損データ
+            logger.debug("顔ベース形式でのデコード失敗: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    @discardableResult
+    func saveFaceReferencePosture(_ posture: FaceReferencePosture) -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+
+        do {
+            let encoder = makeEncoder()
+            let data = try encoder.encode(posture)
+            userDefaults.set(data, forKey: CalibrationStorageKeys.referencePosture)
+            logger.info("顔ベース基準姿勢データを保存しました（フレーム数: \(posture.frameCount)）")
+            return true
+        } catch {
+            logger.error("顔ベース基準姿勢データのエンコードに失敗: \(error.localizedDescription)")
+            return false
+        }
     }
 }
