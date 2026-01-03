@@ -2,9 +2,6 @@
 // Flowease
 //
 // 顔検出ベースのスコア計算サービス
-//
-// T007: FaceScoreCalculatorサービススタブ作成（Phase 2 Foundational）
-// T015-T017: スコア計算ロジック実装（Phase 3 User Story 1）
 
 import Foundation
 import OSLog
@@ -90,8 +87,6 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     /// 顔位置データからスコアを計算
     /// - Parameter face: 検出された顔位置データ
     /// - Returns: 姿勢スコア、または基準姿勢が未設定の場合は nil
-    ///
-    /// US1 (T015-T017): TDDテストに基づく実装済み
     func calculate(from face: FacePosition) -> PostureScore? {
         // 基準姿勢が未設定の場合はスコア計算不可
         guard let reference = referencePosture else {
@@ -102,13 +97,8 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
         let baseline = reference.baselineMetrics
 
         // 各構成要素のスコアを計算
-        // NOTE: T015で実装予定 - 垂直位置スコア
         let verticalScore = calculateVerticalPositionScore(face: face, baseline: baseline)
-
-        // NOTE: T016で実装予定 - サイズ変化スコア
         let sizeScore = calculateSizeChangeScore(face: face, baseline: baseline)
-
-        // NOTE: T017で実装予定 - 傾きスコア（ラップアラウンド対応）
         let tiltScore = calculateTiltScore(face: face, baseline: baseline)
 
         // 加重平均で総合スコアを算出
@@ -137,10 +127,9 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
         )
     }
 
-    // MARK: - Private Score Calculation Methods (T015-T017)
+    // MARK: - Private Score Calculation Methods
 
     /// 垂直位置スコアを計算（片方向：Y低下のみ）
-    /// T015: 実装済み
     private func calculateVerticalPositionScore(face: FacePosition, baseline: FaceBaselineMetrics) -> Int {
         let yDeviation = max(0, baseline.baselineY - face.centerY)
         return calculateScoreFromDeviation(
@@ -151,7 +140,6 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     }
 
     /// サイズ変化スコアを計算（片方向：増加のみ）
-    /// T016: 実装済み
     private func calculateSizeChangeScore(face: FacePosition, baseline: FaceBaselineMetrics) -> Int {
         guard baseline.baselineArea > 0 else { return 100 }
         let sizeRatio = (face.area - baseline.baselineArea) / baseline.baselineArea
@@ -164,7 +152,6 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     }
 
     /// 傾きスコアを計算（両方向、ラップアラウンド考慮）
-    /// T017: 実装済み
     private func calculateTiltScore(face: FacePosition, baseline: FaceBaselineMetrics) -> Int {
         guard let roll = face.roll else {
             return 70 // roll未取得時のデフォルト

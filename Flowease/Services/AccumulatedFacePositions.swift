@@ -2,8 +2,6 @@
 // Flowease
 //
 // 顔ベースキャリブレーション中の位置データ累積
-//
-// T027: FacePositionフレームを蓄積するためのデータ構造
 
 import Foundation
 
