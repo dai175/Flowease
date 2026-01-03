@@ -28,4 +28,17 @@ struct FaceReferencePosture: Codable, Sendable, Equatable {
         frameCount >= Self.minimumFrameCount &&
             averageQuality >= Self.minimumQuality
     }
+
+    /// イニシャライザ
+    init(
+        calibratedAt: Date = Date(),
+        frameCount: Int,
+        averageQuality: Double,
+        baselineMetrics: FaceBaselineMetrics
+    ) {
+        self.calibratedAt = calibratedAt
+        self.frameCount = max(0, frameCount)
+        self.averageQuality = min(max(averageQuality, 0.0), 1.0)
+        self.baselineMetrics = baselineMetrics
+    }
 }
