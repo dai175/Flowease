@@ -201,7 +201,6 @@ private func makePreviewViewModel(state: CalibrationState) -> CalibrationViewMod
 @MainActor
 private final class MockCalibrationServiceForPreview: CalibrationServiceProtocol {
     var state: CalibrationState
-    var referencePosture: ReferencePosture? { nil }
 
     init(initialState: CalibrationState) {
         state = initialState
@@ -219,9 +218,6 @@ private final class MockCalibrationServiceForPreview: CalibrationServiceProtocol
         state = .notCalibrated
     }
 
-    func processFrame(_: BodyPose) {}
-
-    // Face-Based Calibration
     func processFaceFrame(_: FacePosition) {}
     var faceReferencePosture: FaceReferencePosture? { nil }
 }

@@ -20,30 +20,11 @@ enum CalibrationStorageKeys {
 /// UserDefaultsを使用して基準姿勢データを保存・読み込みする
 /// テスト時にはモック実装に差し替え可能
 protocol CalibrationStorageProtocol: Sendable {
-    /// 保存された基準姿勢を取得
-    ///
-    /// - Returns: 保存されている基準姿勢、未保存の場合はnil
-    func loadReferencePosture() -> ReferencePosture?
-
-    /// 基準姿勢を保存
-    ///
-    /// - Parameter referencePosture: 保存する基準姿勢
-    /// - Returns: 保存に成功した場合true
-    @discardableResult
-    func saveReferencePosture(_ referencePosture: ReferencePosture) -> Bool
-
-    /// 保存された基準姿勢を削除
-    func deleteReferencePosture()
-
     /// キャリブレーションが完了しているかどうか
-    /// （referencePostureの有無から導出）
     var isCalibrated: Bool { get }
 
     /// 最後にキャリブレーションが完了した日時
-    /// （referencePosture?.calibratedAtから導出）
     var lastCalibratedAt: Date? { get }
-
-    // MARK: - Face-Based Calibration (T027-T029, T032-T033)
 
     /// 保存された顔ベース基準姿勢を取得
     ///
@@ -64,6 +45,9 @@ protocol CalibrationStorageProtocol: Sendable {
     /// - Returns: 保存に成功した場合true
     @discardableResult
     func saveFaceReferencePosture(_ posture: FaceReferencePosture) -> Bool
+
+    /// 保存された顔ベース基準姿勢を削除
+    func deleteFaceReferencePosture()
 }
 
 // MARK: - CalibrationStorage
@@ -108,60 +92,13 @@ final class CalibrationStorage: CalibrationStorageProtocol, @unchecked Sendable 
 
     // MARK: - CalibrationStorageProtocol
 
-    func loadReferencePosture() -> ReferencePosture? {
-        lock.lock()
-        defer { lock.unlock() }
-
-        guard let data = userDefaults.data(forKey: CalibrationStorageKeys.referencePosture) else {
-            logger.debug("基準姿勢データが見つかりません")
-            return nil
-        }
-
-        do {
-            let decoder = makeDecoder()
-            let referencePosture = try decoder.decode(ReferencePosture.self, from: data)
-            logger.debug("基準姿勢データを読み込みました（フレーム数: \(referencePosture.frameCount)）")
-            return referencePosture
-        } catch {
-            logger.error("基準姿勢データのデコードに失敗: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
-    @discardableResult
-    func saveReferencePosture(_ referencePosture: ReferencePosture) -> Bool {
-        lock.lock()
-        defer { lock.unlock() }
-
-        do {
-            let encoder = makeEncoder()
-            let data = try encoder.encode(referencePosture)
-            userDefaults.set(data, forKey: CalibrationStorageKeys.referencePosture)
-            logger.info("基準姿勢データを保存しました（フレーム数: \(referencePosture.frameCount)）")
-            return true
-        } catch {
-            logger.error("基準姿勢データのエンコードに失敗: \(error.localizedDescription)")
-            return false
-        }
-    }
-
-    func deleteReferencePosture() {
-        lock.lock()
-        defer { lock.unlock() }
-
-        userDefaults.removeObject(forKey: CalibrationStorageKeys.referencePosture)
-        logger.info("基準姿勢データを削除しました")
-    }
-
     var isCalibrated: Bool {
-        loadFaceReferencePosture() != nil || loadReferencePosture() != nil
+        loadFaceReferencePosture() != nil
     }
 
     var lastCalibratedAt: Date? {
-        loadFaceReferencePosture()?.calibratedAt ?? loadReferencePosture()?.calibratedAt
+        loadFaceReferencePosture()?.calibratedAt
     }
-
-    // MARK: - Face-Based Calibration (T027-T029)
 
     func loadFaceReferencePosture() -> FaceReferencePosture? {
         lock.lock()
@@ -202,7 +139,15 @@ final class CalibrationStorage: CalibrationStorageProtocol, @unchecked Sendable 
         }
     }
 
-    // MARK: - T032: Auto-Clean on Load
+    func deleteFaceReferencePosture() {
+        lock.lock()
+        defer { lock.unlock() }
+
+        userDefaults.removeObject(forKey: CalibrationStorageKeys.referencePosture)
+        logger.info("基準姿勢データを削除しました")
+    }
+
+    // MARK: - Auto-Clean on Load
 
     func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? {
         lock.lock()

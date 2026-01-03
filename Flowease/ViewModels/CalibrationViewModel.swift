@@ -58,9 +58,9 @@ final class CalibrationViewModel {
         state.isInProgress
     }
 
-    /// 基準姿勢
-    var referencePosture: ReferencePosture? {
-        calibrationService.referencePosture
+    /// 顔ベース基準姿勢
+    var faceReferencePosture: FaceReferencePosture? {
+        calibrationService.faceReferencePosture
     }
 
     // MARK: - Error State
@@ -160,7 +160,7 @@ final class CalibrationViewModel {
 
     /// キャリブレーション完了日時のフォーマット済みテキスト
     var calibratedAtText: String? {
-        guard let date = referencePosture?.calibratedAt else { return nil }
+        guard let date = faceReferencePosture?.calibratedAt else { return nil }
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
