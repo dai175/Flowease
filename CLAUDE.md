@@ -28,10 +28,10 @@ make setup          # Install pre-commit hooks
 ## Architecture
 
 SwiftUI App with MVVM architecture for macOS menu bar:
-- `Models/` - Data models (PostureScore, BodyPose, MonitoringState, etc.)
+- `Models/` - Data models (PostureScore, FacePosition, FaceReferencePosture, MonitoringState, etc.)
 - `ViewModels/` - View models for state management
-- `Views/` - SwiftUI views (StatusMenuView, CameraPermissionView)
-- `Services/` - Business logic (CameraService, PostureAnalyzer, ScoreCalculator)
+- `Views/` - SwiftUI views (StatusMenuView, CameraPermissionView, CalibrationView)
+- `Services/` - Business logic (CameraService, PostureAnalyzer, FaceDetector, FaceScoreCalculator, CalibrationService)
 - `Utilities/` - Helper functions (ColorGradient)
 
 ## Language
@@ -44,20 +44,13 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 
 - **UI**: Swift 6.0 + SwiftUI
 - **Camera**: AVFoundation (video capture, CMSampleBuffer)
-- **Pose Detection**: Vision framework (VNDetectHumanBodyPoseRequest)
+- **Face Detection**: Vision framework (VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest)
 - **Persistence**: UserDefaults (calibration data)
 
 ## Features
 
-- **姿勢スコア表示**: カメラ映像からリアルタイムで姿勢を分析し、0〜100のスコアで評価
+- **姿勢スコア表示**: カメラ映像から顔の位置・大きさ・傾きをリアルタイムで分析し、0〜100のスコアで評価
 - **姿勢キャリブレーション**: ユーザー個人の「良い姿勢」を基準として登録し、パーソナライズされた評価を提供
 - **メニューバー常駐**: Dockに表示されず、メニューバーからのみアクセス可能
 - **色グラデーション**: スコアに応じてアイコンの色が変化（緑=良好、赤=要改善）
-- **エッジケース対応**: カメラ利用不可、人物未検出時はグレーアイコンで表示
-
-## Active Technologies
-- Swift 6.0 + Vision Framework (VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest), AVFoundation, SwiftUI (003-face-detection)
-- UserDefaults (既存のCalibrationStorage経由) (003-face-detection)
-
-## Recent Changes
-- 003-face-detection: Added Swift 6.0 + Vision Framework (VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest), AVFoundation, SwiftUI
+- **エッジケース対応**: カメラ利用不可、顔未検出時はグレーアイコンで表示
