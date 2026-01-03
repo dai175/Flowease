@@ -80,10 +80,10 @@
 - [X] T015 [US1] Implement FaceScoreCalculator vertical position score (Y coordinate deviation) in Flowease/Services/FaceScoreCalculator.swift
 - [X] T016 [US1] Implement FaceScoreCalculator size change score (area ratio) in Flowease/Services/FaceScoreCalculator.swift
 - [X] T017 [US1] Implement FaceScoreCalculator tilt score with roll wrap-around in Flowease/Services/FaceScoreCalculator.swift
-- [ ] T018 [US1] Modify PostureAnalyzer to use FaceDetector instead of body pose detection in Flowease/Services/PostureAnalyzer.swift
-- [ ] T019 [US1] Modify PostureViewModel to handle FacePosition and face-based scoring in Flowease/ViewModels/PostureViewModel.swift
-- [ ] T020 [US1] Implement pause state transition for noFaceDetected with score history clear (moving average buffer reset) in Flowease/ViewModels/PostureViewModel.swift
-- [ ] T021 [US1] Implement pause state transition for lowDetectionQuality (captureQuality < 0.3) with score history clear in Flowease/ViewModels/PostureViewModel.swift
+- [X] T018 [US1] Modify PostureAnalyzer to use FaceDetector instead of body pose detection in Flowease/Services/PostureAnalyzer.swift
+- [X] T019 [US1] Modify PostureViewModel to handle FacePosition and face-based scoring in Flowease/ViewModels/PostureViewModel.swift
+- [X] T020 [US1] Implement pause state transition for noFaceDetected with score history clear (moving average buffer reset) in Flowease/ViewModels/PostureViewModel.swift
+- [X] T021 [US1] Implement pause state transition for lowDetectionQuality (captureQuality < 0.3) with score history clear in Flowease/ViewModels/PostureViewModel.swift
 
 **Checkpoint**: User Story 1完了 - 顔検出によるリアルタイムスコア算出が動作
 

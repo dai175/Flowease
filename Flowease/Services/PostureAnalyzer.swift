@@ -3,19 +3,18 @@
 //
 // Vision フレームワークを使用した姿勢分析を担当するサービス
 
-import CoreVideo
+@preconcurrency import AVFoundation
 import OSLog
-@preconcurrency import Vision
 
 // MARK: - AnalysisResult
 
 /// 姿勢分析の結果
 ///
 /// PostureAnalyzer の分析結果を表す列挙型。
-/// 成功時は BodyPose を、失敗時は原因を区別して返す。
+/// 成功時は FacePosition を、失敗時は原因を区別して返す。
 enum AnalysisResult: Sendable, Equatable {
-    /// 姿勢が正常に検出された
-    case success(BodyPose)
+    /// 顔が正常に検出された
+    case success(FacePosition)
 
     /// 顔が検出されなかった
     ///
@@ -36,120 +35,57 @@ enum AnalysisResult: Sendable, Equatable {
 /// テスト可能性のために PostureAnalyzer の抽象化を提供する。
 /// 実装は Vision フレームワークを使用するが、テストではモック化可能。
 protocol PostureAnalyzing: Sendable {
-    /// ピクセルバッファから姿勢を分析
-    /// - Parameter pixelBuffer: カメラからのフレームデータ
-    /// - Returns: 分析結果（成功時は BodyPose、失敗時は原因を含む）
-    func analyze(pixelBuffer: CVPixelBuffer) async -> AnalysisResult
+    /// CMSampleBufferから顔を検出して分析
+    /// - Parameter sampleBuffer: カメラからのフレームデータ
+    /// - Returns: 分析結果（成功時は FacePosition、失敗時は原因を含む）
+    func analyze(sampleBuffer: CMSampleBuffer) async -> AnalysisResult
 }
 
 // MARK: - PostureAnalyzer
 
 /// Vision フレームワークを使用した姿勢分析の実装
 ///
-/// カメラからのフレームを受け取り、VNDetectHumanBodyPoseRequest を使用して
-/// 上半身の姿勢を検出する。検出結果は BodyPose モデルに変換して返す。
+/// カメラからのフレームを受け取り、FaceDetector を使用して
+/// 顔の位置・サイズ・傾きを検出する。検出結果は FacePosition モデルに変換して返す。
 @MainActor
 final class PostureAnalyzer: PostureAnalyzing {
     // MARK: - Properties
 
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureAnalyzer")
 
+    /// 顔検出サービス
+    private let faceDetector: FaceDetectorProtocol
+
     // MARK: - Initialization
 
-    init() {
-        logger.debug("PostureAnalyzer 初期化完了")
+    /// イニシャライザ
+    /// - Parameter faceDetector: 顔検出サービス（依存注入によりテスト可能）
+    init(faceDetector: FaceDetectorProtocol = FaceDetector()) {
+        self.faceDetector = faceDetector
+        logger.debug("PostureAnalyzer 初期化完了（FaceDetectorモード）")
     }
 
     // MARK: - PostureAnalyzing
 
-    /// ピクセルバッファから姿勢を分析
-    /// - Parameter pixelBuffer: カメラからのフレームデータ
-    /// - Returns: 分析結果（成功時は BodyPose、失敗時は原因を含む）
-    func analyze(pixelBuffer: CVPixelBuffer) async -> AnalysisResult {
-        // VNDetectHumanBodyPoseRequest を作成
-        let request = VNDetectHumanBodyPoseRequest()
-
-        // VNImageRequestHandler で実行（バックグラウンドでメインスレッドをブロックしない）
-        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:])
-
-        do {
-            try await withCheckedThrowingContinuation { continuation in
-                DispatchQueue.global(qos: .userInitiated).async {
-                    do {
-                        try handler.perform([request])
-                        continuation.resume(returning: ())
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
-        } catch {
-            logger.error("姿勢検出リクエストの実行に失敗: \(error.localizedDescription)")
+    /// CMSampleBufferから顔を検出して分析
+    /// - Parameter sampleBuffer: カメラからのフレームデータ
+    /// - Returns: 分析結果（成功時は FacePosition、失敗時は原因を含む）
+    nonisolated func analyze(sampleBuffer: CMSampleBuffer) async -> AnalysisResult {
+        // FaceDetectorで顔を検出
+        guard let facePosition = await faceDetector.detect(from: sampleBuffer) else {
             return .noFaceDetected
         }
 
-        // 結果を取得（最初の検出結果のみ使用）
-        guard let observation = request.results?.first else {
-            logger.debug("顔が検出されませんでした")
-            return .noFaceDetected
+        // 検出品質のチェック
+        guard facePosition.hasAcceptableQuality else {
+            return .lowDetectionQuality
         }
 
-        // VNHumanBodyPoseObservation を BodyPose に変換
-        let bodyPose = convertToBodyPose(from: observation)
-
-        if bodyPose.isValid {
-            logger.debug("姿勢を検出しました")
-            return .success(bodyPose)
+        // バリデーションのチェック
+        guard facePosition.isValid else {
+            return .lowDetectionQuality
         }
 
-        // 人物は検出されたが必須関節の精度が低い
-        logger.debug("検出された姿勢が無効です（必須関節が不足または低信頼度）")
-        return .lowDetectionQuality
-    }
-
-    // MARK: - Private Methods
-
-    /// VNHumanBodyPoseObservation を BodyPose に変換
-    /// - Parameter observation: Vision フレームワークの姿勢検出結果
-    /// - Returns: 変換された BodyPose
-    private func convertToBodyPose(from observation: VNHumanBodyPoseObservation) -> BodyPose {
-        BodyPose(
-            nose: extractJoint(from: observation, jointName: .nose),
-            neck: extractJoint(from: observation, jointName: .neck),
-            leftShoulder: extractJoint(from: observation, jointName: .leftShoulder),
-            rightShoulder: extractJoint(from: observation, jointName: .rightShoulder),
-            leftEar: extractJoint(from: observation, jointName: .leftEar),
-            rightEar: extractJoint(from: observation, jointName: .rightEar),
-            root: extractJoint(from: observation, jointName: .root),
-            timestamp: Date()
-        )
-    }
-
-    /// 指定した関節の位置を抽出
-    /// - Parameters:
-    ///   - observation: Vision フレームワークの姿勢検出結果
-    ///   - jointName: 抽出する関節の名前
-    /// - Returns: 関節位置、または検出されなかった場合は nil
-    private func extractJoint(
-        from observation: VNHumanBodyPoseObservation,
-        jointName: VNHumanBodyPoseObservation.JointName
-    ) -> JointPosition? {
-        do {
-            let point = try observation.recognizedPoint(jointName)
-
-            // 信頼度が極めて低い場合は検出失敗として扱う
-            guard point.confidence > 0.1 else {
-                return nil
-            }
-
-            return JointPosition(
-                x: point.location.x,
-                y: point.location.y,
-                confidence: Double(point.confidence)
-            )
-        } catch {
-            // 関節が検出されなかった場合
-            return nil
-        }
+        return .success(facePosition)
     }
 }

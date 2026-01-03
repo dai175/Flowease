@@ -4,7 +4,6 @@
 // カメラ権限の管理とフレームキャプチャを担当するサービス
 
 @preconcurrency import AVFoundation
-import CoreVideo
 import OSLog
 
 // MARK: - CameraAuthorizationStatus
@@ -49,8 +48,8 @@ protocol CameraFrameDelegate: AnyObject {
     /// フレームがキャプチャされた時に呼ばれる
     /// - Parameters:
     ///   - service: フレームを提供した CameraService
-    ///   - pixelBuffer: キャプチャされたフレームのピクセルバッファ
-    func cameraService(_ service: any CameraServiceProtocol, didCaptureFrame pixelBuffer: CVPixelBuffer)
+    ///   - sampleBuffer: キャプチャされたフレームのサンプルバッファ
+    func cameraService(_ service: any CameraServiceProtocol, didCaptureFrame sampleBuffer: CMSampleBuffer)
 
     /// エラーが発生した時に呼ばれる
     /// - Parameters:
@@ -433,15 +432,15 @@ final class CameraService: NSObject, CameraServiceProtocol {
     }
 }
 
-// MARK: - SendablePixelBuffer
+// MARK: - SendableSampleBuffer
 
-/// CVPixelBuffer を Sendable としてラップするヘルパー
+/// CMSampleBuffer を Sendable としてラップするヘルパー
 ///
-/// CVPixelBuffer は Core Foundation 型でスレッドセーフではないが、
+/// CMSampleBuffer は Core Foundation 型でスレッドセーフではないが、
 /// カメラキャプチャからメインスレッドへの受け渡しは即時処理されるため安全。
 /// nonisolated により非同期コンテキストからもアクセス可能。
-private nonisolated struct SendablePixelBuffer: @unchecked Sendable {
-    let buffer: CVPixelBuffer
+private nonisolated struct SendableSampleBuffer: @unchecked Sendable {
+    let buffer: CMSampleBuffer
 }
 
 // MARK: - CameraService + AVCaptureVideoDataOutputSampleBufferDelegate
@@ -461,13 +460,8 @@ extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
             return
         }
 
-        // ピクセルバッファを取得
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            return
-        }
-
         // Sendable ラッパーでメインスレッドに送信
-        let sendableBuffer = SendablePixelBuffer(buffer: pixelBuffer)
+        let sendableBuffer = SendableSampleBuffer(buffer: sampleBuffer)
 
         // メインスレッドでデリゲートに通知
         Task { @MainActor [weak self] in

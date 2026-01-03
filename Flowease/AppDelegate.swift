@@ -62,7 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let viewModel = PostureViewModel(
             cameraService: CameraService(),
             postureAnalyzer: PostureAnalyzer(),
-            scoreCalculator: ScoreCalculator(),
+            faceScoreCalculator: FaceScoreCalculator(),
             calibrationService: calibrationService
         )
         self.viewModel = viewModel
