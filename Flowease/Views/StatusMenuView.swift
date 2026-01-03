@@ -210,6 +210,7 @@ private struct MockCalibrationStorage: CalibrationStorageProtocol {
 
     // Face-Based Calibration
     func loadFaceReferencePosture() -> FaceReferencePosture? { savedFacePosture }
+    func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? { savedFacePosture }
     @discardableResult
     func saveFaceReferencePosture(_: FaceReferencePosture) -> Bool { true }
 }

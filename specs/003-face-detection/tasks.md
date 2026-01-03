@@ -122,14 +122,14 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T031 [P] [US3] Extend CalibrationStorageTests for data format detection in FloweaseTests/CalibrationStorageTests.swift
+- [X] T031 [P] [US3] Extend CalibrationStorageTests for data format detection in FloweaseTests/CalibrationStorageTests.swift
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Modify CalibrationStorage.load() to detect and clear old format data in Flowease/Services/CalibrationStorage.swift
-- [ ] T033 [US3] Modify CalibrationStorage.save() to encode FaceReferencePosture in Flowease/Services/CalibrationStorage.swift
-- [ ] T034 [US3] Verify menu bar icon color gradient works with face-based scores in Flowease/ViewModels/PostureViewModel.swift
-- [ ] T035 [US3] Verify tooltip message displays correctly for face detection states in Flowease/ViewModels/PostureViewModel.swift
+- [X] T032 [US3] Modify CalibrationStorage.load() to detect and clear old format data in Flowease/Services/CalibrationStorage.swift
+- [X] T033 [US3] Modify CalibrationStorage.save() to encode FaceReferencePosture in Flowease/Services/CalibrationStorage.swift
+- [X] T034 [US3] Verify menu bar icon color gradient works with face-based scores in Flowease/ViewModels/PostureViewModel.swift
+- [X] T035 [US3] Verify tooltip message displays correctly for face detection states in Flowease/ViewModels/PostureViewModel.swift
 
 **Checkpoint**: User Story 3完了 - 既存UXとの互換性確認
 

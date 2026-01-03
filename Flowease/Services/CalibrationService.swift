@@ -110,9 +110,10 @@ final class CalibrationService: CalibrationServiceProtocol {
         storage.loadReferencePosture()
     }
 
-    /// 現在の顔ベース基準姿勢 (T029)
+    /// 現在の顔ベース基準姿勢 (T029, T032)
+    /// 旧形式または破損データは自動的にクリアされる
     var faceReferencePosture: FaceReferencePosture? {
-        storage.loadFaceReferencePosture()
+        storage.loadFaceReferencePostureWithAutoClean()
     }
 
     // MARK: - Initializer
@@ -123,7 +124,8 @@ final class CalibrationService: CalibrationServiceProtocol {
         self.storage = storage
 
         // 初期状態はストレージの内容から導出（顔ベースまたは従来形式）
-        if storage.loadFaceReferencePosture() != nil || storage.loadReferencePosture() != nil {
+        // T032: 旧形式または破損データは自動的にクリアされる
+        if storage.loadFaceReferencePostureWithAutoClean() != nil || storage.loadReferencePosture() != nil {
             state = .completed
         } else {
             state = .notCalibrated
