@@ -2,11 +2,6 @@
 // Flowease
 //
 // 顔検出サービス（Vision Framework使用）
-//
-// T006: FaceDetectorサービススタブ作成（Phase 2 Foundational）
-// T012: FaceDetector.detect()実装（US1）
-// T013: FaceDetector.findMatchingQuality()実装（US1）
-// T014: FaceDetector.selectLargestFace()実装（US1）
 
 @preconcurrency import AVFoundation
 import CoreGraphics
@@ -67,15 +62,12 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
 
     // MARK: - Private Methods
 
-    /// 顔検出を実行（T012: VNDetectFaceRectanglesRequest使用）
+    /// 顔検出を実行
     ///
     /// 単一のVNImageRequestHandlerでfaceRectRequestとcaptureQualityRequestを
     /// バンドル実行し、効率的に顔検出と品質評価を行う（research.md参照）。
     private nonisolated func performDetection(sampleBuffer: CMSampleBuffer) -> FacePosition? {
-        // T012: VNDetectFaceRectanglesRequestで顔位置・サイズ・roll角を取得
         let faceRectRequest = VNDetectFaceRectanglesRequest()
-
-        // T013: VNDetectFaceCaptureQualityRequestで検出品質を取得
         let captureQualityRequest = VNDetectFaceCaptureQualityRequest()
 
         // 単一ハンドラーでバンドル実行（research.md: Vision Frameworkが内部で並行実行を最適化）
@@ -93,13 +85,13 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
                 return nil
             }
 
-            // T014: 複数顔から最大面積を選択（FR-007）
+            // 複数顔から最大面積を選択（FR-007）
             guard let largestFace = selectLargestFace(from: rectResults) else {
                 logger.debug("顔検出結果なし: 検出された顔が 0 件")
                 return nil
             }
 
-            // T013: 最大面積の顔に対応する品質値を取得
+            // 最大面積の顔に対応する品質値を取得
             let quality = findMatchingQuality(
                 for: largestFace,
                 in: captureQualityRequest.results ?? []
@@ -122,7 +114,7 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
         }
     }
 
-    /// 最大面積の顔を選択（T014: FR-007準拠）
+    /// 最大面積の顔を選択（FR-007準拠）
     ///
     /// 複数の顔が検出された場合、boundingBoxの面積が最大の顔を対象とする。
     /// 画面中央のユーザーが通常最も大きく映るため、この戦略が適切。
@@ -133,7 +125,7 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
         observations.max { $0.boundingBox.area < $1.boundingBox.area }
     }
 
-    /// 対応する顔の検出品質を取得（T013: FR-001準拠）
+    /// 対応する顔の検出品質を取得（FR-001準拠）
     ///
     /// VNDetectFaceCaptureQualityRequestの結果から、指定された顔に
     /// 最も近いboundingBoxを持つ観測の品質値を取得する。

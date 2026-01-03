@@ -302,7 +302,7 @@ final class PostureViewModel {
             addScore(score)
 
         case .noFaceDetected:
-            // T020: 顔が検出されない場合、スコア履歴をクリアして一時停止
+            // 顔が検出されない場合、スコア履歴をクリアして一時停止
             if case .active = monitoringState {
                 monitoringState = .paused(.noFaceDetected)
                 clearScoreHistory()
@@ -310,7 +310,7 @@ final class PostureViewModel {
             }
 
         case .lowDetectionQuality:
-            // T021: 検出精度が低下している場合、スコア履歴をクリアして一時停止
+            // 検出精度が低下している場合、スコア履歴をクリアして一時停止
             if case .active = monitoringState {
                 monitoringState = .paused(.lowDetectionQuality)
                 clearScoreHistory()

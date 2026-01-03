@@ -2,9 +2,6 @@
 // Flowease
 //
 // キャリブレーションの実行と管理
-//
-// T013: CalibrationServiceProtocolとCalibrationServiceを作成
-// T014: CalibrationErrorを作成
 
 import Foundation
 import Observation
