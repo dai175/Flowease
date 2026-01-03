@@ -108,7 +108,7 @@
 - [X] T027 [US2] Modify CalibrationService to accumulate FacePosition frames in Flowease/Services/CalibrationService.swift
 - [X] T028 [US2] Modify CalibrationService to calculate FaceBaselineMetrics from accumulated frames in Flowease/Services/CalibrationService.swift
 - [X] T029 [US2] Modify CalibrationService to create FaceReferencePosture on calibration complete in Flowease/Services/CalibrationService.swift
-- [ ] T030 [US2] Integrate FaceScoreCalculator with FaceBaselineMetrics for deviation calculation in Flowease/Services/FaceScoreCalculator.swift
+- [X] T030 [US2] Integrate FaceScoreCalculator with FaceBaselineMetrics for deviation calculation in Flowease/Services/FaceScoreCalculator.swift
 
 **Checkpoint**: User Story 2完了 - 顔ベースキャリブレーションが動作
 
