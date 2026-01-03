@@ -38,7 +38,7 @@ protocol PostureAnalyzing: Sendable {
     /// CMSampleBufferから顔を検出して分析
     /// - Parameter sampleBuffer: カメラからのフレームデータ
     /// - Returns: 分析結果（成功時は FacePosition、失敗時は原因を含む）
-    func analyze(sampleBuffer: CMSampleBuffer) async -> AnalysisResult
+    func analyze(sampleBuffer: sending CMSampleBuffer) async -> AnalysisResult
 }
 
 // MARK: - PostureAnalyzer
@@ -70,7 +70,7 @@ final class PostureAnalyzer: PostureAnalyzing {
     /// CMSampleBufferから顔を検出して分析
     /// - Parameter sampleBuffer: カメラからのフレームデータ
     /// - Returns: 分析結果（成功時は FacePosition、失敗時は原因を含む）
-    nonisolated func analyze(sampleBuffer: CMSampleBuffer) async -> AnalysisResult {
+    nonisolated func analyze(sampleBuffer: sending CMSampleBuffer) async -> AnalysisResult {
         // FaceDetectorで顔を検出
         guard let facePosition = await faceDetector.detect(from: sampleBuffer) else {
             return .noFaceDetected

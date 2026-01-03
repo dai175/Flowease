@@ -189,7 +189,7 @@ private final class MockCameraService: CameraServiceProtocol {
 
 /// Preview 用のモック PostureAnalyzer
 private struct MockPostureAnalyzer: PostureAnalyzing {
-    nonisolated func analyze(sampleBuffer _: CMSampleBuffer) async -> AnalysisResult {
+    nonisolated func analyze(sampleBuffer _: sending CMSampleBuffer) async -> AnalysisResult {
         .noFaceDetected
     }
 }

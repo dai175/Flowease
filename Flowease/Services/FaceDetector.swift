@@ -24,7 +24,7 @@ protocol FaceDetectorProtocol: Sendable {
     /// CMSampleBufferから顔を検出
     /// - Parameter sampleBuffer: カメラからのフレームデータ
     /// - Returns: 検出された顔の位置情報、検出失敗時は nil
-    func detect(from sampleBuffer: CMSampleBuffer) async -> FacePosition?
+    func detect(from sampleBuffer: sending CMSampleBuffer) async -> FacePosition?
 }
 
 // MARK: - FaceDetector
@@ -55,7 +55,7 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
     ///
     /// - Parameter sampleBuffer: カメラからのフレームデータ
     /// - Returns: 検出された顔の位置情報、検出失敗時は nil
-    nonisolated func detect(from sampleBuffer: CMSampleBuffer) async -> FacePosition? {
+    nonisolated func detect(from sampleBuffer: sending CMSampleBuffer) async -> FacePosition? {
         // Vision処理はCPU負荷が高いためバックグラウンドスレッドで実行
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async { [self] in
