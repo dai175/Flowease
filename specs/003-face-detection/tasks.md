@@ -97,13 +97,13 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T022 [P] [US2] Create FaceBaselineMetricsTests for baseline validation in FloweaseTests/FaceBaselineMetricsTests.swift
+- [X] T022 [P] [US2] Create FaceBaselineMetricsTests for baseline validation in FloweaseTests/FaceBaselineMetricsTests.swift
 - [ ] T023 [P] [US2] Create FaceReferencePostureTests for posture validation in FloweaseTests/FaceReferencePostureTests.swift
 - [ ] T024 [P] [US2] Extend CalibrationServiceTests for face-based calibration in FloweaseTests/CalibrationServiceTests.swift
 
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] Implement FaceBaselineMetrics with NaN/Infinite sanitization in Flowease/Models/FaceBaselineMetrics.swift
+- [X] T025 [US2] Implement FaceBaselineMetrics with NaN/Infinite sanitization in Flowease/Models/FaceBaselineMetrics.swift
 - [ ] T026 [US2] Implement FaceReferencePosture.isValid validation in Flowease/Models/FaceReferencePosture.swift
 - [ ] T027 [US2] Modify CalibrationService to accumulate FacePosition frames in Flowease/Services/CalibrationService.swift
 - [ ] T028 [US2] Modify CalibrationService to calculate FaceBaselineMetrics from accumulated frames in Flowease/Services/CalibrationService.swift
