@@ -5,7 +5,7 @@
 //  姿勢監視状態を管理する ViewModel
 //
 
-import CoreVideo
+@preconcurrency import AVFoundation
 import Foundation
 import Observation
 import OSLog
@@ -32,7 +32,7 @@ final class PostureViewModel {
 
     private let cameraService: CameraServiceProtocol
     private let postureAnalyzer: PostureAnalyzing
-    private let scoreCalculator: ScoreCalculator
+    private let faceScoreCalculator: FaceScoreCalculator
     /// キャリブレーションサービス
     /// Note: @Observableの追跡を有効にするため、具象型で保持
     private let calibrationService: CalibrationService
@@ -87,17 +87,17 @@ final class PostureViewModel {
     /// - Parameters:
     ///   - cameraService: カメラサービス（依存注入によりテスト可能）
     ///   - postureAnalyzer: 姿勢分析サービス
-    ///   - scoreCalculator: スコア計算サービス
+    ///   - faceScoreCalculator: 顔ベーススコア計算サービス
     ///   - calibrationService: キャリブレーションサービス
     init(
         cameraService: CameraServiceProtocol,
         postureAnalyzer: PostureAnalyzing,
-        scoreCalculator: ScoreCalculator,
+        faceScoreCalculator: FaceScoreCalculator,
         calibrationService: CalibrationService
     ) {
         self.cameraService = cameraService
         self.postureAnalyzer = postureAnalyzer
-        self.scoreCalculator = scoreCalculator
+        self.faceScoreCalculator = faceScoreCalculator
         self.calibrationService = calibrationService
         logger.debug("PostureViewModel 初期化完了")
 
@@ -116,8 +116,8 @@ final class PostureViewModel {
     /// キャリブレーションリセット時の処理
     private nonisolated func handleCalibrationReset() {
         Task { @MainActor in
-            scoreCalculator.setReferencePosture(nil)
-            logger.info("キャリブレーションリセット: ScoreCalculatorの基準姿勢をクリア")
+            faceScoreCalculator.setReferencePosture(nil)
+            logger.info("キャリブレーションリセット: FaceScoreCalculatorの基準姿勢をクリア")
         }
     }
 
@@ -130,7 +130,7 @@ final class PostureViewModel {
         self.init(
             cameraService: CameraService(),
             postureAnalyzer: PostureAnalyzer(),
-            scoreCalculator: ScoreCalculator(),
+            faceScoreCalculator: FaceScoreCalculator(),
             calibrationService: calibrationService
         )
     }
@@ -151,11 +151,12 @@ final class PostureViewModel {
 
         logger.info("PostureViewModel 初期化開始")
 
-        // キャリブレーション済みの場合、基準姿勢をScoreCalculatorに設定
-        if let referencePosture = calibrationService.referencePosture {
-            scoreCalculator.setReferencePosture(referencePosture)
-            logger.info("キャリブレーション済み: 基準姿勢をScoreCalculatorに設定")
-        }
+        // NOTE: US2(T025-T030)で FaceReferencePosture に対応後、以下を有効化
+        // キャリブレーション済みの場合、基準姿勢をFaceScoreCalculatorに設定
+        // if let referencePosture = calibrationService.faceReferencePosture {
+        //     faceScoreCalculator.setReferencePosture(referencePosture)
+        //     logger.info("キャリブレーション済み: 基準姿勢をFaceScoreCalculatorに設定")
+        // }
 
         // カメラデバイス・権限チェック
         updateMonitoringState()
@@ -257,10 +258,10 @@ final class PostureViewModel {
 
     // MARK: - Private Methods
 
-    /// フレームから姿勢を分析してスコアを更新
+    /// フレームから顔を分析してスコアを更新
     ///
-    /// - Parameter pixelBuffer: カメラからのフレームデータ
-    private func processFrame(_ pixelBuffer: CVPixelBuffer) async {
+    /// - Parameter sampleBuffer: カメラからのフレームデータ
+    private func processFrame(_ sampleBuffer: CMSampleBuffer) async {
         // タスク完了時に参照をクリア（次のフレーム処理を許可）
         defer { processingTask = nil }
 
@@ -269,32 +270,33 @@ final class PostureViewModel {
             return
         }
 
-        // 姿勢を分析
-        let result = await postureAnalyzer.analyze(pixelBuffer: pixelBuffer)
+        // 顔を分析
+        let result = await postureAnalyzer.analyze(sampleBuffer: sampleBuffer)
 
         switch result {
-        case let .success(bodyPose):
-            // 姿勢分析中に停止された場合は無視
+        case let .success(facePosition):
+            // 顔分析中に停止された場合は無視
             guard cameraService.isCapturing else {
                 return
             }
 
+            // NOTE: US2(T027-T030)でキャリブレーション機能を顔ベースに移行
             // キャリブレーション中であればフレームを渡す
-            if calibrationService.state.isInProgress {
-                calibrationService.processFrame(bodyPose)
-
-                // キャリブレーション完了後、基準姿勢を設定
-                if calibrationService.state.isCompleted,
-                   let referencePosture = calibrationService.referencePosture {
-                    scoreCalculator.setReferencePosture(referencePosture)
-                    logger.info("キャリブレーション完了: 基準姿勢をScoreCalculatorに設定")
-                }
-                return
-            }
+            // if calibrationService.state.isInProgress {
+            //     calibrationService.processFaceFrame(facePosition)
+            //
+            //     // キャリブレーション完了後、基準姿勢を設定
+            //     if calibrationService.state.isCompleted,
+            //        let referencePosture = calibrationService.faceReferencePosture {
+            //         faceScoreCalculator.setReferencePosture(referencePosture)
+            //         logger.info("キャリブレーション完了: 基準姿勢をFaceScoreCalculatorに設定")
+            //     }
+            //     return
+            // }
 
             // スコアを計算
-            guard let score = scoreCalculator.calculate(from: bodyPose) else {
-                logger.debug("スコア計算に失敗（姿勢が無効）")
+            guard let score = faceScoreCalculator.calculate(from: facePosition) else {
+                logger.debug("スコア計算に失敗（基準姿勢未設定またはデータが無効）")
                 return
             }
 
@@ -302,19 +304,19 @@ final class PostureViewModel {
             addScore(score)
 
         case .noFaceDetected:
-            // 顔が検出されない場合
+            // T020: 顔が検出されない場合、スコア履歴をクリアして一時停止
             if case .active = monitoringState {
                 monitoringState = .paused(.noFaceDetected)
                 clearScoreHistory()
-                logger.debug("顔未検出のため一時停止")
+                logger.debug("顔未検出のため一時停止（スコア履歴クリア）")
             }
 
         case .lowDetectionQuality:
-            // 検出精度が低下している場合
+            // T021: 検出精度が低下している場合、スコア履歴をクリアして一時停止
             if case .active = monitoringState {
                 monitoringState = .paused(.lowDetectionQuality)
                 clearScoreHistory()
-                logger.debug("検出精度低下のため一時停止")
+                logger.debug("検出精度低下のため一時停止（スコア履歴クリア）")
             }
         }
     }
@@ -323,13 +325,13 @@ final class PostureViewModel {
 // MARK: CameraFrameDelegate
 
 extension PostureViewModel: CameraFrameDelegate {
-    func cameraService(_: any CameraServiceProtocol, didCaptureFrame pixelBuffer: CVPixelBuffer) {
+    func cameraService(_: any CameraServiceProtocol, didCaptureFrame sampleBuffer: CMSampleBuffer) {
         // 処理中はタスクを作成しない（既存タスクの参照を上書きしない）
         // これにより stopMonitoring で実行中のタスクを確実にキャンセルできる
         guard processingTask == nil else { return }
 
         processingTask = Task {
-            await processFrame(pixelBuffer)
+            await processFrame(sampleBuffer)
         }
     }
 

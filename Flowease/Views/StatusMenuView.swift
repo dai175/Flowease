@@ -5,7 +5,7 @@
 //  Created by Claude on 2025/12/31.
 //
 
-import CoreVideo
+@preconcurrency import AVFoundation
 import SwiftUI
 
 // MARK: - StatusMenuView
@@ -188,9 +188,8 @@ private final class MockCameraService: CameraServiceProtocol {
 // MARK: - MockPostureAnalyzer
 
 /// Preview 用のモック PostureAnalyzer
-@MainActor
 private struct MockPostureAnalyzer: PostureAnalyzing {
-    func analyze(pixelBuffer _: CVPixelBuffer) async -> AnalysisResult {
+    nonisolated func analyze(sampleBuffer _: CMSampleBuffer) async -> AnalysisResult {
         .noFaceDetected
     }
 }
@@ -238,7 +237,7 @@ private func makePreviewViewModel(
     let viewModel = PostureViewModel(
         cameraService: MockCameraService(status: cameraStatus, cameraAvailable: cameraAvailable),
         postureAnalyzer: MockPostureAnalyzer(),
-        scoreCalculator: ScoreCalculator(),
+        faceScoreCalculator: FaceScoreCalculator(),
         calibrationService: makePreviewCalibrationService(isCalibrated: isCalibrated)
     )
     // スコアが指定されている場合は active 状態にする

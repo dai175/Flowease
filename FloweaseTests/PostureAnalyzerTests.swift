@@ -1,3 +1,4 @@
+@preconcurrency import AVFoundation
 import XCTest
 @testable import Flowease
 
@@ -287,16 +288,17 @@ final class PostureAnalyzerTests: XCTestCase {
 // MARK: - Mock PostureAnalyzer
 
 /// テスト用のモック PostureAnalyzer
-@MainActor
 final class MockPostureAnalyzer: PostureAnalyzing {
     /// 返却する AnalysisResult
-    var resultToReturn: AnalysisResult = .noFaceDetected
+    @MainActor var resultToReturn: AnalysisResult = .noFaceDetected
 
     /// analyze が呼ばれた回数
-    private(set) var analyzeCallCount = 0
+    @MainActor private(set) var analyzeCallCount = 0
 
-    func analyze(pixelBuffer _: CVPixelBuffer) async -> AnalysisResult {
-        analyzeCallCount += 1
-        return resultToReturn
+    nonisolated func analyze(sampleBuffer _: CMSampleBuffer) async -> AnalysisResult {
+        await MainActor.run {
+            analyzeCallCount += 1
+            return resultToReturn
+        }
     }
 }

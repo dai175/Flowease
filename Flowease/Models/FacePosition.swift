@@ -4,7 +4,10 @@ import Foundation
 ///
 /// VNFaceObservationから取得した顔の位置・サイズ・傾き情報を保持する。
 /// 姿勢スコアの算出に使用される。
-struct FacePosition: Sendable, Equatable {
+///
+/// Note: nonisolated宣言により、バックグラウンドスレッドからもプロパティにアクセス可能。
+/// FaceDetectorでの顔検出時に使用される。
+nonisolated struct FacePosition: Sendable, Equatable {
     /// 顔中心のX座標（正規化座標 0-1）
     let centerX: Double
 
