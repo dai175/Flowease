@@ -199,13 +199,19 @@ private struct MockPostureAnalyzer: PostureAnalyzing {
 /// Preview 用のモック CalibrationStorage
 private struct MockCalibrationStorage: CalibrationStorageProtocol {
     var savedPosture: ReferencePosture?
+    var savedFacePosture: FaceReferencePosture?
 
-    var isCalibrated: Bool { savedPosture != nil }
-    var lastCalibratedAt: Date? { savedPosture?.calibratedAt }
+    var isCalibrated: Bool { savedPosture != nil || savedFacePosture != nil }
+    var lastCalibratedAt: Date? { savedFacePosture?.calibratedAt ?? savedPosture?.calibratedAt }
     func loadReferencePosture() -> ReferencePosture? { savedPosture }
     @discardableResult
     func saveReferencePosture(_: ReferencePosture) -> Bool { true }
     func deleteReferencePosture() {}
+
+    // Face-Based Calibration
+    func loadFaceReferencePosture() -> FaceReferencePosture? { savedFacePosture }
+    @discardableResult
+    func saveFaceReferencePosture(_: FaceReferencePosture) -> Bool { true }
 }
 
 // MARK: - Preview Helper

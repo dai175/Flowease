@@ -220,6 +220,10 @@ private final class MockCalibrationServiceForPreview: CalibrationServiceProtocol
     }
 
     func processFrame(_: BodyPose) {}
+
+    // Face-Based Calibration
+    func processFaceFrame(_: FacePosition) {}
+    var faceReferencePosture: FaceReferencePosture? { nil }
 }
 
 // MARK: - Preview

@@ -55,6 +55,15 @@ protocol CalibrationServiceProtocol: AnyObject {
     /// フレームを処理してキャリブレーションデータを収集
     /// - Parameter pose: 検出された姿勢データ
     func processFrame(_ pose: BodyPose)
+
+    // MARK: - Face-Based Calibration (T027-T029)
+
+    /// 顔フレームを処理してキャリブレーションデータを収集
+    /// - Parameter face: 検出された顔位置データ
+    func processFaceFrame(_ face: FacePosition)
+
+    /// 現在の顔ベース基準姿勢（完了時のみ有効）
+    var faceReferencePosture: FaceReferencePosture? { get }
 }
 
 // MARK: - CalibrationService
@@ -85,6 +94,9 @@ final class CalibrationService: CalibrationServiceProtocol {
     /// 収集中のフレームデータ（位置の累積値）
     private var accumulatedPositions: AccumulatedPositions?
 
+    /// 収集中の顔フレームデータ（位置の累積値） (T027)
+    private var accumulatedFacePositions: AccumulatedFacePositions?
+
     /// 収集中の進捗情報
     private var currentProgress: CalibrationProgress?
 
@@ -98,6 +110,11 @@ final class CalibrationService: CalibrationServiceProtocol {
         storage.loadReferencePosture()
     }
 
+    /// 現在の顔ベース基準姿勢 (T029)
+    var faceReferencePosture: FaceReferencePosture? {
+        storage.loadFaceReferencePosture()
+    }
+
     // MARK: - Initializer
 
     /// イニシャライザ
@@ -105,8 +122,8 @@ final class CalibrationService: CalibrationServiceProtocol {
     init(storage: CalibrationStorageProtocol) {
         self.storage = storage
 
-        // 初期状態はストレージの内容から導出
-        if storage.loadReferencePosture() != nil {
+        // 初期状態はストレージの内容から導出（顔ベースまたは従来形式）
+        if storage.loadFaceReferencePosture() != nil || storage.loadReferencePosture() != nil {
             state = .completed
         } else {
             state = .notCalibrated
@@ -126,6 +143,7 @@ final class CalibrationService: CalibrationServiceProtocol {
 
         // 進捗情報を初期化（タイマーは最初のフレーム受信時に開始）
         accumulatedPositions = AccumulatedPositions()
+        accumulatedFacePositions = AccumulatedFacePositions() // T027
         hasReceivedFirstFrame = false
         currentProgress = nil // 最初のフレーム受信時に作成
 
@@ -144,6 +162,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         state = .failed(.cancelled)
         currentProgress = nil
         accumulatedPositions = nil
+        accumulatedFacePositions = nil // T027
         hasReceivedFirstFrame = false
         logger.info("キャリブレーションをキャンセルしました")
     }
@@ -153,6 +172,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         if state.isInProgress {
             currentProgress = nil
             accumulatedPositions = nil
+            accumulatedFacePositions = nil // T027
             hasReceivedFirstFrame = false
         }
 
@@ -285,6 +305,129 @@ final class CalibrationService: CalibrationServiceProtocol {
         logger.info("""
         キャリブレーション完了: frameCount=\(referencePosture.frameCount), \
         avgConfidence=\(String(format: "%.2f", referencePosture.averageConfidence))
+        """)
+    }
+
+    // MARK: - Face-Based Calibration (T027-T029)
+
+    /// 顔フレームを処理してキャリブレーションデータを収集 (T027)
+    func processFaceFrame(_ face: FacePosition) {
+        // 実行中でなければ無視
+        guard state.isInProgress,
+              var accumulated = accumulatedFacePositions
+        else {
+            return
+        }
+
+        // 最初のフレーム受信時にタイマーを開始
+        if !hasReceivedFirstFrame {
+            hasReceivedFirstFrame = true
+            currentProgress = CalibrationProgress()
+            logger.debug("顔ベースキャリブレーション: フレーム収集開始")
+        }
+
+        guard var progress = currentProgress else {
+            return
+        }
+
+        // フレームの品質をチェック
+        let frameQuality = evaluateFaceFrameQuality(face)
+
+        // 進捗を更新
+        progress.addFrame(quality: frameQuality)
+
+        // 高品質フレームなら位置データを累積 (T027)
+        if frameQuality == .highConfidence {
+            accumulated.add(face)
+        }
+
+        // 失敗判定（顔未検出を優先）
+        if progress.shouldFailNoFaceDetected {
+            state = .failed(.noFaceDetected)
+            currentProgress = nil
+            accumulatedFacePositions = nil
+            logger.warning("顔ベースキャリブレーション失敗: 顔未検出が連続")
+            return
+        }
+
+        if progress.shouldFailLowConfidence {
+            state = .failed(.lowConfidence)
+            currentProgress = nil
+            accumulatedFacePositions = nil
+            logger.warning("顔ベースキャリブレーション失敗: 低品質が連続")
+            return
+        }
+
+        // 完了判定
+        if progress.isComplete {
+            completeFaceCalibration(accumulated: accumulated)
+            return
+        }
+
+        // 状態を更新
+        currentProgress = progress
+        accumulatedFacePositions = accumulated
+        state = .inProgress(progress)
+    }
+
+    /// 顔フレームの品質を評価 (T027)
+    ///
+    /// - Parameter face: 評価する顔位置データ
+    /// - Returns: フレームの品質レベル
+    private func evaluateFaceFrameQuality(_ face: FacePosition) -> CalibrationProgress.FrameQuality {
+        // FacePosition.isValid をチェック
+        guard face.isValid else {
+            return .noFaceDetected
+        }
+
+        // captureQuality が閾値以上かチェック（FacePosition.minimumCaptureQuality = 0.3）
+        if face.captureQuality >= FacePosition.minimumCaptureQuality {
+            return .highConfidence
+        } else {
+            return .lowConfidence
+        }
+    }
+
+    /// 顔ベースキャリブレーションを完了 (T028, T029)
+    private func completeFaceCalibration(accumulated: AccumulatedFacePositions) {
+        // フレーム数が不足していれば失敗
+        guard accumulated.frameCount >= FaceReferencePosture.minimumFrameCount else {
+            state = .failed(.insufficientFrames)
+            currentProgress = nil
+            accumulatedFacePositions = nil
+            logger.warning("""
+            顔ベースキャリブレーション失敗: フレーム数不足 \
+            (\(accumulated.frameCount) < \(FaceReferencePosture.minimumFrameCount))
+            """)
+            return
+        }
+
+        // 平均位置からFaceReferencePostureを生成 (T028, T029)
+        let facePosture = accumulated.createFaceReferencePosture()
+
+        // 品質チェック
+        guard facePosture.isValid else {
+            state = .failed(.lowConfidence)
+            currentProgress = nil
+            accumulatedFacePositions = nil
+            logger.warning("顔ベースキャリブレーション失敗: 平均品質が不足")
+            return
+        }
+
+        // ストレージに保存 (T029)
+        storage.saveFaceReferencePosture(facePosture)
+
+        // 状態を完了に
+        state = .completed
+        currentProgress = nil
+        accumulatedFacePositions = nil
+
+        logger.info("""
+        顔ベースキャリブレーション完了: frameCount=\(facePosture.frameCount), \
+        avgQuality=\(String(format: "%.2f", facePosture.averageQuality)), \
+        baselineY=\(String(format: "%.3f", facePosture.baselineMetrics.baselineY)), \
+        baselineArea=\(String(format: "%.3f", facePosture.baselineMetrics.baselineArea)), \
+        baselineRoll=\(String(format: "%.3f", facePosture.baselineMetrics.baselineRoll))
         """)
     }
 }

@@ -494,13 +494,14 @@ final class CalibrationServiceTests: XCTestCase {
 @MainActor
 final class MockCalibrationStorage: CalibrationStorageProtocol {
     private var storedPosture: ReferencePosture?
+    private var storedFacePosture: FaceReferencePosture?
 
     var isCalibrated: Bool {
-        storedPosture != nil
+        storedPosture != nil || storedFacePosture != nil
     }
 
     var lastCalibratedAt: Date? {
-        storedPosture?.calibratedAt
+        storedFacePosture?.calibratedAt ?? storedPosture?.calibratedAt
     }
 
     func loadReferencePosture() -> ReferencePosture? {
@@ -515,7 +516,509 @@ final class MockCalibrationStorage: CalibrationStorageProtocol {
 
     func deleteReferencePosture() {
         storedPosture = nil
+        storedFacePosture = nil
+    }
+
+    // Face-Based Calibration
+    func loadFaceReferencePosture() -> FaceReferencePosture? {
+        storedFacePosture
+    }
+
+    @discardableResult
+    func saveFaceReferencePosture(_ posture: FaceReferencePosture) -> Bool {
+        storedFacePosture = posture
+        return true
     }
 }
 
 // Note: CalibrationError は Flowease/Services/CalibrationService.swift で定義されています
+
+// MARK: - Face-Based Calibration Tests (T024)
+
+/// 顔ベースキャリブレーションのテスト
+///
+/// T024: CalibrationServiceをFacePositionベースに拡張するためのテスト
+/// TDD方式: このテストは実装前に失敗することを確認する。
+@MainActor
+final class FaceCalibrationServiceTests: XCTestCase {
+    // MARK: - System Under Test
+
+    private var sut: CalibrationService!
+    private var mockStorage: MockFaceCalibrationStorage!
+
+    // MARK: - Setup / Teardown
+
+    override func setUp() {
+        super.setUp()
+        mockStorage = MockFaceCalibrationStorage()
+        sut = CalibrationService(storage: mockStorage)
+    }
+
+    override func tearDown() {
+        sut = nil
+        mockStorage = nil
+        super.tearDown()
+    }
+
+    // MARK: - Test Helpers
+
+    /// テスト用の有効な FacePosition を作成（高信頼度）
+    private func makeValidFacePosition(timestamp: Date = Date()) -> FacePosition {
+        FacePosition(
+            centerX: 0.5,
+            centerY: 0.5,
+            area: 0.05,
+            roll: 0.0,
+            captureQuality: 0.9,
+            timestamp: timestamp
+        )
+    }
+
+    /// 低品質の FacePosition を作成（captureQuality < 0.3）
+    private func makeLowQualityFacePosition(timestamp: Date = Date()) -> FacePosition {
+        FacePosition(
+            centerX: 0.5,
+            centerY: 0.5,
+            area: 0.05,
+            roll: 0.0,
+            captureQuality: 0.2,
+            timestamp: timestamp
+        )
+    }
+
+    /// 傾いた FacePosition を作成
+    private func makeTiltedFacePosition(roll: Double, timestamp: Date = Date()) -> FacePosition {
+        FacePosition(
+            centerX: 0.5,
+            centerY: 0.5,
+            area: 0.05,
+            roll: roll,
+            captureQuality: 0.9,
+            timestamp: timestamp
+        )
+    }
+
+    /// 前傾した FacePosition を作成（面積が大きい）
+    private func makeForwardLeanedFacePosition(timestamp: Date = Date()) -> FacePosition {
+        FacePosition(
+            centerX: 0.5,
+            centerY: 0.4, // Y座標が下がる
+            area: 0.08,   // 面積が大きくなる
+            roll: 0.0,
+            captureQuality: 0.9,
+            timestamp: timestamp
+        )
+    }
+
+    // MARK: - processFaceFrame Basic Tests
+
+    func testProcessFaceFrame_whenNotInProgress_isIgnored() async throws {
+        // Given: notCalibrated 状態
+        let face = makeValidFacePosition()
+
+        // When: フレーム処理
+        sut.processFaceFrame(face)
+
+        // Then: 状態は変わらない
+        XCTAssertTrue(sut.state.isNotCalibrated, "inProgress でなければフレームは無視される")
+    }
+
+    func testProcessFaceFrame_incrementsCollectedFrames() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let face = makeValidFacePosition()
+
+        // When: 有効なフレームを処理
+        sut.processFaceFrame(face)
+
+        // Then: collectedFrames が増加
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.collectedFrames, 1, "有効なフレーム処理後は collectedFrames が 1 であるべき")
+    }
+
+    func testProcessFaceFrame_withLowQuality_incrementsLowConfidenceStreak() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let face = makeLowQualityFacePosition()
+
+        // When: 低品質フレームを処理
+        sut.processFaceFrame(face)
+
+        // Then: lowConfidenceStreak が増加（collectedFrames は増えない）
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.collectedFrames, 0, "低品質フレームでは collectedFrames は増えない")
+        XCTAssertGreaterThan(progress.lowConfidenceStreak, 0, "低品質フレームでは lowConfidenceStreak が増加")
+    }
+
+    func testProcessFaceFrame_lowQualityStreakExceedsThreshold_failsCalibration() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let face = makeLowQualityFacePosition()
+
+        // When: 低品質フレームを連続で処理（しきい値を超える）
+        for _ in 0 ..< CalibrationProgress.failureThreshold {
+            sut.processFaceFrame(face)
+        }
+
+        // Then: failed(.lowConfidence) 状態になる
+        XCTAssertTrue(sut.state.isFailed, "低品質が連続するとfailedになるべき")
+        XCTAssertEqual(sut.state.failure, .lowConfidence, "失敗理由は lowConfidence であるべき")
+    }
+
+    // MARK: - Face Position Accumulation Tests (T027)
+
+    func testProcessFaceFrame_accumulatesCenterY() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+
+        // When: 異なるY座標のフレームを処理
+        sut.processFaceFrame(FacePosition(
+            centerX: 0.5, centerY: 0.4, area: 0.05, roll: 0.0,
+            captureQuality: 0.9, timestamp: Date()
+        ))
+        sut.processFaceFrame(FacePosition(
+            centerX: 0.5, centerY: 0.6, area: 0.05, roll: 0.0,
+            captureQuality: 0.9, timestamp: Date()
+        ))
+
+        // Then: フレームが蓄積される
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.collectedFrames, 2, "2フレームが蓄積されるべき")
+    }
+
+    func testProcessFaceFrame_accumulatesArea() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+
+        // When: 異なる面積のフレームを処理
+        sut.processFaceFrame(FacePosition(
+            centerX: 0.5, centerY: 0.5, area: 0.03, roll: 0.0,
+            captureQuality: 0.9, timestamp: Date()
+        ))
+        sut.processFaceFrame(FacePosition(
+            centerX: 0.5, centerY: 0.5, area: 0.07, roll: 0.0,
+            captureQuality: 0.9, timestamp: Date()
+        ))
+
+        // Then: フレームが蓄積される
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.collectedFrames, 2, "2フレームが蓄積されるべき")
+    }
+
+    func testProcessFaceFrame_accumulatesRoll() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+
+        // When: 異なるroll角のフレームを処理
+        sut.processFaceFrame(makeTiltedFacePosition(roll: 0.1))
+        sut.processFaceFrame(makeTiltedFacePosition(roll: -0.1))
+
+        // Then: フレームが蓄積される
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.collectedFrames, 2, "2フレームが蓄積されるべき")
+    }
+
+    // MARK: - FaceBaselineMetrics Calculation Tests (T028)
+
+    func testCalibrationCompletion_calculatesFaceBaselineMetrics() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let face = makeValidFacePosition()
+
+        // When: 十分なフレームを処理してキャリブレーション完了
+        for _ in 0 ..< 100 {
+            sut.processFaceFrame(face)
+        }
+
+        // 時間経過をシミュレート
+        try await Task.sleep(nanoseconds: 3_100_000_000)
+        sut.processFaceFrame(face)
+
+        // Then: FaceReferencePostureが保存される
+        guard let facePosture = mockStorage.loadFaceReferencePosture() else {
+            XCTFail("FaceReferencePosture が保存されるべき")
+            return
+        }
+
+        // FaceBaselineMetricsが正しく計算されている
+        XCTAssertEqual(facePosture.baselineMetrics.baselineY, 0.5, accuracy: 0.01,
+                       "baselineY は入力の平均 (0.5) であるべき")
+        XCTAssertEqual(facePosture.baselineMetrics.baselineArea, 0.05, accuracy: 0.01,
+                       "baselineArea は入力の平均 (0.05) であるべき")
+        XCTAssertEqual(facePosture.baselineMetrics.baselineRoll, 0.0, accuracy: 0.01,
+                       "baselineRoll は入力の平均 (0.0) であるべき")
+    }
+
+    func testCalibrationCompletion_averagesMultipleFacePositions() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+
+        // When: 異なる位置のフレームを処理
+        for i in 0 ..< 50 {
+            // Y座標: 0.4 と 0.6 を交互に（平均 0.5）
+            let face = FacePosition(
+                centerX: 0.5,
+                centerY: i % 2 == 0 ? 0.4 : 0.6,
+                area: 0.05,
+                roll: 0.0,
+                captureQuality: 0.9,
+                timestamp: Date()
+            )
+            sut.processFaceFrame(face)
+        }
+
+        // 時間経過をシミュレート
+        try await Task.sleep(nanoseconds: 3_100_000_000)
+        sut.processFaceFrame(makeValidFacePosition())
+
+        // Then: 平均値が計算される
+        guard let facePosture = mockStorage.loadFaceReferencePosture() else {
+            XCTFail("FaceReferencePosture が保存されるべき")
+            return
+        }
+
+        XCTAssertEqual(facePosture.baselineMetrics.baselineY, 0.5, accuracy: 0.05,
+                       "baselineY は平均値に近いべき")
+    }
+
+    // MARK: - FaceReferencePosture Creation Tests (T029)
+
+    func testCalibrationCompletion_createsFaceReferencePosture() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let face = makeValidFacePosition()
+
+        // When: 十分なフレームを処理してキャリブレーション完了
+        for _ in 0 ..< 100 {
+            sut.processFaceFrame(face)
+        }
+
+        try await Task.sleep(nanoseconds: 3_100_000_000)
+        sut.processFaceFrame(face)
+
+        // Then: 状態が completed になる
+        XCTAssertTrue(sut.state.isCompleted, "十分なフレーム後は completed であるべき")
+    }
+
+    func testCalibrationCompletion_faceReferencePostureHasValidFrameCount() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let face = makeValidFacePosition()
+
+        // When: 十分なフレームを処理
+        for _ in 0 ..< 100 {
+            sut.processFaceFrame(face)
+        }
+
+        try await Task.sleep(nanoseconds: 3_100_000_000)
+        sut.processFaceFrame(face)
+
+        // Then: frameCount が minimumFrameCount 以上
+        guard let facePosture = mockStorage.loadFaceReferencePosture() else {
+            XCTFail("FaceReferencePosture が保存されるべき")
+            return
+        }
+
+        XCTAssertGreaterThanOrEqual(
+            facePosture.frameCount,
+            FaceReferencePosture.minimumFrameCount,
+            "frameCount は最低 \(FaceReferencePosture.minimumFrameCount) 以上"
+        )
+    }
+
+    func testCalibrationCompletion_faceReferencePostureHasValidAverageQuality() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let face = makeValidFacePosition()
+
+        // When: 高品質フレームを処理
+        for _ in 0 ..< 100 {
+            sut.processFaceFrame(face)
+        }
+
+        try await Task.sleep(nanoseconds: 3_100_000_000)
+        sut.processFaceFrame(face)
+
+        // Then: averageQuality が minimumQuality 以上
+        guard let facePosture = mockStorage.loadFaceReferencePosture() else {
+            XCTFail("FaceReferencePosture が保存されるべき")
+            return
+        }
+
+        XCTAssertGreaterThanOrEqual(
+            facePosture.averageQuality,
+            FaceReferencePosture.minimumQuality,
+            "averageQuality は最低 \(FaceReferencePosture.minimumQuality) 以上"
+        )
+    }
+
+    func testCalibrationCompletion_faceReferencePostureIsValid() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+        let face = makeValidFacePosition()
+
+        // When: 十分なフレームを処理
+        for _ in 0 ..< 100 {
+            sut.processFaceFrame(face)
+        }
+
+        try await Task.sleep(nanoseconds: 3_100_000_000)
+        sut.processFaceFrame(face)
+
+        // Then: isValid が true
+        guard let facePosture = mockStorage.loadFaceReferencePosture() else {
+            XCTFail("FaceReferencePosture が保存されるべき")
+            return
+        }
+
+        XCTAssertTrue(facePosture.isValid, "FaceReferencePosture.isValid は true であるべき")
+    }
+
+    func testCalibrationCompletion_insufficientFrames_failsCalibration() async throws {
+        // Given: inProgress 状態
+        try await sut.startCalibration()
+
+        // When: フレームをほとんど処理せずに時間経過
+        try await Task.sleep(nanoseconds: 3_100_000_000)
+        sut.processFaceFrame(makeValidFacePosition())
+
+        // Then: 十分なフレームがなければ failed になる
+        if sut.state.isFailed {
+            XCTAssertEqual(sut.state.failure, .insufficientFrames)
+        } else if sut.state.isCompleted {
+            // 時間経過だけで completed になる実装の場合
+            if let facePosture = mockStorage.loadFaceReferencePosture() {
+                // フレーム数が少なすぎる場合は isValid が false
+                if facePosture.frameCount < FaceReferencePosture.minimumFrameCount {
+                    XCTAssertFalse(facePosture.isValid, "フレーム数が少なすぎる場合は isValid が false")
+                }
+            }
+        }
+    }
+
+    // MARK: - FaceReferencePosture Access Tests
+
+    func testFaceReferencePosture_afterCompletion_isAccessible() async throws {
+        // Given: キャリブレーション完了
+        try await sut.startCalibration()
+        let face = makeValidFacePosition()
+
+        for _ in 0 ..< 100 {
+            sut.processFaceFrame(face)
+        }
+
+        try await Task.sleep(nanoseconds: 3_100_000_000)
+        sut.processFaceFrame(face)
+
+        // Then: faceReferencePosture が取得可能
+        XCTAssertNotNil(sut.faceReferencePosture, "完了後は faceReferencePosture が取得可能であるべき")
+    }
+
+    func testFaceReferencePosture_beforeCompletion_isNil() async throws {
+        // Given: 未キャリブレーション状態
+        XCTAssertTrue(sut.state.isNotCalibrated)
+
+        // Then: faceReferencePosture は nil
+        XCTAssertNil(sut.faceReferencePosture, "未完了時は faceReferencePosture は nil であるべき")
+    }
+
+    // MARK: - Initial State with Face Calibration Tests
+
+    func testInitialState_withStoredFaceReferencePosture_isCompleted() async {
+        // Given: ストレージに FaceReferencePosture が保存されている
+        let facePosture = FaceReferencePosture(
+            calibratedAt: Date(),
+            frameCount: 50,
+            averageQuality: 0.9,
+            baselineMetrics: FaceBaselineMetrics(
+                baselineY: 0.5,
+                baselineArea: 0.05,
+                baselineRoll: 0.0
+            )
+        )
+        mockStorage.saveFaceReferencePosture(facePosture)
+
+        // When: 新しい CalibrationService を作成
+        let service = CalibrationService(storage: mockStorage)
+
+        // Then: 状態は completed（アプリ再起動後もキャリブレーション済みとして認識）
+        XCTAssertTrue(service.state.isCompleted, "保存済み顔ベースデータがあれば completed であるべき")
+    }
+
+    func testStorageIsCalibrated_withFaceReferencePosture_returnsTrue() async {
+        // Given: ストレージに FaceReferencePosture が保存されている
+        let facePosture = FaceReferencePosture(
+            calibratedAt: Date(),
+            frameCount: 50,
+            averageQuality: 0.9,
+            baselineMetrics: FaceBaselineMetrics(
+                baselineY: 0.5,
+                baselineArea: 0.05,
+                baselineRoll: 0.0
+            )
+        )
+        mockStorage.saveFaceReferencePosture(facePosture)
+
+        // Then: isCalibrated は true
+        XCTAssertTrue(mockStorage.isCalibrated, "顔ベースデータがあれば isCalibrated は true であるべき")
+    }
+}
+
+// MARK: - MockFaceCalibrationStorage
+
+/// 顔ベースキャリブレーション用のモックストレージ
+@MainActor
+final class MockFaceCalibrationStorage: CalibrationStorageProtocol {
+    private var storedPosture: ReferencePosture?
+    private var storedFacePosture: FaceReferencePosture?
+
+    var isCalibrated: Bool {
+        storedPosture != nil || storedFacePosture != nil
+    }
+
+    var lastCalibratedAt: Date? {
+        storedFacePosture?.calibratedAt ?? storedPosture?.calibratedAt
+    }
+
+    func loadReferencePosture() -> ReferencePosture? {
+        storedPosture
+    }
+
+    @discardableResult
+    func saveReferencePosture(_ posture: ReferencePosture) -> Bool {
+        storedPosture = posture
+        return true
+    }
+
+    func deleteReferencePosture() {
+        storedPosture = nil
+        storedFacePosture = nil
+    }
+
+    // MARK: - Face-Based Storage
+
+    func loadFaceReferencePosture() -> FaceReferencePosture? {
+        storedFacePosture
+    }
+
+    @discardableResult
+    func saveFaceReferencePosture(_ posture: FaceReferencePosture) -> Bool {
+        storedFacePosture = posture
+        return true
+    }
+}

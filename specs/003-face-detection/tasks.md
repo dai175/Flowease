@@ -99,15 +99,15 @@
 
 - [X] T022 [P] [US2] Create FaceBaselineMetricsTests for baseline validation in FloweaseTests/FaceBaselineMetricsTests.swift
 - [X] T023 [P] [US2] Create FaceReferencePostureTests for posture validation in FloweaseTests/FaceReferencePostureTests.swift
-- [ ] T024 [P] [US2] Extend CalibrationServiceTests for face-based calibration in FloweaseTests/CalibrationServiceTests.swift
+- [X] T024 [P] [US2] Extend CalibrationServiceTests for face-based calibration in FloweaseTests/CalibrationServiceTests.swift
 
 ### Implementation for User Story 2
 
 - [X] T025 [US2] Implement FaceBaselineMetrics with NaN/Infinite sanitization in Flowease/Models/FaceBaselineMetrics.swift
 - [X] T026 [US2] Implement FaceReferencePosture.isValid validation in Flowease/Models/FaceReferencePosture.swift
-- [ ] T027 [US2] Modify CalibrationService to accumulate FacePosition frames in Flowease/Services/CalibrationService.swift
-- [ ] T028 [US2] Modify CalibrationService to calculate FaceBaselineMetrics from accumulated frames in Flowease/Services/CalibrationService.swift
-- [ ] T029 [US2] Modify CalibrationService to create FaceReferencePosture on calibration complete in Flowease/Services/CalibrationService.swift
+- [X] T027 [US2] Modify CalibrationService to accumulate FacePosition frames in Flowease/Services/CalibrationService.swift
+- [X] T028 [US2] Modify CalibrationService to calculate FaceBaselineMetrics from accumulated frames in Flowease/Services/CalibrationService.swift
+- [X] T029 [US2] Modify CalibrationService to create FaceReferencePosture on calibration complete in Flowease/Services/CalibrationService.swift
 - [ ] T030 [US2] Integrate FaceScoreCalculator with FaceBaselineMetrics for deviation calculation in Flowease/Services/FaceScoreCalculator.swift
 
 **Checkpoint**: User Story 2完了 - 顔ベースキャリブレーションが動作
