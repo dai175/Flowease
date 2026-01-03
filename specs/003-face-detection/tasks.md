@@ -141,14 +141,14 @@
 
 **⚠️ 削除前提条件**: T036-T040の削除タスクは、US1/US2/US3がすべて動作確認済みであることが前提。削除前に `make test` が全件PASSすることを確認すること。
 
-- [ ] T036 Delete ReferencePosture.swift after verifying no references in Flowease/Models/ReferencePosture.swift
-- [ ] T037 Delete BaselineMetrics.swift after verifying no references in Flowease/Models/BaselineMetrics.swift
-- [ ] T038 Delete ReferenceJointPosition.swift after verifying no references in Flowease/Models/ReferenceJointPosition.swift
-- [ ] T039 Review and delete BodyPose.swift if unused after migration in Flowease/Models/BodyPose.swift
-- [ ] T040 Review and delete JointPosition.swift if unused after migration in Flowease/Models/JointPosition.swift
-- [ ] T041 Run `make lint` and fix any SwiftLint warnings
-- [ ] T042 Run `make format` and commit formatting changes
-- [ ] T043 Run `make test` and verify all tests pass
+- [X] T036 Delete ReferencePosture.swift after verifying no references in Flowease/Models/ReferencePosture.swift
+- [X] T037 Delete BaselineMetrics.swift after verifying no references in Flowease/Models/BaselineMetrics.swift
+- [X] T038 Delete ReferenceJointPosition.swift after verifying no references in Flowease/Models/ReferenceJointPosition.swift
+- [X] T039 Review and delete BodyPose.swift if unused after migration in Flowease/Models/BodyPose.swift
+- [X] T040 Review and delete JointPosition.swift if unused after migration in Flowease/Models/JointPosition.swift
+- [X] T041 Run `make lint` and fix any SwiftLint warnings
+- [X] T042 Run `make format` and commit formatting changes
+- [X] T043 Run `make test` and verify all tests pass
 - [ ] T044 Manual validation per quickstart.md Testing Checklist
 
 ---

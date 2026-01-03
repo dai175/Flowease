@@ -151,12 +151,11 @@ final class PostureViewModel {
 
         logger.info("PostureViewModel 初期化開始")
 
-        // NOTE: US2(T025-T030)で FaceReferencePosture に対応後、以下を有効化
         // キャリブレーション済みの場合、基準姿勢をFaceScoreCalculatorに設定
-        // if let referencePosture = calibrationService.faceReferencePosture {
-        //     faceScoreCalculator.setReferencePosture(referencePosture)
-        //     logger.info("キャリブレーション済み: 基準姿勢をFaceScoreCalculatorに設定")
-        // }
+        if let referencePosture = calibrationService.faceReferencePosture {
+            faceScoreCalculator.setReferencePosture(referencePosture)
+            logger.info("キャリブレーション済み: 基準姿勢をFaceScoreCalculatorに設定")
+        }
 
         // カメラデバイス・権限チェック
         updateMonitoringState()
@@ -280,19 +279,18 @@ final class PostureViewModel {
                 return
             }
 
-            // NOTE: US2(T027-T030)でキャリブレーション機能を顔ベースに移行
             // キャリブレーション中であればフレームを渡す
-            // if calibrationService.state.isInProgress {
-            //     calibrationService.processFaceFrame(facePosition)
-            //
-            //     // キャリブレーション完了後、基準姿勢を設定
-            //     if calibrationService.state.isCompleted,
-            //        let referencePosture = calibrationService.faceReferencePosture {
-            //         faceScoreCalculator.setReferencePosture(referencePosture)
-            //         logger.info("キャリブレーション完了: 基準姿勢をFaceScoreCalculatorに設定")
-            //     }
-            //     return
-            // }
+            if calibrationService.state.isInProgress {
+                calibrationService.processFaceFrame(facePosition)
+
+                // キャリブレーション完了後、基準姿勢を設定
+                if calibrationService.state.isCompleted,
+                   let referencePosture = calibrationService.faceReferencePosture {
+                    faceScoreCalculator.setReferencePosture(referencePosture)
+                    logger.info("キャリブレーション完了: 基準姿勢をFaceScoreCalculatorに設定")
+                }
+                return
+            }
 
             // スコアを計算
             guard let score = faceScoreCalculator.calculate(from: facePosition) else {

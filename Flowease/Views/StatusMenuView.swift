@@ -198,21 +198,16 @@ private struct MockPostureAnalyzer: PostureAnalyzing {
 
 /// Preview 用のモック CalibrationStorage
 private struct MockCalibrationStorage: CalibrationStorageProtocol {
-    var savedPosture: ReferencePosture?
     var savedFacePosture: FaceReferencePosture?
 
-    var isCalibrated: Bool { savedPosture != nil || savedFacePosture != nil }
-    var lastCalibratedAt: Date? { savedFacePosture?.calibratedAt ?? savedPosture?.calibratedAt }
-    func loadReferencePosture() -> ReferencePosture? { savedPosture }
-    @discardableResult
-    func saveReferencePosture(_: ReferencePosture) -> Bool { true }
-    func deleteReferencePosture() {}
+    var isCalibrated: Bool { savedFacePosture != nil }
+    var lastCalibratedAt: Date? { savedFacePosture?.calibratedAt }
 
-    // Face-Based Calibration
     func loadFaceReferencePosture() -> FaceReferencePosture? { savedFacePosture }
     func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? { savedFacePosture }
     @discardableResult
     func saveFaceReferencePosture(_: FaceReferencePosture) -> Bool { true }
+    func deleteFaceReferencePosture() {}
 }
 
 // MARK: - Preview Helper
@@ -221,15 +216,13 @@ private struct MockCalibrationStorage: CalibrationStorageProtocol {
 private func makePreviewCalibrationService(isCalibrated: Bool = false) -> CalibrationService {
     if isCalibrated {
         // キャリブレーション済み用のダミーデータ
-        let dummyPosture = ReferencePosture(
-            neck: ReferenceJointPosition(x: 0.5, y: 0.5, confidence: 0.9),
-            leftShoulder: ReferenceJointPosition(x: 0.3, y: 0.4, confidence: 0.9),
-            rightShoulder: ReferenceJointPosition(x: 0.7, y: 0.4, confidence: 0.9),
+        let dummyPosture = FaceReferencePosture(
+            calibratedAt: Date(),
             frameCount: 90,
-            averageConfidence: 0.9,
-            baselineMetrics: BaselineMetrics(headTiltDeviation: 0, shoulderBalance: 0, forwardLean: 0, symmetry: 0)
+            averageQuality: 0.9,
+            baselineMetrics: FaceBaselineMetrics(baselineY: 0.5, baselineArea: 0.1, baselineRoll: 0.0)
         )
-        return CalibrationService(storage: MockCalibrationStorage(savedPosture: dummyPosture))
+        return CalibrationService(storage: MockCalibrationStorage(savedFacePosture: dummyPosture))
     }
     return CalibrationService(storage: MockCalibrationStorage())
 }
