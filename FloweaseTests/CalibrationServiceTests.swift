@@ -524,6 +524,10 @@ final class MockCalibrationStorage: CalibrationStorageProtocol {
         storedFacePosture
     }
 
+    func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? {
+        storedFacePosture
+    }
+
     @discardableResult
     func saveFaceReferencePosture(_ posture: FaceReferencePosture) -> Bool {
         storedFacePosture = posture
@@ -1013,6 +1017,10 @@ final class MockFaceCalibrationStorage: CalibrationStorageProtocol {
     // MARK: - Face-Based Storage
 
     func loadFaceReferencePosture() -> FaceReferencePosture? {
+        storedFacePosture
+    }
+
+    func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? {
         storedFacePosture
     }
 

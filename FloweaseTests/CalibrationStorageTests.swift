@@ -253,4 +253,200 @@ final class CalibrationStorageTests: XCTestCase {
         // Then
         XCTAssertNil(result)
     }
+
+    // MARK: - Face-Based Data Format Detection Tests (T031)
+
+    /// テスト用の有効なFaceReferencePostureを作成
+    private func createValidFaceReferencePosture(
+        frameCount: Int = 30,
+        averageQuality: Double = 0.8,
+        calibratedAt: Date = Date()
+    ) -> FaceReferencePosture {
+        let baselineMetrics = FaceBaselineMetrics(
+            baselineY: 0.6,
+            baselineArea: 0.05,
+            baselineRoll: 0.0
+        )
+        return FaceReferencePosture(
+            calibratedAt: calibratedAt,
+            frameCount: frameCount,
+            averageQuality: averageQuality,
+            baselineMetrics: baselineMetrics
+        )
+    }
+
+    func testLoadFaceReferencePostureReturnsNilWhenEmpty() {
+        // Given
+        let storage = makeStorage()
+
+        // When
+        let result = storage.loadFaceReferencePosture()
+
+        // Then
+        XCTAssertNil(result)
+    }
+
+    func testLoadFaceReferencePostureReturnsStoredData() {
+        // Given
+        let storage = makeStorage()
+        let originalPosture = createValidFaceReferencePosture()
+        storage.saveFaceReferencePosture(originalPosture)
+
+        // When
+        let loadedPosture = storage.loadFaceReferencePosture()
+
+        // Then
+        guard let loadedPosture else {
+            XCTFail("loadedPosture should not be nil")
+            return
+        }
+        XCTAssertEqual(loadedPosture.frameCount, originalPosture.frameCount)
+        XCTAssertEqual(loadedPosture.averageQuality, originalPosture.averageQuality, accuracy: 0.0001)
+        XCTAssertEqual(loadedPosture.baselineMetrics.baselineY, 0.6, accuracy: 0.0001)
+        XCTAssertEqual(loadedPosture.baselineMetrics.baselineArea, 0.05, accuracy: 0.0001)
+        XCTAssertEqual(loadedPosture.baselineMetrics.baselineRoll, 0.0, accuracy: 0.0001)
+    }
+
+    func testSaveFaceReferencePostureReturnsTrue() {
+        // Given
+        let storage = makeStorage()
+        let posture = createValidFaceReferencePosture()
+
+        // When
+        let result = storage.saveFaceReferencePosture(posture)
+
+        // Then
+        XCTAssertTrue(result)
+    }
+
+    func testLoadFaceReferencePostureReturnsNilForOldFormatData() {
+        // Given: 旧形式（ReferencePosture）のデータが保存されている
+        let storage = makeStorage()
+        let oldPosture = createValidReferencePosture()
+        storage.saveReferencePosture(oldPosture)
+
+        // When: 顔ベース形式で読み込みを試みる
+        let result = storage.loadFaceReferencePosture()
+
+        // Then: 形式が異なるためnilを返す
+        XCTAssertNil(result)
+    }
+
+    func testLoadFaceReferencePostureClearsOldFormatData() {
+        // Given: 旧形式（ReferencePosture）のデータが保存されている
+        let defaults = UserDefaults(suiteName: Self.testSuiteName)!
+        defaults.removePersistentDomain(forName: Self.testSuiteName)
+        let storage = CalibrationStorage(userDefaults: defaults)
+        let oldPosture = createValidReferencePosture()
+        storage.saveReferencePosture(oldPosture)
+
+        // Verify: 旧形式データが存在する
+        XCTAssertNotNil(defaults.data(forKey: CalibrationStorageKeys.referencePosture))
+
+        // When: 顔ベース形式で読み込みを試みる（自動クリア）
+        _ = storage.loadFaceReferencePostureWithAutoClean()
+
+        // Then: 旧形式データがクリアされる
+        XCTAssertNil(defaults.data(forKey: CalibrationStorageKeys.referencePosture))
+    }
+
+    func testIsCalibratedReturnsTrueForFaceData() {
+        // Given
+        let storage = makeStorage()
+        let posture = createValidFaceReferencePosture()
+        storage.saveFaceReferencePosture(posture)
+
+        // Then
+        XCTAssertTrue(storage.isCalibrated)
+    }
+
+    func testLastCalibratedAtReturnsCorrectDateForFaceData() {
+        // Given
+        let storage = makeStorage()
+        let specificDate = Date(timeIntervalSince1970: 1_704_067_200) // 2024-01-01 00:00:00 UTC
+        let posture = createValidFaceReferencePosture(calibratedAt: specificDate)
+        storage.saveFaceReferencePosture(posture)
+
+        // When
+        let lastCalibrated = storage.lastCalibratedAt
+
+        // Then
+        XCTAssertNotNil(lastCalibrated)
+        XCTAssertEqual(
+            lastCalibrated!.timeIntervalSince1970,
+            specificDate.timeIntervalSince1970,
+            accuracy: 1.0
+        )
+    }
+
+    func testDataIntegrityForFaceReferencePosture() {
+        // Given
+        let storage = makeStorage()
+        let baselineMetrics = FaceBaselineMetrics(
+            baselineY: 0.55,
+            baselineArea: 0.08,
+            baselineRoll: 0.1
+        )
+        let originalPosture = FaceReferencePosture(
+            calibratedAt: Date(),
+            frameCount: 25,
+            averageQuality: 0.75,
+            baselineMetrics: baselineMetrics
+        )
+
+        // When
+        storage.saveFaceReferencePosture(originalPosture)
+        let loadedPosture = storage.loadFaceReferencePosture()
+
+        // Then
+        guard let loadedPosture else {
+            XCTFail("loadedPosture should not be nil")
+            return
+        }
+        XCTAssertEqual(loadedPosture.frameCount, originalPosture.frameCount)
+        XCTAssertEqual(loadedPosture.averageQuality, originalPosture.averageQuality, accuracy: 0.0001)
+        XCTAssertEqual(
+            loadedPosture.baselineMetrics.baselineY,
+            originalPosture.baselineMetrics.baselineY,
+            accuracy: 0.0001
+        )
+        XCTAssertEqual(
+            loadedPosture.baselineMetrics.baselineArea,
+            originalPosture.baselineMetrics.baselineArea,
+            accuracy: 0.0001
+        )
+        XCTAssertEqual(
+            loadedPosture.baselineMetrics.baselineRoll,
+            originalPosture.baselineMetrics.baselineRoll,
+            accuracy: 0.0001
+        )
+    }
+
+    func testLoadFaceReferencePostureReturnsNilForCorruptedData() {
+        // Given
+        let defaults = UserDefaults(suiteName: Self.testSuiteName)!
+        defaults.removePersistentDomain(forName: Self.testSuiteName)
+        defaults.set(Data([0x00, 0x01, 0x02]), forKey: CalibrationStorageKeys.referencePosture)
+        let storage = CalibrationStorage(userDefaults: defaults)
+
+        // When
+        let result = storage.loadFaceReferencePosture()
+
+        // Then
+        XCTAssertNil(result)
+    }
+
+    func testDeleteReferencePostureRemovesFaceData() {
+        // Given
+        let storage = makeStorage()
+        let posture = createValidFaceReferencePosture()
+        storage.saveFaceReferencePosture(posture)
+
+        // When
+        storage.deleteReferencePosture()
+        let loadedPosture = storage.loadFaceReferencePosture()
+
+        // Then
+        XCTAssertNil(loadedPosture)
+    }
 }

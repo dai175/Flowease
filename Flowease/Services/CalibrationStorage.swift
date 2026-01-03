@@ -43,12 +43,20 @@ protocol CalibrationStorageProtocol: Sendable {
     /// （referencePosture?.calibratedAtから導出）
     var lastCalibratedAt: Date? { get }
 
-    // MARK: - Face-Based Calibration (T027-T029)
+    // MARK: - Face-Based Calibration (T027-T029, T032-T033)
 
     /// 保存された顔ベース基準姿勢を取得
     ///
     /// - Returns: 保存されているFaceReferencePosture、未保存の場合はnil
     func loadFaceReferencePosture() -> FaceReferencePosture?
+
+    /// 保存された顔ベース基準姿勢を取得（自動クリーン付き）
+    ///
+    /// 顔ベース形式でのデコードに失敗した場合（旧形式または破損データ）、
+    /// 自動的にデータをクリアする。
+    ///
+    /// - Returns: 保存されているFaceReferencePosture、未保存またはクリア済みの場合はnil
+    func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture?
 
     /// 顔ベース基準姿勢を保存
     ///
@@ -191,6 +199,31 @@ final class CalibrationStorage: CalibrationStorageProtocol, @unchecked Sendable 
         } catch {
             logger.error("顔ベース基準姿勢データのエンコードに失敗: \(error.localizedDescription)")
             return false
+        }
+    }
+
+    // MARK: - T032: Auto-Clean on Load
+
+    func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard let data = userDefaults.data(forKey: CalibrationStorageKeys.referencePosture) else {
+            logger.debug("基準姿勢データが見つかりません")
+            return nil
+        }
+
+        do {
+            let decoder = makeDecoder()
+            // 顔ベース形式でデコード試行
+            let facePosture = try decoder.decode(FaceReferencePosture.self, from: data)
+            logger.debug("顔ベース基準姿勢データを読み込みました（フレーム数: \(facePosture.frameCount)）")
+            return facePosture
+        } catch {
+            // デコード失敗 = 旧形式または破損データ → クリア
+            logger.info("キャリブレーションデータをクリア（形式不一致または破損）: \(error.localizedDescription)")
+            userDefaults.removeObject(forKey: CalibrationStorageKeys.referencePosture)
+            return nil
         }
     }
 }
