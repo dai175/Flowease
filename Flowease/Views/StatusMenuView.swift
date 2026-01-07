@@ -43,7 +43,7 @@ struct StatusMenuView: View {
                 Text("\(viewModel.smoothedScore)")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
                     .foregroundStyle(viewModel.iconColor)
-                Text("姿勢モニタリング中")
+                Text("Monitoring Posture")
                     .foregroundStyle(.secondary)
 
             case let .paused(reason):
@@ -99,7 +99,7 @@ private struct CalibrationStatusRow: View {
                     .foregroundStyle(isCalibrated ? .green : .secondary)
 
                 // 状態テキスト
-                Text("キャリブレーション: \(statusSummary)")
+                Text("Calibration: \(statusSummary)")
                     .font(.subheadline)
                     .foregroundStyle(isCalibrated ? .primary : .secondary)
 
@@ -107,7 +107,7 @@ private struct CalibrationStatusRow: View {
 
                 // リセットボタン（キャリブレーション済みの場合のみ表示）
                 if isCalibrated {
-                    Button("リセット") {
+                    Button("Reset") {
                         onReset()
                         // 通知を送信してPostureViewModelでScoreCalculatorをクリア
                         NotificationCenter.default.post(name: .calibrationReset, object: nil)
@@ -118,7 +118,7 @@ private struct CalibrationStatusRow: View {
                 }
 
                 // キャリブレーションボタン
-                Button(isCalibrated ? "再設定" : "設定") {
+                Button(isCalibrated ? "Reconfigure" : "Configure") {
                     // 通知を送信してAppDelegateでウィンドウを開く
                     NotificationCenter.default.post(name: .showCalibrationWindow, object: nil)
                 }
