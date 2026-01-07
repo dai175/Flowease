@@ -23,7 +23,7 @@ struct CalibrationView: View {
     var body: some View {
         VStack(spacing: 16) {
             // タイトル
-            Text("姿勢キャリブレーション")
+            Text("Posture Calibration")
                 .font(.headline)
 
             Divider()
@@ -67,12 +67,12 @@ struct CalibrationView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.secondary)
 
-            Text("良い姿勢を取ってください")
+            Text("Please assume good posture")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
-            Text("3秒間、カメラに向かって正面を向き、リラックスした良い姿勢を維持してください。")
+            Text("Face the camera and maintain a relaxed, good posture for 3 seconds.")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -89,7 +89,7 @@ struct CalibrationView: View {
                 remainingSeconds: viewModel.remainingSeconds
             )
 
-            Text("そのままの姿勢を維持...")
+            Text("Maintain your posture...")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
@@ -119,11 +119,11 @@ struct CalibrationView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.green)
 
-            Text("キャリブレーション完了")
+            Text("Calibration Complete")
                 .font(.subheadline)
                 .foregroundStyle(.primary)
 
-            Text("あなたの良い姿勢が基準として記録されました。")
+            Text("Your good posture has been recorded as the baseline.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -139,7 +139,7 @@ struct CalibrationView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.orange)
 
-            Text("キャリブレーション失敗")
+            Text("Calibration Failed")
                 .font(.subheadline)
                 .foregroundStyle(.primary)
 
@@ -160,12 +160,12 @@ struct CalibrationView: View {
         switch viewModel.state {
         case .notCalibrated, .failed:
             HStack(spacing: 12) {
-                Button("キャンセル") {
+                Button("Cancel") {
                     dismiss()
                 }
                 .buttonStyle(.bordered)
 
-                Button("開始") {
+                Button("Start") {
                     Task {
                         await viewModel.startCalibration()
                     }
@@ -174,13 +174,13 @@ struct CalibrationView: View {
             }
 
         case .inProgress:
-            Button("キャンセル") {
+            Button("Cancel") {
                 viewModel.cancelCalibration()
             }
             .buttonStyle(.bordered)
 
         case .completed:
-            Button("閉じる") {
+            Button("Close") {
                 dismiss()
             }
             .buttonStyle(.borderedProminent)

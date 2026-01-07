@@ -1,12 +1,102 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "An unexpected error occurred" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "予期しないエラーが発生しました"
+          }
+        }
+      }
+    },
+    "Calibrating... %lld seconds remaining" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーション中... 残り%lld秒"
+          }
+        }
+      }
+    },
+    "Calibration Complete" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーション完了"
+          }
+        }
+      }
+    },
+    "Calibration Failed" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーション失敗"
+          }
+        }
+      }
+    },
+    "Calibration not configured" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーション未設定"
+          }
+        }
+      }
+    },
     "Calibration: %@" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "キャリブレーション: %@"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャンセル"
+          }
+        }
+      }
+    },
+    "Close" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
+          }
+        }
+      }
+    },
+    "Complete" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了"
+          }
+        }
+      }
+    },
+    "Complete (%@)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完了 (%@)"
           }
         }
       }
@@ -21,12 +111,112 @@
         }
       }
     },
+    "Configure calibration for more accurate posture assessment" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーションを設定すると、より正確な姿勢評価ができます"
+          }
+        }
+      }
+    },
+    "Face the camera and maintain a relaxed, good posture for 3 seconds." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3秒間、カメラに向かって正面を向き、リラックスした良い姿勢を維持してください。"
+          }
+        }
+      }
+    },
+    "Maintain your posture..." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "そのままの姿勢を維持..."
+          }
+        }
+      }
+    },
     "Monitoring Posture" : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "姿勢モニタリング中"
+          }
+        }
+      }
+    },
+    "Not configured" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定"
+          }
+        }
+      }
+    },
+    "Please adjust the lighting" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照明を調整してください"
+          }
+        }
+      }
+    },
+    "Please assume good posture" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "良い姿勢を取ってください"
+          }
+        }
+      }
+    },
+    "Please ensure your face is visible to the camera" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラに顔が映っていることを確認してください"
+          }
+        }
+      }
+    },
+    "Please try again" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もう一度お試しください"
+          }
+        }
+      }
+    },
+    "Posture Calibration" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "姿勢キャリブレーション"
+          }
+        }
+      }
+    },
+    "Posture detection quality is low" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "姿勢の検出精度が低下しています"
           }
         }
       }
@@ -47,6 +237,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "リセット"
+          }
+        }
+      }
+    },
+    "Start" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始"
+          }
+        }
+      }
+    },
+    "Your good posture has been recorded as the baseline." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたの良い姿勢が基準として記録されました。"
           }
         }
       }
