@@ -38,13 +38,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - NSApplicationDelegate
 
     func applicationDidFinishLaunching(_: Notification) {
-        logger.info("アプリケーション起動")
+        logger.info("Application started")
         setupStatusItem()
         setupNotificationObservers()
     }
 
     func applicationWillTerminate(_: Notification) {
-        logger.info("アプリケーション終了")
+        logger.info("Application terminating")
         // 観察タスクを停止
         statusItemManager?.stopObserving()
         // 姿勢監視を停止（カメラリソースを解放）
@@ -87,7 +87,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // メニューを設定
         statusItem.menu = createMenu(viewModel: viewModel, calibrationViewModel: calibrationViewModel)
 
-        logger.debug("NSStatusItem をセットアップしました")
+        logger.debug("NSStatusItem has been set up")
 
         // ViewModel の初期化を開始
         Task {
@@ -145,7 +145,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         guard let calibrationViewModel else {
-            logger.error("CalibrationViewModel が未初期化です")
+            logger.error("CalibrationViewModel is not initialized")
             return
         }
 
@@ -170,7 +170,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
 
         calibrationWindow = window
-        logger.debug("キャリブレーションウィンドウを表示")
+        logger.debug("Showing calibration window")
     }
 }
 
@@ -192,7 +192,7 @@ extension AppDelegate: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         if let window = notification.object as? NSWindow, window === calibrationWindow {
             calibrationWindow = nil
-            logger.debug("キャリブレーションウィンドウを閉じました")
+            logger.debug("Calibration window closed")
         }
     }
 }

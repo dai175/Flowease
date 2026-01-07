@@ -37,7 +37,7 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
     // MARK: - Initialization
 
     nonisolated init() {
-        logger.debug("FaceDetector 初期化完了")
+        logger.debug("FaceDetector initialized")
     }
 
     // MARK: - FaceDetectorProtocol
@@ -81,13 +81,13 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
             try handler.perform([faceRectRequest, captureQualityRequest])
 
             guard let rectResults = faceRectRequest.results else {
-                logger.debug("顔検出結果なし: results が nil")
+                logger.debug("No face detection result: results is nil")
                 return nil
             }
 
             // 複数顔から最大面積を選択（FR-007）
             guard let largestFace = selectLargestFace(from: rectResults) else {
-                logger.debug("顔検出結果なし: 検出された顔が 0 件")
+                logger.debug("No face detection result: 0 faces detected")
                 return nil
             }
 
@@ -100,7 +100,7 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
             let position = createFacePosition(from: largestFace, quality: quality)
 
             logger.debug("""
-            顔検出成功: center=(\(String(format: "%.3f", position.centerX)), \
+            Face detected: center=(\(String(format: "%.3f", position.centerX)), \
             \(String(format: "%.3f", position.centerY))), \
             area=\(String(format: "%.4f", position.area)), \
             roll=\(position.roll.map { String(format: "%.3f", $0) } ?? "nil"), \
@@ -109,7 +109,7 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
 
             return position
         } catch {
-            logger.error("顔検出エラー: \(error.localizedDescription)")
+            logger.error("Face detection error: \(error.localizedDescription)")
             return nil
         }
     }

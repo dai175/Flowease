@@ -87,7 +87,7 @@ final class CalibrationViewModel {
     /// - Parameter calibrationService: キャリブレーションサービス
     init(calibrationService: CalibrationServiceProtocol) {
         self.calibrationService = calibrationService
-        logger.debug("CalibrationViewModel 初期化完了")
+        logger.debug("CalibrationViewModel initialized")
     }
 
     // MARK: - Public Methods
@@ -100,20 +100,20 @@ final class CalibrationViewModel {
 
         do {
             try await calibrationService.startCalibration()
-            logger.info("キャリブレーション開始")
+            logger.info("Calibration started")
         } catch let error as CalibrationError {
             errorMessage = error.localizedDescription
-            logger.warning("キャリブレーション開始失敗: \(error.localizedDescription)")
+            logger.warning("Failed to start calibration: \(error.localizedDescription)")
         } catch {
             errorMessage = String(localized: "An unexpected error occurred")
-            logger.error("キャリブレーション開始で予期しないエラー: \(error.localizedDescription)")
+            logger.error("Unexpected error starting calibration: \(error.localizedDescription)")
         }
     }
 
     /// キャリブレーションをキャンセル
     func cancelCalibration() {
         calibrationService.cancelCalibration()
-        logger.info("キャリブレーションをキャンセル")
+        logger.info("Calibration cancelled")
     }
 
     /// キャリブレーションをリセット（基準姿勢を削除）
@@ -121,7 +121,7 @@ final class CalibrationViewModel {
     /// 保存された基準姿勢を削除し、固定しきい値モードに戻る。
     func resetCalibration() {
         calibrationService.resetCalibration()
-        logger.info("キャリブレーションをリセット")
+        logger.info("Calibration reset")
     }
 
     /// エラーメッセージをクリア

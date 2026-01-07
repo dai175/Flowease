@@ -32,7 +32,7 @@ final class StatusItemManager {
         updateIcon()
         observeChanges()
 
-        logger.debug("StatusItemManager 初期化完了")
+        logger.debug("StatusItemManager initialized")
     }
 
     // MARK: - Private Methods
@@ -95,6 +95,6 @@ final class StatusItemManager {
     /// アプリ終了時に呼び出して、観察の再帰呼び出しを停止する。
     func stopObserving() {
         isObserving = false
-        logger.debug("StatusItemManager 観察を停止")
+        logger.debug("StatusItemManager stopped observing")
     }
 }

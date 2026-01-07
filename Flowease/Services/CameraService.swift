@@ -154,7 +154,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
 
     override init() {
         super.init()
-        logger.debug("CameraService 初期化完了")
+        logger.debug("CameraService initialized")
     }
 
     // MARK: - Public Methods
@@ -166,17 +166,17 @@ final class CameraService: NSObject, CameraServiceProtocol {
 
         // 既に決定済みの場合はそのまま返す
         guard currentStatus == .notDetermined else {
-            logger.info("カメラ権限は既に決定済み: \(String(describing: currentStatus))")
+            logger.info("Camera permission already determined: \(String(describing: currentStatus))")
             return currentStatus
         }
 
-        logger.info("カメラ権限をリクエスト中...")
+        logger.info("Requesting camera permission...")
 
         // 権限リクエストを実行
         let granted = await AVCaptureDevice.requestAccess(for: .video)
 
         let newStatus = authorizationStatus
-        logger.info("カメラ権限リクエスト結果: granted=\(granted), status=\(String(describing: newStatus))")
+        logger.info("Camera permission request result: granted=\(granted), status=\(String(describing: newStatus))")
 
         return newStatus
     }
@@ -186,7 +186,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
     func checkCameraAvailability() -> Bool {
         let device = AVCaptureDevice.default(for: .video)
         let isAvailable = device != nil
-        logger.debug("カメラデバイス利用可能: \(isAvailable)")
+        logger.debug("Camera device available: \(isAvailable)")
         return isAvailable
     }
 
@@ -195,7 +195,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
     func toMonitoringState() -> MonitoringState {
         // カメラデバイスが存在しない場合
         if !checkCameraAvailability() {
-            logger.warning("カメラデバイスが利用不可")
+            logger.warning("Camera device unavailable")
             return .disabled(.noCameraAvailable)
         }
 
@@ -220,7 +220,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
     /// フレームキャプチャを開始
     func startCapturing() {
         guard !isCapturing else {
-            logger.debug("既にキャプチャ中")
+            logger.debug("Already capturing")
             return
         }
 
@@ -229,14 +229,14 @@ final class CameraService: NSObject, CameraServiceProtocol {
 
         guard authorizationStatus == .authorized else {
             isCapturing = false
-            logger.warning("カメラ権限がないためキャプチャを開始できません")
+            logger.warning("Cannot start capture: camera permission not granted")
             frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.permissionDenied)
             return
         }
 
         guard checkCameraAvailability() else {
             isCapturing = false
-            logger.warning("カメラデバイスが利用できないためキャプチャを開始できません")
+            logger.warning("Cannot start capture: camera device unavailable")
             frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.noCameraAvailable)
             return
         }
@@ -252,16 +252,16 @@ final class CameraService: NSObject, CameraServiceProtocol {
                     // セッションが実際に開始されたかチェック
                     guard let session, session.isRunning else {
                         isCapturing = false
-                        logger.error("フレームキャプチャの開始に失敗しました")
+                        logger.error("Failed to start frame capture")
                         frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.cameraInUse)
                         return
                     }
-                    logger.info("フレームキャプチャを開始しました")
+                    logger.info("Frame capture started")
                 }
             }
         } catch {
             isCapturing = false
-            logger.error("キャプチャセッションのセットアップに失敗: \(error.localizedDescription)")
+            logger.error("Failed to set up capture session: \(error.localizedDescription)")
             frameDelegate?.cameraService(self, didEncounterError: error)
         }
     }
@@ -269,7 +269,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
     /// フレームキャプチャを停止
     func stopCapturing() {
         guard isCapturing else {
-            logger.debug("キャプチャは既に停止中")
+            logger.debug("Capture already stopped")
             return
         }
 
@@ -311,7 +311,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
             // セッションを停止
             session?.stopRunning()
         }
-        logger.info("フレームキャプチャを停止しました")
+        logger.info("Frame capture stopped")
     }
 
     // MARK: - Private Methods
@@ -331,12 +331,12 @@ final class CameraService: NSObject, CameraServiceProtocol {
         do {
             input = try AVCaptureDeviceInput(device: device)
         } catch {
-            logger.error("カメラ入力の作成に失敗: \(error.localizedDescription)")
+            logger.error("Failed to create camera input: \(error.localizedDescription)")
             throw CameraServiceError.sessionConfigurationFailed
         }
 
         guard session.canAddInput(input) else {
-            logger.error("セッションに入力を追加できません")
+            logger.error("Cannot add input to session")
             throw CameraServiceError.sessionConfigurationFailed
         }
         session.addInput(input)
@@ -351,7 +351,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
         output.setSampleBufferDelegate(self, queue: captureQueue)
 
         guard session.canAddOutput(output) else {
-            logger.error("セッションに出力を追加できません")
+            logger.error("Cannot add output to session")
             throw CameraServiceError.sessionConfigurationFailed
         }
         session.addOutput(output)
@@ -368,7 +368,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
             object: session
         )
 
-        logger.debug("キャプチャセッションをセットアップしました")
+        logger.debug("Capture session set up")
     }
 
     // MARK: - Session Error Handlers
@@ -387,7 +387,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
             guard let self else { return }
 
             // エラーの内容をログ出力
-            logger.warning("カメラセッションでエラーが発生しました: code=\(error.code.rawValue), \(error.localizedDescription)")
+            logger.warning("Camera session error: code=\(error.code.rawValue), \(error.localizedDescription)")
 
             // エラーコードに基づいて適切な CameraServiceError を決定
             let cameraError: CameraServiceError = switch error.code {
@@ -417,11 +417,11 @@ final class CameraService: NSObject, CameraServiceProtocol {
                     object: session
                 )
 
-                logger.info("セッションエラーによりキャプチャ状態をリセットしました")
+                logger.info("Capture state reset due to session error")
                 frameDelegate?.cameraService(self, didEncounterError: cameraError)
             } else if captureSession != nil {
                 // セッションが実行中でもエラーが発生した場合は停止してクリーンアップ
-                logger.warning("セッション実行中にエラーが発生したため停止します")
+                logger.warning("Stopping due to session runtime error")
                 stopCapturing()
                 frameDelegate?.cameraService(self, didEncounterError: cameraError)
             } else {
@@ -477,7 +477,7 @@ extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
     ) {
         // フレームがドロップされた場合は警告ログ（過剰にならないよう制限）
         Task { @MainActor [weak self] in
-            self?.logger.debug("フレームがドロップされました")
+            self?.logger.debug("Frame dropped")
         }
     }
 }

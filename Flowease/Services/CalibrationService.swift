@@ -108,7 +108,7 @@ final class CalibrationService: CalibrationServiceProtocol {
             state = .notCalibrated
         }
 
-        logger.debug("CalibrationService 初期化完了: state=\(self.state.statusDescription)")
+        logger.debug("CalibrationService initialized: state=\(self.state.statusDescription)")
     }
 
     // MARK: - CalibrationServiceProtocol
@@ -116,7 +116,7 @@ final class CalibrationService: CalibrationServiceProtocol {
     func startCalibration() async throws {
         // 既に実行中の場合はエラー
         if state.isInProgress {
-            logger.warning("キャリブレーション開始失敗: 既に実行中")
+            logger.warning("Failed to start calibration: already in progress")
             throw CalibrationError.alreadyInProgress
         }
 
@@ -127,7 +127,7 @@ final class CalibrationService: CalibrationServiceProtocol {
 
         // 状態を更新（ダミーの進捗で開始）
         state = .inProgress(CalibrationProgress())
-        logger.info("キャリブレーション開始（フレーム待機中）")
+        logger.info("Calibration started (waiting for frames)")
     }
 
     func cancelCalibration() {
@@ -141,7 +141,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         currentProgress = nil
         accumulatedFacePositions = nil
         hasReceivedFirstFrame = false
-        logger.info("キャリブレーションをキャンセルしました")
+        logger.info("Calibration cancelled")
     }
 
     func resetCalibration() {
@@ -157,7 +157,7 @@ final class CalibrationService: CalibrationServiceProtocol {
 
         // 状態を未キャリブレーションに
         state = .notCalibrated
-        logger.info("キャリブレーションをリセットしました")
+        logger.info("Calibration reset")
     }
 
     // MARK: - Face Calibration
@@ -175,7 +175,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         if !hasReceivedFirstFrame {
             hasReceivedFirstFrame = true
             currentProgress = CalibrationProgress()
-            logger.debug("キャリブレーション: フレーム収集開始")
+            logger.debug("Calibration: Starting frame collection")
         }
 
         guard var progress = currentProgress else {
@@ -198,7 +198,7 @@ final class CalibrationService: CalibrationServiceProtocol {
             state = .failed(.noFaceDetected)
             currentProgress = nil
             accumulatedFacePositions = nil
-            logger.warning("キャリブレーション失敗: 顔未検出が連続")
+            logger.warning("Calibration failed: consecutive face detection failures")
             return
         }
 
@@ -206,7 +206,7 @@ final class CalibrationService: CalibrationServiceProtocol {
             state = .failed(.lowConfidence)
             currentProgress = nil
             accumulatedFacePositions = nil
-            logger.warning("キャリブレーション失敗: 低品質が連続")
+            logger.warning("Calibration failed: consecutive low quality frames")
             return
         }
 
@@ -250,7 +250,7 @@ final class CalibrationService: CalibrationServiceProtocol {
             currentProgress = nil
             accumulatedFacePositions = nil
             logger.warning("""
-            キャリブレーション失敗: フレーム数不足 \
+            Calibration failed: insufficient frames \
             (\(accumulated.frameCount) < \(FaceReferencePosture.minimumFrameCount))
             """)
             return
@@ -264,7 +264,7 @@ final class CalibrationService: CalibrationServiceProtocol {
             state = .failed(.lowConfidence)
             currentProgress = nil
             accumulatedFacePositions = nil
-            logger.warning("キャリブレーション失敗: 平均品質が不足")
+            logger.warning("Calibration failed: average quality insufficient")
             return
         }
 
@@ -277,7 +277,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         accumulatedFacePositions = nil
 
         logger.info("""
-        キャリブレーション完了: frameCount=\(facePosture.frameCount), \
+        Calibration complete: frameCount=\(facePosture.frameCount), \
         avgQuality=\(String(format: "%.2f", facePosture.averageQuality)), \
         baselineY=\(String(format: "%.3f", facePosture.baselineMetrics.baselineY)), \
         baselineArea=\(String(format: "%.3f", facePosture.baselineMetrics.baselineArea)), \
