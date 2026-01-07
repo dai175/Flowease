@@ -157,7 +157,7 @@ final class MonitoringStateTests: XCTestCase {
         let reason = PauseReason.cameraInitializing
 
         // Then
-        XCTAssertEqual(reason.description, "カメラを準備中...")
+        XCTAssertEqual(reason.description, "Initializing camera...")
     }
 
     func testPauseReason_noFaceDetected_description() {
@@ -165,7 +165,7 @@ final class MonitoringStateTests: XCTestCase {
         let reason = PauseReason.noFaceDetected
 
         // Then
-        XCTAssertEqual(reason.description, "顔が検出されません")
+        XCTAssertEqual(reason.description, "Face not detected")
     }
 
     func testPauseReason_cameraInUse_description() {
@@ -173,7 +173,7 @@ final class MonitoringStateTests: XCTestCase {
         let reason = PauseReason.cameraInUse
 
         // Then
-        XCTAssertEqual(reason.description, "カメラが他のアプリで使用中です")
+        XCTAssertEqual(reason.description, "Camera is being used by another app")
     }
 
     // MARK: - DisableReason Description Tests
@@ -183,7 +183,7 @@ final class MonitoringStateTests: XCTestCase {
         let reason = DisableReason.cameraPermissionDenied
 
         // Then
-        XCTAssertEqual(reason.description, "カメラへのアクセスが拒否されています")
+        XCTAssertEqual(reason.description, "Camera access denied")
     }
 
     func testDisableReason_cameraPermissionDenied_actionHint() {
@@ -193,7 +193,7 @@ final class MonitoringStateTests: XCTestCase {
         // Then
         XCTAssertEqual(
             reason.actionHint,
-            "システム設定 > プライバシーとセキュリティ > カメラ から許可してください"
+            "Go to System Settings > Privacy & Security > Camera to grant permission"
         )
     }
 
@@ -202,7 +202,7 @@ final class MonitoringStateTests: XCTestCase {
         let reason = DisableReason.cameraPermissionRestricted
 
         // Then
-        XCTAssertEqual(reason.description, "カメラへのアクセスが制限されています")
+        XCTAssertEqual(reason.description, "Camera access restricted")
     }
 
     func testDisableReason_cameraPermissionRestricted_actionHint() {
@@ -212,7 +212,7 @@ final class MonitoringStateTests: XCTestCase {
         // Then
         XCTAssertEqual(
             reason.actionHint,
-            "システム管理者に連絡してカメラの使用許可を依頼してください"
+            "Contact your system administrator to request camera access"
         )
     }
 
@@ -221,7 +221,7 @@ final class MonitoringStateTests: XCTestCase {
         let reason = DisableReason.noCameraAvailable
 
         // Then
-        XCTAssertEqual(reason.description, "カメラが見つかりません")
+        XCTAssertEqual(reason.description, "Camera not found")
     }
 
     func testDisableReason_noCameraAvailable_actionHint() {
@@ -229,7 +229,7 @@ final class MonitoringStateTests: XCTestCase {
         let reason = DisableReason.noCameraAvailable
 
         // Then
-        XCTAssertEqual(reason.actionHint, "外部カメラを接続してください")
+        XCTAssertEqual(reason.actionHint, "Please connect an external camera")
     }
 
     // MARK: - State Transition Scenario Tests
