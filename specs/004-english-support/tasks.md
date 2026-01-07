@@ -107,17 +107,17 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T025 [US3] Add test for DisableReason and PauseReason descriptions in FloweaseTests/LocalizationTests.swift
+- [X] T025 [US3] Add test for DisableReason and PauseReason descriptions in FloweaseTests/LocalizationTests.swift
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Update Flowease/Models/DisableReason.swift: Change description strings to English using String(localized:)
-- [ ] T027 [US3] Update Flowease/Models/DisableReason.swift: Change actionHint strings to English using String(localized:)
-- [ ] T028 [P] [US3] Update Flowease/Models/PauseReason.swift: Change description strings to English using String(localized:)
-- [ ] T029 [P] [US3] Update Flowease/Views/CameraPermissionView.swift: Change "システム設定を開く" to "Open System Settings"
-- [ ] T030 [US3] Add Japanese translations to Flowease/Localizable.xcstrings for DisableReason strings (6 strings)
-- [ ] T031 [US3] Add Japanese translations to Flowease/Localizable.xcstrings for PauseReason strings (4 strings)
-- [ ] T032 [US3] Add Japanese translation to Flowease/Localizable.xcstrings for CameraPermissionView (1 string)
+- [X] T026 [US3] Update Flowease/Models/DisableReason.swift: Change description strings to English using String(localized:)
+- [X] T027 [US3] Update Flowease/Models/DisableReason.swift: Change actionHint strings to English using String(localized:)
+- [X] T028 [P] [US3] Update Flowease/Models/PauseReason.swift: Change description strings to English using String(localized:)
+- [X] T029 [P] [US3] Update Flowease/Views/CameraPermissionView.swift: Change "システム設定を開く" to "Open System Settings"
+- [X] T030 [US3] Add Japanese translations to Flowease/Localizable.xcstrings for DisableReason strings (6 strings)
+- [X] T031 [US3] Add Japanese translations to Flowease/Localizable.xcstrings for PauseReason strings (4 strings)
+- [X] T032 [US3] Add Japanese translation to Flowease/Localizable.xcstrings for CameraPermissionView (1 string)
 
 **Checkpoint**: User Story 3 complete - エラーメッセージが英語表示可能
 

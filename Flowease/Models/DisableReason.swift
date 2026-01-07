@@ -31,11 +31,11 @@ extension DisableReason: CustomStringConvertible {
     var description: String {
         switch self {
         case .cameraPermissionDenied:
-            "カメラへのアクセスが拒否されています"
+            String(localized: "Camera access denied")
         case .cameraPermissionRestricted:
-            "カメラへのアクセスが制限されています"
+            String(localized: "Camera access restricted")
         case .noCameraAvailable:
-            "カメラが見つかりません"
+            String(localized: "Camera not found")
         }
     }
 
@@ -43,11 +43,11 @@ extension DisableReason: CustomStringConvertible {
     var actionHint: String {
         switch self {
         case .cameraPermissionDenied:
-            "システム設定 > プライバシーとセキュリティ > カメラ から許可してください"
+            String(localized: "Go to System Settings > Privacy & Security > Camera to grant permission")
         case .cameraPermissionRestricted:
-            "システム管理者に連絡してカメラの使用許可を依頼してください"
+            String(localized: "Contact your system administrator to request camera access")
         case .noCameraAvailable:
-            "外部カメラを接続してください"
+            String(localized: "Please connect an external camera")
         }
     }
 }

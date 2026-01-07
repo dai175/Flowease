@@ -39,7 +39,7 @@ struct CameraPermissionView: View {
 
             // システム設定ボタン（権限拒否の場合のみ）
             if reason == .cameraPermissionDenied {
-                Button("システム設定を開く") {
+                Button("Open System Settings") {
                     openSystemSettings()
                 }
                 .buttonStyle(.borderedProminent)

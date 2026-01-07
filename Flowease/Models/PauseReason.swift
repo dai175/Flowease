@@ -37,13 +37,13 @@ extension PauseReason: CustomStringConvertible {
     var description: String {
         switch self {
         case .cameraInitializing:
-            "カメラを準備中..."
+            String(localized: "Initializing camera...")
         case .noFaceDetected:
-            "顔が検出されません"
+            String(localized: "Face not detected")
         case .cameraInUse:
-            "カメラが他のアプリで使用中です"
+            String(localized: "Camera is being used by another app")
         case .lowDetectionQuality:
-            "検出精度が低下しています"
+            String(localized: "Detection quality is low")
         }
     }
 }
