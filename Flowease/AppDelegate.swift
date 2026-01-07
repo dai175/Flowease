@@ -114,7 +114,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // 終了ボタン
         let quitItem = NSMenuItem(
-            title: "終了",
+            title: String(localized: "Quit"),
             action: #selector(NSApplication.terminate(_:)),
             keyEquivalent: "q"
         )
@@ -156,7 +156,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = "姿勢キャリブレーション"
+        window.title = String(localized: "Posture Calibration")
         window.center()
         window.isReleasedWhenClosed = false
         window.delegate = self
@@ -258,12 +258,12 @@ private struct CalibrationWindowView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.secondary)
 
-            Text("良い姿勢を取ってください")
+            Text("Please assume good posture")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
-            Text("3秒間、カメラに向かって正面を向き、リラックスした良い姿勢を維持してください。")
+            Text("Face the camera and maintain a relaxed, good posture for 3 seconds.")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -282,7 +282,7 @@ private struct CalibrationWindowView: View {
             )
             .id(timerTick)
 
-            Text("そのままの姿勢を維持...")
+            Text("Maintain your posture...")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -297,11 +297,11 @@ private struct CalibrationWindowView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.green)
 
-            Text("キャリブレーション完了")
+            Text("Calibration Complete")
                 .font(.subheadline)
                 .foregroundStyle(.primary)
 
-            Text("あなたの良い姿勢が基準として記録されました。")
+            Text("Your good posture has been recorded as the baseline.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -317,7 +317,7 @@ private struct CalibrationWindowView: View {
                 .font(.system(size: 40))
                 .foregroundStyle(.orange)
 
-            Text("キャリブレーション失敗")
+            Text("Calibration Failed")
                 .font(.subheadline)
                 .foregroundStyle(.primary)
 
@@ -338,12 +338,12 @@ private struct CalibrationWindowView: View {
         switch viewModel.state {
         case .notCalibrated, .failed:
             HStack(spacing: 12) {
-                Button("閉じる") {
+                Button("Cancel") {
                     closeWindow()
                 }
                 .buttonStyle(.bordered)
 
-                Button("開始") {
+                Button("Start") {
                     Task {
                         await viewModel.startCalibration()
                     }
@@ -352,13 +352,13 @@ private struct CalibrationWindowView: View {
             }
 
         case .inProgress:
-            Button("キャンセル") {
+            Button("Cancel") {
                 viewModel.cancelCalibration()
             }
             .buttonStyle(.bordered)
 
         case .completed:
-            Button("閉じる") {
+            Button("Close") {
                 closeWindow()
             }
             .buttonStyle(.borderedProminent)
