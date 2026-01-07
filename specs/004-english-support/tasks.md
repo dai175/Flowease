@@ -141,9 +141,9 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T034 [Polish] Run `make build` to verify all strings are extracted to Flowease/Localizable.xcstrings
-- [ ] T035 [Polish] Run `make test` to verify all localization tests pass in FloweaseTests/LocalizationTests.swift
-- [ ] T036 [Polish] Run `make lint` and `make format` via ./Makefile to ensure code quality
+- [X] T034 [Polish] Run `make build` to verify all strings are extracted to Flowease/Localizable.xcstrings
+- [X] T035 [Polish] Run `make test` to verify all localization tests pass in FloweaseTests/LocalizationTests.swift
+- [X] T036 [Polish] Run `make lint` and `make format` via ./Makefile to ensure code quality
 - [ ] T037 [Polish] Manual verification per specs/004-english-support/spec.md: Test in English environment (SC-001)
 - [ ] T038 [Polish] Manual verification per specs/004-english-support/spec.md: Test in Japanese environment for regression (SC-002)
 - [ ] T039 [Polish] Manual verification per specs/004-english-support/spec.md: Test in unsupported language environment for English fallback (SC-004)
