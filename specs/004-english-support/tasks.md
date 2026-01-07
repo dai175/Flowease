@@ -131,7 +131,7 @@
 
 ### Implementation for User Story 4
 
-- [ ] T033 [US4] Update Flowease/ViewModels/CalibrationViewModel.swift: Remove hardcoded Locale(identifier: "ja_JP") from DateFormatter
+- [X] T033 [US4] Update Flowease/ViewModels/CalibrationViewModel.swift: Remove hardcoded Locale(identifier: "ja_JP") from DateFormatter
 
 **Checkpoint**: User Story 4 complete - 日付・時刻がロケールに従って表示
 

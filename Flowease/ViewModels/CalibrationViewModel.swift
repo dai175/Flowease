@@ -164,7 +164,6 @@ final class CalibrationViewModel {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
-        formatter.locale = Locale(identifier: "ja_JP")
         return formatter.string(from: date)
     }
 
