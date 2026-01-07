@@ -55,15 +55,15 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T005 [US1] Add test for StatusMenuView localized strings in FloweaseTests/LocalizationTests.swift
+- [X] T005 [US1] Add test for StatusMenuView localized strings in FloweaseTests/LocalizationTests.swift
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Update Flowease/Views/StatusMenuView.swift: Change "姿勢モニタリング中" to "Monitoring Posture"
-- [ ] T007 [US1] Update Flowease/Views/StatusMenuView.swift: Change "キャリブレーション:" to "Calibration:"
-- [ ] T008 [US1] Update Flowease/Views/StatusMenuView.swift: Change button labels ("リセット" → "Reset", "再設定" → "Reconfigure", "設定" → "Configure")
-- [ ] T009 [US1] Add Japanese translations to Flowease/Localizable.xcstrings for StatusMenuView strings (5 strings)
-- [ ] T010 [US1] Run `make build` and verify StatusMenuView strings are extracted to Flowease/Localizable.xcstrings
+- [X] T006 [US1] Update Flowease/Views/StatusMenuView.swift: Change "姿勢モニタリング中" to "Monitoring Posture"
+- [X] T007 [US1] Update Flowease/Views/StatusMenuView.swift: Change "キャリブレーション:" to "Calibration:"
+- [X] T008 [US1] Update Flowease/Views/StatusMenuView.swift: Change button labels ("リセット" → "Reset", "再設定" → "Reconfigure", "設定" → "Configure")
+- [X] T009 [US1] Add Japanese translations to Flowease/Localizable.xcstrings for StatusMenuView strings (5 strings)
+- [X] T010 [US1] Run `make build` and verify StatusMenuView strings are extracted to Flowease/Localizable.xcstrings
 
 **Checkpoint**: User Story 1 complete - メインメニューが英語表示可能
 
