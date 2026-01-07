@@ -25,9 +25,9 @@
 
 **Purpose**: Project initialization and localization infrastructure setup
 
-- [ ] T001 [Setup] Create String Catalog file at Flowease/Localizable.xcstrings
-- [ ] T002 [Setup] Configure Xcode project in Flowease.xcodeproj/project.pbxproj: Set Development Language to English
-- [ ] T003 [Setup] Configure Xcode project in Flowease.xcodeproj/project.pbxproj: Add Japanese to Localizations
+- [X] T001 [Setup] Create String Catalog file at Flowease/Localizable.xcstrings
+- [X] T002 [Setup] Configure Xcode project in Flowease.xcodeproj/project.pbxproj: Set Development Language to English
+- [X] T003 [Setup] Configure Xcode project in Flowease.xcodeproj/project.pbxproj: Add Japanese to Localizations
 
 **Checkpoint**: String Catalog created, project configured for multi-language support
 
