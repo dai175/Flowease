@@ -62,7 +62,7 @@ final class PostureAnalyzer: PostureAnalyzing {
     /// - Parameter faceDetector: 顔検出サービス（依存注入によりテスト可能）
     init(faceDetector: FaceDetectorProtocol = FaceDetector()) {
         self.faceDetector = faceDetector
-        logger.debug("PostureAnalyzer 初期化完了（FaceDetectorモード）")
+        logger.debug("PostureAnalyzer initialized (FaceDetector mode)")
     }
 
     // MARK: - PostureAnalyzing

@@ -99,7 +99,7 @@ final class PostureViewModel {
         self.postureAnalyzer = postureAnalyzer
         self.faceScoreCalculator = faceScoreCalculator
         self.calibrationService = calibrationService
-        logger.debug("PostureViewModel 初期化完了")
+        logger.debug("PostureViewModel initialized")
 
         // キャリブレーションリセット通知を購読
         calibrationResetObserver = NotificationCenter.default.addObserver(
@@ -117,7 +117,7 @@ final class PostureViewModel {
     private nonisolated func handleCalibrationReset() {
         Task { @MainActor in
             faceScoreCalculator.setReferencePosture(nil)
-            logger.info("キャリブレーションリセット: FaceScoreCalculatorの基準姿勢をクリア")
+            logger.info("Calibration reset: Cleared FaceScoreCalculator reference posture")
         }
     }
 
@@ -144,17 +144,17 @@ final class PostureViewModel {
     /// 複数回呼び出されても安全（べき等）。
     func initialize() async {
         guard !isInitialized else {
-            logger.debug("PostureViewModel は既に初期化済み")
+            logger.debug("PostureViewModel already initialized")
             return
         }
         isInitialized = true
 
-        logger.info("PostureViewModel 初期化開始")
+        logger.info("PostureViewModel initialization started")
 
         // キャリブレーション済みの場合、基準姿勢をFaceScoreCalculatorに設定
         if let referencePosture = calibrationService.faceReferencePosture {
             faceScoreCalculator.setReferencePosture(referencePosture)
-            logger.info("キャリブレーション済み: 基準姿勢をFaceScoreCalculatorに設定")
+            logger.info("Calibrated: Set reference posture to FaceScoreCalculator")
         }
 
         // カメラデバイス・権限チェック
@@ -162,12 +162,12 @@ final class PostureViewModel {
 
         // 権限が未決定の場合はリクエスト
         if cameraService.authorizationStatus == .notDetermined {
-            logger.info("カメラ権限をリクエスト中...")
+            logger.info("Requesting camera permission...")
             _ = await cameraService.requestAuthorization()
             updateMonitoringState()
         }
 
-        logger.info("PostureViewModel 初期化完了: \(String(describing: self.monitoringState))")
+        logger.info("PostureViewModel initialization complete: \(String(describing: self.monitoringState))")
 
         // 権限が許可されていれば監視を開始
         if cameraService.authorizationStatus == .authorized {
@@ -190,7 +190,7 @@ final class PostureViewModel {
 
         // 状態が変化した場合のみログ出力
         if monitoringState != newState {
-            logger.debug("監視状態更新: \(String(describing: self.monitoringState)) → \(String(describing: newState))")
+            logger.debug("State update: \(String(describing: self.monitoringState)) -> \(String(describing: newState))")
         }
 
         monitoringState = newState
@@ -212,7 +212,7 @@ final class PostureViewModel {
 
         // 状態を active に更新
         monitoringState = .active(score)
-        logger.debug("スコア追加: \(score.value), 平滑化スコア: \(self.smoothedScore)")
+        logger.debug("Score added: \(score.value), smoothed score: \(self.smoothedScore)")
     }
 
     /// スコア履歴をクリア
@@ -220,7 +220,7 @@ final class PostureViewModel {
     /// 監視が中断された場合などに呼び出す。
     func clearScoreHistory() {
         scoreHistory.removeAll()
-        logger.debug("スコア履歴をクリア")
+        logger.debug("Score history cleared")
     }
 
     /// 姿勢監視を開始
@@ -229,14 +229,14 @@ final class PostureViewModel {
     /// 権限がない場合は何もしない。
     func startMonitoring() {
         guard cameraService.authorizationStatus == .authorized else {
-            logger.warning("カメラ権限がないため監視を開始できません")
+            logger.warning("Cannot start monitoring: Camera permission not granted")
             return
         }
 
         // デリゲートを設定してキャプチャ開始
         cameraService.frameDelegate = self
         cameraService.startCapturing()
-        logger.info("姿勢監視を開始しました")
+        logger.info("Posture monitoring started")
     }
 
     /// 姿勢監視を停止
@@ -252,7 +252,7 @@ final class PostureViewModel {
         cameraService.frameDelegate = nil
         clearScoreHistory()
         monitoringState = .paused(.cameraInitializing)
-        logger.info("姿勢監視を停止しました")
+        logger.info("Posture monitoring stopped")
     }
 
     // MARK: - Private Methods
@@ -287,14 +287,14 @@ final class PostureViewModel {
                 if calibrationService.state.isCompleted,
                    let referencePosture = calibrationService.faceReferencePosture {
                     faceScoreCalculator.setReferencePosture(referencePosture)
-                    logger.info("キャリブレーション完了: 基準姿勢をFaceScoreCalculatorに設定")
+                    logger.info("Calibration complete: Set reference posture to FaceScoreCalculator")
                 }
                 return
             }
 
             // スコアを計算
             guard let score = faceScoreCalculator.calculate(from: facePosition) else {
-                logger.debug("スコア計算に失敗（基準姿勢未設定またはデータが無効）")
+                logger.debug("Score calculation failed (reference posture not set or invalid data)")
                 return
             }
 
@@ -306,7 +306,7 @@ final class PostureViewModel {
             if case .active = monitoringState {
                 monitoringState = .paused(.noFaceDetected)
                 clearScoreHistory()
-                logger.debug("顔未検出のため一時停止（スコア履歴クリア）")
+                logger.debug("Paused due to no face detected (score history cleared)")
             }
 
         case .lowDetectionQuality:
@@ -314,7 +314,7 @@ final class PostureViewModel {
             if case .active = monitoringState {
                 monitoringState = .paused(.lowDetectionQuality)
                 clearScoreHistory()
-                logger.debug("検出精度低下のため一時停止（スコア履歴クリア）")
+                logger.debug("Paused due to low detection quality (score history cleared)")
             }
         }
     }
@@ -334,7 +334,7 @@ extension PostureViewModel: CameraFrameDelegate {
     }
 
     func cameraService(_: any CameraServiceProtocol, didEncounterError error: Error) {
-        logger.error("カメラエラー: \(error.localizedDescription)")
+        logger.error("Camera error: \(error.localizedDescription)")
 
         // エラーの種類に応じて状態を更新
         if let cameraError = error as? CameraServiceError {

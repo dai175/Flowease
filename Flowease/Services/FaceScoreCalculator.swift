@@ -69,7 +69,7 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     // MARK: - Initialization
 
     init() {
-        logger.debug("FaceScoreCalculator 初期化完了")
+        logger.debug("FaceScoreCalculator initialized")
     }
 
     // MARK: - Reference Posture
@@ -78,7 +78,7 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     func setReferencePosture(_ posture: FaceReferencePosture?) {
         referencePosture = posture
         if let posture {
-            logger.debug("基準姿勢を設定: frameCount=\(posture.frameCount)")
+            logger.debug("Reference posture set: frameCount=\(posture.frameCount)")
         }
     }
 
@@ -90,7 +90,7 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     func calculate(from face: FacePosition) -> PostureScore? {
         // 基準姿勢が未設定の場合はスコア計算不可
         guard let reference = referencePosture else {
-            logger.debug("基準姿勢未設定のためスコア計算をスキップ")
+            logger.debug("Skipping score calculation: reference posture not set")
             return nil
         }
 
@@ -110,7 +110,7 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
 
         logger.debug(
             """
-            スコア計算完了: total=\(totalScore), vertical=\(verticalScore), \
+            Score calculation complete: total=\(totalScore), vertical=\(verticalScore), \
             size=\(sizeScore), tilt=\(tiltScore)
             """
         )
