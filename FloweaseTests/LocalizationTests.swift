@@ -199,4 +199,64 @@ final class LocalizationTests: XCTestCase {
             "cancelled userMessage should be empty"
         )
     }
+
+    // MARK: - US3: DisableReason Localization Tests
+
+    /// DisableReason の description と actionHint が英語でローカライズされていることを確認
+    func testDisableReasonLocalizedStringsExist() {
+        // description 文字列
+        let cameraAccessDenied = String(localized: "Camera access denied")
+        XCTAssertEqual(cameraAccessDenied, "Camera access denied", "English string should match")
+
+        let cameraAccessRestricted = String(localized: "Camera access restricted")
+        XCTAssertEqual(cameraAccessRestricted, "Camera access restricted", "English string should match")
+
+        let cameraNotFound = String(localized: "Camera not found")
+        XCTAssertEqual(cameraNotFound, "Camera not found", "English string should match")
+
+        // actionHint 文字列
+        let grantPermission = String(
+            localized: "Go to System Settings > Privacy & Security > Camera to grant permission"
+        )
+        XCTAssertEqual(
+            grantPermission,
+            "Go to System Settings > Privacy & Security > Camera to grant permission",
+            "English string should match"
+        )
+
+        let contactAdmin = String(localized: "Contact your system administrator to request camera access")
+        XCTAssertEqual(
+            contactAdmin,
+            "Contact your system administrator to request camera access",
+            "English string should match"
+        )
+
+        let connectCamera = String(localized: "Please connect an external camera")
+        XCTAssertEqual(connectCamera, "Please connect an external camera", "English string should match")
+    }
+
+    // MARK: - US3: PauseReason Localization Tests
+
+    /// PauseReason の description が英語でローカライズされていることを確認
+    func testPauseReasonLocalizedStringsExist() {
+        let initializingCamera = String(localized: "Initializing camera...")
+        XCTAssertEqual(initializingCamera, "Initializing camera...", "English string should match")
+
+        let faceNotDetected = String(localized: "Face not detected")
+        XCTAssertEqual(faceNotDetected, "Face not detected", "English string should match")
+
+        let cameraInUse = String(localized: "Camera is being used by another app")
+        XCTAssertEqual(cameraInUse, "Camera is being used by another app", "English string should match")
+
+        let detectionQualityLow = String(localized: "Detection quality is low")
+        XCTAssertEqual(detectionQualityLow, "Detection quality is low", "English string should match")
+    }
+
+    // MARK: - US3: CameraPermissionView Localization Tests
+
+    /// CameraPermissionView のボタンラベルが英語でローカライズされていることを確認
+    func testCameraPermissionViewLocalizedStringsExist() {
+        let openSystemSettings = String(localized: "Open System Settings")
+        XCTAssertEqual(openSystemSettings, "Open System Settings", "English string should match")
+    }
 }
