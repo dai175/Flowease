@@ -77,23 +77,23 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T011 [US2] Add test for CalibrationView localized strings in FloweaseTests/LocalizationTests.swift
+- [X] T011 [US2] Add test for CalibrationView localized strings in FloweaseTests/LocalizationTests.swift
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Update Flowease/Views/CalibrationView.swift: Change title "姿勢キャリブレーション" to "Posture Calibration"
-- [ ] T013 [US2] Update Flowease/Views/CalibrationView.swift: Change instruction texts to English (notCalibratedView section)
-- [ ] T014 [US2] Update Flowease/Views/CalibrationView.swift: Change progress text "そのままの姿勢を維持..." to "Maintain your posture..."
-- [ ] T015 [US2] Update Flowease/Views/CalibrationView.swift: Change completion messages to English (completedView section)
-- [ ] T016 [US2] Update Flowease/Views/CalibrationView.swift: Change failure title "キャリブレーション失敗" to "Calibration Failed"
-- [ ] T017 [US2] Update Flowease/Views/CalibrationView.swift: Change button labels ("キャンセル" → "Cancel", "開始" → "Start", "閉じる" → "Close")
-- [ ] T018 [US2] Update Flowease/ViewModels/CalibrationViewModel.swift: Change qualityWarningMessage strings to English using String(localized:)
-- [ ] T019 [US2] Update Flowease/ViewModels/CalibrationViewModel.swift: Change statusText, recommendationMessage, statusSummary strings to English using String(localized:)
-- [ ] T020 [US2] Update Flowease/ViewModels/CalibrationViewModel.swift: Change errorMessage "予期しないエラーが発生しました" to "An unexpected error occurred"
-- [ ] T021 [US2] Update Flowease/Models/CalibrationFailure.swift: Change userMessage strings to English using String(localized:)
-- [ ] T022 [US2] Add Japanese translations to Flowease/Localizable.xcstrings for CalibrationView strings (10 strings)
-- [ ] T023 [US2] Add Japanese translations to Flowease/Localizable.xcstrings for CalibrationViewModel strings (10 strings)
-- [ ] T024 [US2] Add Japanese translations to Flowease/Localizable.xcstrings for CalibrationFailure strings (3 strings)
+- [X] T012 [US2] Update Flowease/Views/CalibrationView.swift: Change title "姿勢キャリブレーション" to "Posture Calibration"
+- [X] T013 [US2] Update Flowease/Views/CalibrationView.swift: Change instruction texts to English (notCalibratedView section)
+- [X] T014 [US2] Update Flowease/Views/CalibrationView.swift: Change progress text "そのままの姿勢を維持..." to "Maintain your posture..."
+- [X] T015 [US2] Update Flowease/Views/CalibrationView.swift: Change completion messages to English (completedView section)
+- [X] T016 [US2] Update Flowease/Views/CalibrationView.swift: Change failure title "キャリブレーション失敗" to "Calibration Failed"
+- [X] T017 [US2] Update Flowease/Views/CalibrationView.swift: Change button labels ("キャンセル" → "Cancel", "開始" → "Start", "閉じる" → "Close")
+- [X] T018 [US2] Update Flowease/ViewModels/CalibrationViewModel.swift: Change qualityWarningMessage strings to English using String(localized:)
+- [X] T019 [US2] Update Flowease/ViewModels/CalibrationViewModel.swift: Change statusText, recommendationMessage, statusSummary strings to English using String(localized:)
+- [X] T020 [US2] Update Flowease/ViewModels/CalibrationViewModel.swift: Change errorMessage "予期しないエラーが発生しました" to "An unexpected error occurred"
+- [X] T021 [US2] Update Flowease/Models/CalibrationFailure.swift: Change userMessage strings to English using String(localized:)
+- [X] T022 [US2] Add Japanese translations to Flowease/Localizable.xcstrings for CalibrationView strings (10 strings)
+- [X] T023 [US2] Add Japanese translations to Flowease/Localizable.xcstrings for CalibrationViewModel strings (10 strings)
+- [X] T024 [US2] Add Japanese translations to Flowease/Localizable.xcstrings for CalibrationFailure strings (3 strings)
 
 **Checkpoint**: User Story 2 complete - キャリブレーション画面が英語表示可能
 

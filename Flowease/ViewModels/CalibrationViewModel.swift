@@ -42,9 +42,9 @@ final class CalibrationViewModel {
         case .good:
             return nil
         case .lowConfidence:
-            return "姿勢の検出精度が低下しています"
+            return String(localized: "Posture detection quality is low")
         case .noFaceDetected:
-            return "カメラに顔が映っていることを確認してください"
+            return String(localized: "Please ensure your face is visible to the camera")
         }
     }
 
@@ -105,7 +105,7 @@ final class CalibrationViewModel {
             errorMessage = error.localizedDescription
             logger.warning("キャリブレーション開始失敗: \(error.localizedDescription)")
         } catch {
-            errorMessage = "予期しないエラーが発生しました"
+            errorMessage = String(localized: "An unexpected error occurred")
             logger.error("キャリブレーション開始で予期しないエラー: \(error.localizedDescription)")
         }
     }
@@ -133,12 +133,12 @@ final class CalibrationViewModel {
     var statusText: String {
         switch state {
         case .notCalibrated:
-            return "キャリブレーション未設定"
+            return String(localized: "Calibration not configured")
         case .inProgress:
             let seconds = Int(ceil(remainingSeconds))
-            return "キャリブレーション中... 残り\(seconds)秒"
+            return String(localized: "Calibrating... \(seconds) seconds remaining")
         case .completed:
-            return "キャリブレーション完了"
+            return String(localized: "Calibration Complete")
         case let .failed(failure):
             return failure.userMessage
         }
@@ -150,7 +150,7 @@ final class CalibrationViewModel {
     /// 未キャリブレーション時かつ実行中でない場合にユーザーに推奨を表示するためのテキスト
     var recommendationMessage: String? {
         guard shouldShowRecommendation else { return nil }
-        return "キャリブレーションを設定すると、より正確な姿勢評価ができます"
+        return String(localized: "Configure calibration for more accurate posture assessment")
     }
 
     /// 推奨メッセージを表示すべきかどうか
@@ -172,11 +172,11 @@ final class CalibrationViewModel {
     var statusSummary: String {
         if isCalibrated {
             if let dateText = calibratedAtText {
-                return "完了 (\(dateText))"
+                return String(localized: "Complete (\(dateText))")
             }
-            return "完了"
+            return String(localized: "Complete")
         } else {
-            return "未設定"
+            return String(localized: "Not configured")
         }
     }
 }

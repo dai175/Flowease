@@ -21,11 +21,11 @@ enum CalibrationFailure: Sendable, Equatable {
     var userMessage: String {
         switch self {
         case .noFaceDetected:
-            return "カメラに顔が映るようにしてください"
+            return String(localized: "Please ensure your face is visible to the camera")
         case .lowConfidence:
-            return "照明を調整してください"
+            return String(localized: "Please adjust the lighting")
         case .insufficientFrames:
-            return "もう一度お試しください"
+            return String(localized: "Please try again")
         case .cancelled:
             return ""
         }
