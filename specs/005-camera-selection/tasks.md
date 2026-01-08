@@ -25,9 +25,9 @@ Based on plan.md structure:
 
 **Purpose**: 新規ファイルの作成と基本構造のセットアップ
 
-- [ ] T001 [P] Create CameraDevice model in Flowease/Models/CameraDevice.swift
-- [ ] T002 [P] Create CameraDeviceManager internal service in Flowease/Services/CameraDeviceManager.swift
-- [ ] T003 [P] Create CameraSelectionView component in Flowease/Views/CameraSelectionView.swift
+- [x] T001 [P] Create CameraDevice model in Flowease/Models/CameraDevice.swift
+- [x] T002 [P] Create CameraDeviceManager internal service in Flowease/Services/CameraDeviceManager.swift
+- [x] T003 [P] Create CameraSelectionView component in Flowease/Views/CameraSelectionView.swift
 
 ---
 
