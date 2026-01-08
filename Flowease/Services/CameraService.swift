@@ -6,106 +6,6 @@
 @preconcurrency import AVFoundation
 import OSLog
 
-// MARK: - CameraAuthorizationStatus
-
-/// カメラ権限の状態
-/// AVAuthorizationStatus をアプリ内で扱いやすい形にラップ
-enum CameraAuthorizationStatus: Sendable, Equatable {
-    /// カメラアクセスが許可されている
-    case authorized
-
-    /// カメラアクセスが拒否されている
-    case denied
-
-    /// カメラアクセスが制限されている（ペアレンタルコントロール等）
-    case restricted
-
-    /// まだ権限を要求していない
-    case notDetermined
-
-    /// AVAuthorizationStatus から変換
-    init(from avStatus: AVAuthorizationStatus) {
-        switch avStatus {
-        case .authorized:
-            self = .authorized
-        case .denied:
-            self = .denied
-        case .restricted:
-            self = .restricted
-        case .notDetermined:
-            self = .notDetermined
-        @unknown default:
-            self = .denied
-        }
-    }
-}
-
-// MARK: - CameraFrameDelegate
-
-/// カメラフレームを受け取るデリゲートプロトコル
-@MainActor
-protocol CameraFrameDelegate: AnyObject {
-    /// フレームがキャプチャされた時に呼ばれる
-    /// - Parameters:
-    ///   - service: フレームを提供した CameraService
-    ///   - sampleBuffer: キャプチャされたフレームのサンプルバッファ
-    func cameraService(_ service: any CameraServiceProtocol, didCaptureFrame sampleBuffer: CMSampleBuffer)
-
-    /// エラーが発生した時に呼ばれる
-    /// - Parameters:
-    ///   - service: エラーが発生した CameraService
-    ///   - error: 発生したエラー
-    func cameraService(_ service: any CameraServiceProtocol, didEncounterError error: Error)
-}
-
-// MARK: - CameraServiceProtocol
-
-/// カメラサービスのプロトコル
-/// テスト時にモックへ差し替え可能
-@MainActor
-protocol CameraServiceProtocol: AnyObject, Sendable {
-    /// 現在のカメラ権限状態
-    var authorizationStatus: CameraAuthorizationStatus { get }
-
-    /// フレームキャプチャ中かどうか
-    var isCapturing: Bool { get }
-
-    /// フレームを受け取るデリゲート
-    var frameDelegate: CameraFrameDelegate? { get set }
-
-    /// カメラ権限をリクエスト
-    /// - Returns: リクエスト後の権限状態
-    func requestAuthorization() async -> CameraAuthorizationStatus
-
-    /// カメラデバイスが利用可能かチェック
-    /// - Returns: カメラが利用可能な場合は true
-    func checkCameraAvailability() -> Bool
-
-    /// 現在の権限状態を MonitoringState に変換
-    /// - Returns: 対応する MonitoringState
-    func toMonitoringState() -> MonitoringState
-
-    /// フレームキャプチャを開始
-    func startCapturing()
-
-    /// フレームキャプチャを停止
-    func stopCapturing()
-}
-
-// MARK: - CameraServiceError
-
-/// CameraService のエラー型
-enum CameraServiceError: Error, Sendable, Equatable {
-    /// カメラデバイスが利用できない
-    case noCameraAvailable
-    /// カメラ権限がない
-    case permissionDenied
-    /// セッションの設定に失敗
-    case sessionConfigurationFailed
-    /// 他のアプリがカメラを使用中
-    case cameraInUse
-}
-
 // MARK: - CameraService
 
 /// カメラ権限管理とフレームキャプチャの実装
@@ -114,6 +14,9 @@ final class CameraService: NSObject, CameraServiceProtocol {
     // MARK: - Properties
 
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "CameraService")
+
+    /// カメラデバイスマネージャー（内部実装）
+    private let deviceManager = CameraDeviceManager()
 
     /// 現在のカメラ権限状態
     var authorizationStatus: CameraAuthorizationStatus {
@@ -126,6 +29,12 @@ final class CameraService: NSObject, CameraServiceProtocol {
 
     /// フレームを受け取るデリゲート
     weak var frameDelegate: CameraFrameDelegate?
+
+    /// 利用可能なカメラデバイス一覧
+    var availableCameras: [CameraDevice] { deviceManager.availableCameras }
+
+    /// 現在選択されているカメラのID（スタブ実装）
+    var selectedCameraID: String? { nil }
 
     // MARK: - Capture Session Properties
 
@@ -154,6 +63,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
 
     override init() {
         super.init()
+        deviceManager.setupDiscoverySession()
         logger.debug("CameraService initialized")
     }
 
@@ -312,6 +222,12 @@ final class CameraService: NSObject, CameraServiceProtocol {
             session?.stopRunning()
         }
         logger.info("Frame capture stopped")
+    }
+
+    /// カメラを選択（スタブ実装）
+    /// - Parameter deviceID: 選択するカメラのuniqueID (nil でシステムデフォルト)
+    func selectCamera(_ deviceID: String?) {
+        logger.debug("selectCamera called with deviceID: \(deviceID ?? "nil") (stub implementation)")
     }
 
     // MARK: - Private Methods

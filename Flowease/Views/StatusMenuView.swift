@@ -145,6 +145,8 @@ private final class MockCameraService: CameraServiceProtocol {
     var authorizationStatus: CameraAuthorizationStatus
     var isCapturing = false
     weak var frameDelegate: CameraFrameDelegate?
+    var availableCameras: [CameraDevice] = []
+    var selectedCameraID: String?
     private let cameraAvailable: Bool
 
     init(status: CameraAuthorizationStatus, cameraAvailable: Bool = true) {
@@ -182,6 +184,10 @@ private final class MockCameraService: CameraServiceProtocol {
 
     func stopCapturing() {
         isCapturing = false
+    }
+
+    func selectCamera(_: String?) {
+        // No-op for preview
     }
 }
 

@@ -28,6 +28,12 @@ enum PauseReason: Sendable, Equatable {
     /// カメラに顔が映っているが、照明条件や角度などの理由で
     /// 顔の検出品質が低い場合。
     case lowDetectionQuality
+
+    /// 選択されたカメラが切断された
+    ///
+    /// ユーザーが選択したカメラが物理的に切断された場合。
+    /// 再接続されるか、別のカメラを選択するまで一時停止。
+    case selectedCameraDisconnected
 }
 
 // MARK: CustomStringConvertible
@@ -44,6 +50,8 @@ extension PauseReason: CustomStringConvertible {
             String(localized: "Camera is being used by another app")
         case .lowDetectionQuality:
             String(localized: "Detection quality is low")
+        case .selectedCameraDisconnected:
+            String(localized: "Selected camera disconnected")
         }
     }
 }
