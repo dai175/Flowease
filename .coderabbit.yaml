@@ -1,0 +1,22 @@
+reviews:
+  path_instructions:
+    - path: "**/*.swift"
+      instructions: |
+        This project uses Xcode String Catalogs (.xcstrings) for localization.
+        - UI strings in SwiftUI (e.g., Button("text"), Text("text")) are automatically
+          localized via LocalizedStringKey using Localizable.xcstrings
+        - String(localized:) with interpolation is properly handled by String Catalogs
+        - Info.plist values are localized via InfoPlist.xcstrings
+        - Do NOT suggest using NSLocalizedString, .strings files, or .lproj folders
+        - Do NOT flag English string literals as localization issues if they are UI text
+
+    - path: "**/Info.plist"
+      instructions: |
+        Info.plist values are localized using InfoPlist.xcstrings (String Catalog).
+        Do NOT suggest creating InfoPlist.strings files.
+
+    - path: "specs/**/*.md"
+      instructions: |
+        Specification documents may contain Japanese text.
+        This is intentional per project guidelines (CLAUDE.md).
+        Do NOT suggest translating Japanese to English in spec files.
