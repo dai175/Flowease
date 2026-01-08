@@ -37,10 +37,10 @@ Based on plan.md structure:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Extend CameraServiceProtocol with availableCameras, selectedCameraID, selectCamera(_:) in Flowease/Services/CameraService.swift
-- [ ] T005 Add PauseReason.selectedCameraDisconnected case in Flowease/Models/PauseReason.swift
-- [ ] T006 Implement CameraDeviceManager skeleton with DiscoverySession initialization (structure only, no enumeration logic yet) in Flowease/Services/CameraDeviceManager.swift
-- [ ] T007 Integrate CameraDeviceManager into CameraService in Flowease/Services/CameraService.swift
+- [x] T004 Extend CameraServiceProtocol with availableCameras, selectedCameraID, selectCamera(_:) in Flowease/Services/CameraService.swift
+- [x] T005 Add PauseReason.selectedCameraDisconnected case in Flowease/Models/PauseReason.swift
+- [x] T006 Implement CameraDeviceManager skeleton with DiscoverySession initialization (structure only, no enumeration logic yet) in Flowease/Services/CameraDeviceManager.swift
+- [x] T007 Integrate CameraDeviceManager into CameraService in Flowease/Services/CameraService.swift
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 

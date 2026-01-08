@@ -24,6 +24,11 @@ final class CameraDeviceManager {
         category: "CameraDeviceManager"
     )
 
+    // MARK: - Private Properties
+
+    /// デバイス検出セッション
+    private var discoverySession: AVCaptureDevice.DiscoverySession?
+
     // MARK: - Initialization
 
     init() {
@@ -32,5 +37,20 @@ final class CameraDeviceManager {
 
     deinit {
         logger.debug("CameraDeviceManager deinitialized")
+    }
+
+    // MARK: - Setup Methods
+
+    /// DiscoverySession を初期化
+    ///
+    /// 内蔵カメラと外部カメラの両方を検出するセッションを作成します。
+    /// この時点ではデバイス列挙は行わず、セッションの構造のみを準備します。
+    func setupDiscoverySession() {
+        discoverySession = AVCaptureDevice.DiscoverySession(
+            deviceTypes: [.builtInWideAngleCamera, .externalUnknown],
+            mediaType: .video,
+            position: .unspecified
+        )
+        logger.debug("DiscoverySession initialized")
     }
 }
