@@ -61,3 +61,10 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - Supported languages: English (base), Japanese
 - Logger messages: English only (not localized)
 - Date formatting: System locale via `DateFormatter`
+
+## Active Technologies
+- Swift 6.0 + AVFoundation, SwiftUI, OSLog (005-camera-selection)
+- UserDefaults（カメラ選択の永続化） (005-camera-selection)
+
+## Recent Changes
+- 005-camera-selection: Added Swift 6.0 + AVFoundation, SwiftUI, OSLog
