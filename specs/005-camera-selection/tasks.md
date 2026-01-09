@@ -68,13 +68,13 @@ Based on plan.md structure:
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Implement CameraDevice model with id, name, isConnected, isDefault in Flowease/Models/CameraDevice.swift
-- [ ] T012 [US1] Implement camera enumeration logic (populate availableCameras from DiscoverySession.devices) in Flowease/Services/CameraDeviceManager.swift
-- [ ] T013 [US1] Implement selectCamera(_:) with UserDefaults persistence in Flowease/Services/CameraService.swift
-- [ ] T014 [US1] Implement camera fallback logic (resolveCamera with didFallback flag) in Flowease/Services/CameraService.swift
-- [ ] T015 [US1] Implement CameraSelectionView with Picker and visual selection indicator in Flowease/Views/CameraSelectionView.swift
-- [ ] T016 [US1] Integrate CameraSelectionView into StatusMenuView (authorized only) in Flowease/Views/StatusMenuView.swift
-- [ ] T017 [US1] Add logging for camera selection events in Flowease/Services/CameraService.swift
+- [x] T011 [US1] Implement CameraDevice model with id, name, isConnected, isDefault in Flowease/Models/CameraDevice.swift
+- [x] T012 [US1] Implement camera enumeration logic (populate availableCameras from DiscoverySession.devices) in Flowease/Services/CameraDeviceManager.swift
+- [x] T013 [US1] Implement selectCamera(_:) with UserDefaults persistence in Flowease/Services/CameraService.swift
+- [x] T014 [US1] Implement camera fallback logic (resolveCamera with didFallback flag) in Flowease/Services/CameraService.swift
+- [x] T015 [US1] Implement CameraSelectionView with Picker and visual selection indicator in Flowease/Views/CameraSelectionView.swift
+- [x] T016 [US1] Integrate CameraSelectionView into StatusMenuView (authorized only) in Flowease/Views/StatusMenuView.swift
+- [x] T017 [US1] Add logging for camera selection events in Flowease/Services/CameraService.swift
 
 **Checkpoint**: User Story 1 should be fully functional - カメラ選択と永続化が動作
 

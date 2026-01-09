@@ -44,7 +44,7 @@ final class CameraDeviceManager {
     /// DiscoverySession を初期化
     ///
     /// 内蔵カメラと外部カメラの両方を検出するセッションを作成します。
-    /// この時点ではデバイス列挙は行わず、セッションの構造のみを準備します。
+    /// 初期化後、カメラデバイスを列挙します。
     func setupDiscoverySession() {
         discoverySession = AVCaptureDevice.DiscoverySession(
             deviceTypes: [.builtInWideAngleCamera, .externalUnknown],
@@ -52,5 +52,38 @@ final class CameraDeviceManager {
             position: .unspecified
         )
         logger.debug("DiscoverySession initialized")
+
+        // 初期デバイス列挙
+        enumerateCameras()
+    }
+
+    // MARK: - Camera Enumeration
+
+    /// 利用可能なカメラデバイスを列挙
+    ///
+    /// DiscoverySession からデバイスを取得し、CameraDevice 配列に変換します。
+    /// システムデフォルトカメラを特定し、isDefault フラグを設定します。
+    func enumerateCameras() {
+        guard let session = discoverySession else {
+            logger.warning("DiscoverySession not initialized")
+            return
+        }
+
+        let devices = session.devices
+        let defaultDevice = AVCaptureDevice.default(for: .video)
+
+        availableCameras = devices.map { device in
+            CameraDevice(
+                id: device.uniqueID,
+                name: device.localizedName,
+                isConnected: device.isConnected,
+                isDefault: device.uniqueID == defaultDevice?.uniqueID
+            )
+        }
+
+        logger.debug("Enumerated \(self.availableCameras.count) camera(s)")
+
+        // デバイスリスト変更を通知
+        onDevicesChanged?(availableCameras)
     }
 }
