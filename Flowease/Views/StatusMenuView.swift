@@ -10,14 +10,6 @@ import SwiftUI
 
 // MARK: - StatusMenuView
 
-/// キャリブレーションウィンドウ表示通知
-extension Notification.Name {
-    static let showCalibrationWindow = Notification.Name("showCalibrationWindow")
-    static let calibrationReset = Notification.Name("calibrationReset")
-}
-
-// MARK: - StatusMenuView
-
 /// メニューバーアイコンクリック時に表示されるメニュー
 ///
 /// `PostureViewModel` の `monitoringState` に応じた UI を表示する。
@@ -31,58 +23,75 @@ struct StatusMenuView: View {
     /// キャリブレーション ViewModel
     let calibrationViewModel: CalibrationViewModel
 
+    /// ウィンドウを開くための Environment
+    @Environment(\.openWindow) private var openWindow
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Flowease")
-                .font(.headline)
-            Divider()
+        // アプリ名
+        Text("Flowease")
+            .font(.headline)
 
-            // 監視状態に応じた表示
-            switch viewModel.monitoringState {
-            case .active:
-                Text("\(viewModel.smoothedScore)")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(viewModel.iconColor)
-                Text("Monitoring Posture")
-                    .foregroundStyle(.secondary)
+        Divider()
 
-            case let .paused(reason):
-                HStack {
-                    Image(systemName: "pause.circle")
-                        .foregroundStyle(.secondary)
-                    Text(reason.description)
-                        .foregroundStyle(.secondary)
-                }
+        // 監視状態に応じた表示
+        switch viewModel.monitoringState {
+        case .active:
+            Text("\(viewModel.smoothedScore)")
+                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .foregroundStyle(viewModel.iconColor)
+            Text("Monitoring Posture")
+                .foregroundStyle(.secondary)
 
-            case let .disabled(reason):
-                CameraPermissionView(reason: reason)
-            }
+        case let .paused(reason):
+            Label(reason.description, systemImage: "pause.circle")
+                .foregroundStyle(.secondary)
 
-            Divider()
-
-            // キャリブレーション状態表示
-            CalibrationStatusRow(
-                isCalibrated: calibrationViewModel.isCalibrated,
-                statusSummary: calibrationViewModel.statusSummary,
-                recommendationMessage: calibrationViewModel.recommendationMessage,
-                onReset: {
-                    calibrationViewModel.resetCalibration()
-                }
-            )
-
-            // カメラ選択（authorized 時のみ表示）
-            if viewModel.cameraServiceAccess.authorizationStatus == .authorized {
-                Divider()
-                CameraSelectionView(
-                    availableCameras: viewModel.cameraServiceAccess.availableCameras,
-                    selectedCameraID: viewModel.cameraServiceAccess.selectedCameraID,
-                    onSelect: { viewModel.cameraServiceAccess.selectCamera($0) }
-                )
-            }
+        case let .disabled(reason):
+            CameraPermissionView(reason: reason)
         }
-        .padding()
-        // 初期化は AppDelegate で実行するため .task は不要
+
+        Divider()
+
+        // キャリブレーション状態表示
+        CalibrationStatusRow(
+            isCalibrated: calibrationViewModel.isCalibrated,
+            statusSummary: calibrationViewModel.statusSummary,
+            recommendationMessage: calibrationViewModel.recommendationMessage,
+            onReset: {
+                calibrationViewModel.resetCalibration()
+                // 通知を送信してPostureViewModelでScoreCalculatorをクリア
+                NotificationCenter.default.post(name: .calibrationReset, object: nil)
+            },
+            onConfigure: {
+                openWindow(id: "calibration")
+            }
+        )
+
+        // カメラ選択（authorized 時のみ表示）
+        if viewModel.cameraServiceAccess.authorizationStatus == .authorized {
+            Divider()
+            CameraSelectionView(
+                availableCameras: viewModel.cameraServiceAccess.availableCameras,
+                selectedCameraID: viewModel.cameraServiceAccess.selectedCameraID,
+                onSelect: { viewModel.cameraServiceAccess.selectCamera($0) }
+            )
+        }
+
+        Divider()
+
+        // 終了ボタン
+        Button("Quit") {
+            NSApplication.shared.terminate(nil)
+        }
+        .keyboardShortcut("q")
     }
+}
+
+// MARK: - Notification.Name
+
+/// キャリブレーションリセット通知
+extension Notification.Name {
+    static let calibrationReset = Notification.Name("calibrationReset")
 }
 
 // MARK: - CalibrationStatusRow
@@ -100,6 +109,9 @@ private struct CalibrationStatusRow: View {
 
     /// リセットアクション
     let onReset: () -> Void
+
+    /// 設定アクション
+    let onConfigure: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -119,8 +131,6 @@ private struct CalibrationStatusRow: View {
                 if isCalibrated {
                     Button("Reset") {
                         onReset()
-                        // 通知を送信してPostureViewModelでScoreCalculatorをクリア
-                        NotificationCenter.default.post(name: .calibrationReset, object: nil)
                     }
                     .buttonStyle(.borderless)
                     .foregroundStyle(.secondary)
@@ -129,8 +139,7 @@ private struct CalibrationStatusRow: View {
 
                 // キャリブレーションボタン
                 Button(isCalibrated ? "Reconfigure" : "Configure") {
-                    // 通知を送信してAppDelegateでウィンドウを開く
-                    NotificationCenter.default.post(name: .showCalibrationWindow, object: nil)
+                    onConfigure()
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)

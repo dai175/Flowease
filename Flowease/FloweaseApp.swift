@@ -11,11 +11,32 @@ import SwiftUI
 ///
 /// メニューバーに常駐し、姿勢をモニタリングするアプリケーション。
 /// `LSUIElement=true` により Dock には表示されない。
-/// NSStatusItem を使用してメニューバーアイコンを動的に更新する。
+/// MenuBarExtra を使用して SwiftUI ネイティブなメニューを表示する。
 @main
 struct FloweaseApp: App {
-    /// AppDelegate を使用して NSStatusItem を管理
-    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    /// アプリケーション状態を管理
+    @State private var appState = AppState()
 
-    var body: some Scene {}
+    var body: some Scene {
+        // メニューバーアイテム（ウィンドウスタイルで Picker が動作）
+        MenuBarExtra {
+            StatusMenuView(
+                viewModel: appState.postureViewModel,
+                calibrationViewModel: appState.calibrationViewModel
+            )
+            .frame(width: 280)
+        } label: {
+            // 動的アイコン（スコアに応じた色）
+            Image(nsImage: appState.menuBarIcon)
+        }
+        .menuBarExtraStyle(.window)
+
+        // キャリブレーションウィンドウ
+        Window("Posture Calibration", id: "calibration") {
+            CalibrationWindowView(viewModel: appState.calibrationViewModel)
+        }
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
+        .defaultPosition(.center)
+    }
 }

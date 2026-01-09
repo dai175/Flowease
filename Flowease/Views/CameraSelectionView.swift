@@ -22,6 +22,13 @@ struct CameraSelectionView: View {
                 set: { onSelect($0) }
             )
         ) {
+            // システムデフォルトオプション
+            Text(String(localized: "System Default", comment: "System default camera option"))
+                .tag(nil as String?)
+
+            Divider()
+
+            // 各カメラオプション
             ForEach(availableCameras) { camera in
                 cameraLabel(for: camera)
                     .tag(camera.id as String?)
@@ -33,17 +40,10 @@ struct CameraSelectionView: View {
 
     @ViewBuilder
     private func cameraLabel(for camera: CameraDevice) -> some View {
-        HStack {
+        if camera.isDefault {
+            Text("\(camera.name) (\(String(localized: "Default", comment: "Default camera indicator")))")
+        } else {
             Text(camera.name)
-            if camera.isDefault {
-                Text(
-                    String(
-                        localized: "(Default)",
-                        comment: "Default camera indicator"
-                    )
-                )
-                .foregroundStyle(.secondary)
-            }
         }
     }
 }
