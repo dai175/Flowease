@@ -1,8 +1,15 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "(Default)" : {
-      "comment" : "Default camera indicator"
+    "%@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$@)"
+          }
+        }
+      }
     },
     "%lld" : {
 
@@ -281,6 +288,9 @@
           }
         }
       }
+    },
+    "Default" : {
+      "comment" : "Default camera indicator"
     },
     "Detection quality is low" : {
       "localizations" : {
@@ -610,6 +620,9 @@
           }
         }
       }
+    },
+    "System Default" : {
+      "comment" : "System default camera option"
     },
     "Your good posture has been recorded as the baseline." : {
       "localizations" : {
