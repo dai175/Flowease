@@ -5,8 +5,14 @@
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "%1$@ (%2$@)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@（%2$@）"
           }
         }
       }
@@ -111,7 +117,21 @@
       }
     },
     "Camera" : {
-      "comment" : "Camera selection picker label"
+      "comment" : "Camera selection picker label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラ"
+          }
+        }
+      }
     },
     "Camera access denied" : {
       "localizations" : {
@@ -290,7 +310,21 @@
       }
     },
     "Default" : {
-      "comment" : "Default camera indicator"
+      "comment" : "Default camera indicator",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルト"
+          }
+        }
+      }
     },
     "Detection quality is low" : {
       "localizations" : {
@@ -603,7 +637,20 @@
       }
     },
     "Selected camera disconnected" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected camera disconnected"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択したカメラが切断されました"
+          }
+        }
+      }
     },
     "Start" : {
       "localizations" : {
@@ -622,7 +669,21 @@
       }
     },
     "System Default" : {
-      "comment" : "System default camera option"
+      "comment" : "System default camera option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System Default"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "システムデフォルト"
+          }
+        }
+      }
     },
     "Your good posture has been recorded as the baseline." : {
       "localizations" : {
