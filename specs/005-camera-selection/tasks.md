@@ -62,9 +62,9 @@ Based on plan.md structure:
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Test CameraDevice model equality and Sendable conformance in FloweaseTests/CameraDeviceTests.swift
-- [ ] T009 [P] [US1] Test CameraService.selectCamera() and persistence in FloweaseTests/CameraServiceTests.swift
-- [ ] T010 [P] [US1] Test camera fallback logic (selected camera unavailable → system default) in FloweaseTests/CameraServiceTests.swift
+- [x] T008 [P] [US1] Test CameraDevice model equality and Sendable conformance in FloweaseTests/CameraDeviceTests.swift
+- [x] T009 [P] [US1] Test CameraService.selectCamera() and persistence in FloweaseTests/CameraServiceTests.swift
+- [x] T010 [P] [US1] Test camera fallback logic (selected camera unavailable → system default) in FloweaseTests/CameraServiceTests.swift
 
 ### Implementation for User Story 1
 
