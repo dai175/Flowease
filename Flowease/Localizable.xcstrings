@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "(Default)" : {
+      "comment" : "Default camera indicator"
+    },
     "%lld" : {
 
     },
@@ -99,6 +102,9 @@
           }
         }
       }
+    },
+    "Camera" : {
+      "comment" : "Camera selection picker label"
     },
     "Camera access denied" : {
       "localizations" : {
@@ -585,6 +591,9 @@
           }
         }
       }
+    },
+    "Selected camera disconnected" : {
+
     },
     "Start" : {
       "localizations" : {

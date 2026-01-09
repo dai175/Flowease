@@ -69,6 +69,16 @@ struct StatusMenuView: View {
                     calibrationViewModel.resetCalibration()
                 }
             )
+
+            // カメラ選択（authorized 時のみ表示）
+            if viewModel.cameraServiceAccess.authorizationStatus == .authorized {
+                Divider()
+                CameraSelectionView(
+                    availableCameras: viewModel.cameraServiceAccess.availableCameras,
+                    selectedCameraID: viewModel.cameraServiceAccess.selectedCameraID,
+                    onSelect: { viewModel.cameraServiceAccess.selectCamera($0) }
+                )
+            }
         }
         .padding()
         // 初期化は AppDelegate で実行するため .task は不要
@@ -145,13 +155,19 @@ private final class MockCameraService: CameraServiceProtocol {
     var authorizationStatus: CameraAuthorizationStatus
     var isCapturing = false
     weak var frameDelegate: CameraFrameDelegate?
-    var availableCameras: [CameraDevice] = []
+    var availableCameras: [CameraDevice]
     var selectedCameraID: String?
     private let cameraAvailable: Bool
 
     init(status: CameraAuthorizationStatus, cameraAvailable: Bool = true) {
         authorizationStatus = status
         self.cameraAvailable = cameraAvailable
+        // Preview 用のダミーカメラリスト
+        availableCameras = [
+            CameraDevice(id: "camera-1", name: "FaceTime HD Camera", isConnected: true, isDefault: true),
+            CameraDevice(id: "camera-2", name: "Logitech C920", isConnected: true, isDefault: false)
+        ]
+        selectedCameraID = "camera-1"
     }
 
     func requestAuthorization() async -> CameraAuthorizationStatus {

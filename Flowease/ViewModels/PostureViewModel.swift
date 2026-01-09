@@ -80,6 +80,11 @@ final class PostureViewModel {
         }
     }
 
+    /// カメラサービスへのアクセス（read-only）
+    ///
+    /// StatusMenuView からカメラ選択機能にアクセスするために使用します。
+    var cameraServiceAccess: CameraServiceProtocol { cameraService }
+
     // MARK: - Initialization
 
     /// イニシャライザ

@@ -18,6 +18,9 @@ final class CameraService: NSObject, CameraServiceProtocol {
     /// カメラデバイスマネージャー（内部実装）
     private let deviceManager = CameraDeviceManager()
 
+    /// UserDefaults に保存されるカメラ選択のキー
+    private static let selectedCameraKey = "selectedCameraDeviceID"
+
     /// 現在のカメラ権限状態
     var authorizationStatus: CameraAuthorizationStatus {
         let avStatus = AVCaptureDevice.authorizationStatus(for: .video)
@@ -33,8 +36,13 @@ final class CameraService: NSObject, CameraServiceProtocol {
     /// 利用可能なカメラデバイス一覧
     var availableCameras: [CameraDevice] { deviceManager.availableCameras }
 
-    /// 現在選択されているカメラのID（スタブ実装）
-    var selectedCameraID: String? { nil }
+    /// 現在選択されているカメラのID
+    ///
+    /// UserDefaults から読み込まれた値を返します。
+    /// 保存された値がない場合は nil（システムデフォルトを使用）。
+    var selectedCameraID: String? {
+        UserDefaults.standard.string(forKey: Self.selectedCameraKey)
+    }
 
     // MARK: - Capture Session Properties
 
@@ -224,22 +232,80 @@ final class CameraService: NSObject, CameraServiceProtocol {
         logger.info("Frame capture stopped")
     }
 
-    /// カメラを選択（スタブ実装）
+    /// カメラを選択
+    ///
+    /// 選択されたカメラIDをUserDefaultsに永続化します。
+    /// キャプチャ中の場合は、新しいカメラでセッションを再起動します。
+    /// nil を渡すとシステムデフォルトカメラを使用します。
+    ///
     /// - Parameter deviceID: 選択するカメラのuniqueID (nil でシステムデフォルト)
     func selectCamera(_ deviceID: String?) {
-        logger.debug("selectCamera called with deviceID: \(deviceID ?? "nil") (stub implementation)")
+        if let deviceID {
+            UserDefaults.standard.set(deviceID, forKey: Self.selectedCameraKey)
+            logger.info("Camera selected: \(deviceID)")
+        } else {
+            UserDefaults.standard.removeObject(forKey: Self.selectedCameraKey)
+            logger.info("Camera selection cleared (using system default)")
+        }
+
+        // キャプチャ中であれば新しいカメラでセッションを再起動
+        if isCapturing {
+            logger.info("Restarting capture session with new camera")
+            stopCapturing()
+            startCapturing()
+        }
     }
 
     // MARK: - Private Methods
+
+    /// 使用するカメラデバイスを解決
+    ///
+    /// 選択されたカメラが利用可能であればそれを返し、
+    /// 利用不可の場合はシステムデフォルトにフォールバックします。
+    ///
+    /// - Parameter preferredID: 優先するカメラのID（nil でシステムデフォルト）
+    /// - Returns: 使用するデバイスとフォールバックが発生したかどうか
+    private func resolveCamera(preferredID: String?) -> (device: AVCaptureDevice?, didFallback: Bool) {
+        // 優先IDが指定されている場合
+        if let preferredID,
+           let device = AVCaptureDevice(uniqueID: preferredID),
+           device.isConnected {
+            logger.debug("Using preferred camera: \(device.localizedName)")
+            return (device, false)
+        }
+
+        // フォールバック: システムデフォルトを使用
+        let defaultDevice = AVCaptureDevice.default(for: .video)
+
+        // preferredID が指定されていたがフォールバックした場合のみ didFallback = true
+        let didFallback = preferredID != nil
+        if didFallback {
+            logger
+                .info(
+                    "Preferred camera unavailable, falling back to default: \(defaultDevice?.localizedName ?? "none")"
+                )
+        } else {
+            logger.debug("Using default camera: \(defaultDevice?.localizedName ?? "none")")
+        }
+
+        return (defaultDevice, didFallback)
+    }
 
     /// キャプチャセッションをセットアップ
     private func setupCaptureSession() throws {
         let session = AVCaptureSession()
         session.sessionPreset = .medium // 640x480 相当
 
-        // カメラデバイスを取得
-        guard let device = AVCaptureDevice.default(for: .video) else {
+        // カメラデバイスを解決（選択されたカメラ、またはシステムデフォルト）
+        let (resolvedDevice, didFallback) = resolveCamera(preferredID: selectedCameraID)
+
+        guard let device = resolvedDevice else {
             throw CameraServiceError.noCameraAvailable
+        }
+
+        // フォールバックが発生した場合、ログに記録（FR-004 の通知は View 層で実装）
+        if didFallback {
+            logger.warning("Camera fallback occurred - selected camera not available")
         }
 
         // 入力を追加
