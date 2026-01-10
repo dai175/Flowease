@@ -124,14 +124,14 @@ Based on plan.md structure:
 
 ### Tests for User Story 3
 
-- [ ] T028 [P] [US3] Test single camera scenario in CameraDeviceManager in FloweaseTests/CameraDeviceManagerTests.swift
-- [ ] T029 [P] [US3] Test CameraSelectionView with single camera in FloweaseTests/CameraSelectionViewTests.swift
+- [x] T028 [P] [US3] Test single camera scenario in CameraDeviceManager in FloweaseTests/CameraDeviceManagerTests.swift
+- [x] T029 [P] [US3] Test CameraSelectionView with single camera in FloweaseTests/CameraSelectionViewTests.swift
 
 ### Implementation for User Story 3
 
-- [ ] T030 [US3] Handle single camera case in CameraDeviceManager in Flowease/Services/CameraDeviceManager.swift
-- [ ] T031 [US3] Update CameraSelectionView to display single camera gracefully in Flowease/Views/CameraSelectionView.swift
-- [ ] T032 [US3] Ensure auto-selection of single available camera on app launch in Flowease/Services/CameraService.swift
+- [x] T030 [US3] Handle single camera case in CameraDeviceManager in Flowease/Services/CameraDeviceManager.swift
+- [x] T031 [US3] Update CameraSelectionView to display single camera gracefully in Flowease/Views/CameraSelectionView.swift
+- [x] T032 [US3] Ensure auto-selection of single available camera on app launch in Flowease/Services/CameraService.swift
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -141,12 +141,12 @@ Based on plan.md structure:
 
 **Purpose**: エッジケース対応、品質改善、ローカライズ
 
-- [ ] T033 [P] Handle duplicate camera names (append number suffix) in Flowease/Services/CameraDeviceManager.swift
-- [ ] T034 [P] Handle zero cameras case (existing noCameraAvailable state) in Flowease/Services/CameraService.swift
-- [ ] T035 [P] Add localized strings for camera selection UI in Flowease/Localizable.xcstrings
-- [ ] T036 [P] Add Preview providers for CameraSelectionView in Flowease/Views/CameraSelectionView.swift
-- [ ] T037 Run SwiftLint and SwiftFormat on all modified files
-- [ ] T038 Validate against quickstart.md success criteria verification
+- [x] T033 [P] Handle duplicate camera names (append number suffix) in Flowease/Services/CameraDeviceManager.swift
+- [x] T034 [P] Handle zero cameras case (existing noCameraAvailable state) in Flowease/Services/CameraService.swift
+- [x] T035 [P] Add localized strings for camera selection UI in Flowease/Localizable.xcstrings
+- [x] T036 [P] Add Preview providers for CameraSelectionView in Flowease/Views/CameraSelectionView.swift
+- [x] T037 Run SwiftLint and SwiftFormat on all modified files
+- [x] T038 Validate against quickstart.md success criteria verification
 
 ---
 
