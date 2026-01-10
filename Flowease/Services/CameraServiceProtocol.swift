@@ -103,4 +103,6 @@ enum CameraServiceError: Error, Sendable, Equatable {
     case cameraInUse
     /// 選択されたカメラが切断された
     case selectedCameraDisconnected
+    /// 選択されたカメラが失敗し、システムデフォルトにフォールバックした
+    case selectedCameraFailed
 }

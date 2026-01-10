@@ -4,22 +4,25 @@
 // カメラ権限の管理とフレームキャプチャを担当するサービス
 
 @preconcurrency import AVFoundation
+import Combine
 import OSLog
 
 // MARK: - CameraService
 
 /// カメラ権限管理とフレームキャプチャの実装
 @MainActor
-final class CameraService: NSObject, CameraServiceProtocol {
+final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
     // MARK: - Properties
 
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "CameraService")
+    /// Note: extension からアクセスするため internal
+    let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "CameraService")
 
     /// カメラデバイスマネージャー（内部実装）
     private let deviceManager = CameraDeviceManager()
 
     /// UserDefaults に保存されるカメラ選択のキー
-    private static let selectedCameraKey = "selectedCameraDeviceID"
+    /// Note: extension からアクセスするため internal
+    static let selectedCameraKey = "selectedCameraDeviceID"
 
     /// 現在のカメラ権限状態
     var authorizationStatus: CameraAuthorizationStatus {
@@ -28,7 +31,8 @@ final class CameraService: NSObject, CameraServiceProtocol {
     }
 
     /// フレームキャプチャ中かどうか
-    private(set) var isCapturing = false
+    /// Note: extension からアクセスするため internal(set)
+    var isCapturing = false
 
     /// フレームを受け取るデリゲート
     weak var frameDelegate: CameraFrameDelegate?
@@ -38,42 +42,55 @@ final class CameraService: NSObject, CameraServiceProtocol {
 
     /// 現在選択されているカメラのID
     ///
-    /// UserDefaults から読み込まれた値を返します。
-    /// 保存された値がない場合は nil（システムデフォルトを使用）。
-    var selectedCameraID: String? {
-        UserDefaults.standard.string(forKey: Self.selectedCameraKey)
-    }
+    /// UserDefaults と同期されます。
+    /// nil の場合はシステムデフォルトを使用。
+    /// Note: extension からアクセスするため internal(set)
+    @Published var selectedCameraID: String?
 
     // MARK: - Capture Session Properties
 
+    // Note: extension からアクセスするため internal
+
     /// キャプチャセッション
-    private var captureSession: AVCaptureSession?
+    var captureSession: AVCaptureSession?
 
     /// ビデオ出力
-    private var videoOutput: AVCaptureVideoDataOutput?
+    var videoOutput: AVCaptureVideoDataOutput?
 
     /// キャプチャ入力（クリーンアップ時に削除するために保持）
-    private var captureInput: AVCaptureDeviceInput?
+    var captureInput: AVCaptureDeviceInput?
 
     /// キャプチャ処理用の専用キュー
-    private let captureQueue = DispatchQueue(
+    let captureQueue = DispatchQueue(
         label: "cc.focuswave.Flowease.CameraCapture",
         qos: .userInitiated
     )
 
     /// フレームスキップカウンター（パフォーマンス最適化用、nonisolated でアクセスするため Atomic 使用）
-    private let frameCounter = OSAllocatedUnfairLock(initialState: 0)
+    /// Note: extension からアクセスするため internal
+    let frameCounter = OSAllocatedUnfairLock(initialState: 0)
 
     /// 処理するフレームの間隔（2 = 2フレームに1回処理）
-    private let frameProcessingInterval = 2
+    /// Note: extension からアクセスするため internal
+    let frameProcessingInterval = 2
+
+    /// 現在実際に使用中のカメラID（フォールバック判定用）
+    /// Note: extension からアクセスするため internal
+    var currentCameraID: String?
+
+    /// フォールバック試行中フラグ（無限ループ防止）
+    /// Note: extension からアクセスするため internal
+    var isAttemptingFallback = false
 
     // MARK: - Initialization
 
     override init() {
+        // UserDefaults から選択カメラIDを復元
+        selectedCameraID = UserDefaults.standard.string(forKey: Self.selectedCameraKey)
         super.init()
 
         // 保存された選択カメラIDを deviceManager に設定
-        deviceManager.selectedCameraID = UserDefaults.standard.string(forKey: Self.selectedCameraKey)
+        deviceManager.selectedCameraID = selectedCameraID
 
         // 切断/再接続コールバックを設定
         deviceManager.onSelectedCameraDisconnected = { [weak self] in
@@ -225,6 +242,7 @@ final class CameraService: NSObject, CameraServiceProtocol {
         captureSession = nil
         videoOutput = nil
         captureInput = nil
+        currentCameraID = nil
         frameCounter.withLock { $0 = 0 }
 
         // セッション通知のオブザーバーを削除
@@ -265,6 +283,10 @@ final class CameraService: NSObject, CameraServiceProtocol {
     ///
     /// - Parameter deviceID: 選択するカメラのuniqueID (nil でシステムデフォルト)
     func selectCamera(_ deviceID: String?) {
+        // プロパティを更新
+        selectedCameraID = deviceID
+
+        // UserDefaults に保存
         if let deviceID {
             UserDefaults.standard.set(deviceID, forKey: Self.selectedCameraKey)
             logger.info("Camera selected: \(deviceID)")
@@ -273,16 +295,70 @@ final class CameraService: NSObject, CameraServiceProtocol {
             logger.info("Camera selection cleared (using system default)")
         }
 
-        // deviceManager にも selectedCameraID を同期
+        // deviceManager にも同期
         deviceManager.selectedCameraID = deviceID
         deviceManager.resetDisconnectionState()
 
         // キャプチャ中であれば新しいカメラでセッションを再起動
         if isCapturing {
             logger.info("Restarting capture session with new camera")
-            stopCapturing()
-            startCapturing()
+            restartCapturing()
         }
+    }
+
+    /// キャプチャを再起動（停止完了を待ってから開始）
+    ///
+    /// 競合状態を避けるため、古いセッションの停止を待ってから新しいセッションを開始します。
+    private func restartCapturing() {
+        guard isCapturing else { return }
+
+        // 先にフラグを下げて新しいフレーム処理を止める
+        isCapturing = false
+        let session = captureSession
+        let output = videoOutput
+        let input = captureInput
+
+        captureSession = nil
+        videoOutput = nil
+        captureInput = nil
+        currentCameraID = nil
+        frameCounter.withLock { $0 = 0 }
+
+        // セッション通知のオブザーバーを削除
+        if let session {
+            NotificationCenter.default.removeObserver(
+                self,
+                name: AVCaptureSession.runtimeErrorNotification,
+                object: session
+            )
+        }
+
+        // クリーンアップ処理をバックグラウンドで実行し、完了後に新しいセッションを開始
+        captureQueue.async { [weak self] in
+            // デリゲート参照を削除してコールバックを停止
+            output?.setSampleBufferDelegate(nil, queue: nil)
+
+            // セッションの入出力を原子的に削除
+            session?.beginConfiguration()
+            if let input {
+                session?.removeInput(input)
+            }
+            if let output {
+                session?.removeOutput(output)
+            }
+            session?.commitConfiguration()
+
+            // セッションを停止
+            session?.stopRunning()
+
+            // 停止完了後、メインスレッドで新しいセッションを開始
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                logger.info("Old session stopped, starting new session")
+                startCapturing()
+            }
+        }
+        logger.info("Frame capture stopping for restart")
     }
 
     // MARK: - Private Methods
@@ -332,6 +408,9 @@ final class CameraService: NSObject, CameraServiceProtocol {
             throw CameraServiceError.noCameraAvailable
         }
 
+        // 現在使用中のカメラIDを記録（フォールバック判定用）
+        currentCameraID = device.uniqueID
+
         // フォールバックが発生した場合、ログに記録（FR-004 の通知は View 層で実装）
         if didFallback {
             logger.warning("Camera fallback occurred - selected camera not available")
@@ -380,115 +459,5 @@ final class CameraService: NSObject, CameraServiceProtocol {
         )
 
         logger.debug("Capture session set up")
-    }
-
-    // MARK: - Session Error Handlers
-
-    /// セッションでランタイムエラーが発生した時に呼ばれる
-    ///
-    /// カメラが他のアプリで使用中の場合や、デバイスエラーが発生した場合に発火する。
-    /// macOS では wasInterruptedNotification が利用できないため、この通知でエラーを検出する。
-    @objc private func sessionRuntimeError(_ notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let error = userInfo[AVCaptureSessionErrorKey] as? AVError else {
-            return
-        }
-
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-
-            // エラーの内容をログ出力
-            logger.warning("Camera session error: code=\(error.code.rawValue), \(error.localizedDescription)")
-
-            // エラーコードに基づいて適切な CameraServiceError を決定
-            let cameraError: CameraServiceError = switch error.code {
-            case .deviceInUseByAnotherApplication:
-                // 他のアプリがカメラを使用中
-                .cameraInUse
-            default:
-                // その他のエラー（セッション設定エラーとして扱う）
-                .sessionConfigurationFailed
-            }
-
-            // セッションが停止している場合はリカバリーのためにクリーンアップ
-            if let session = captureSession, !session.isRunning {
-                // キャプチャ状態をリセットして再開可能にする
-                isCapturing = false
-
-                // セッションの参照をクリア（次回 startCapturing で新しいセッションを作成）
-                captureSession = nil
-                videoOutput = nil
-                captureInput = nil
-                frameCounter.withLock { $0 = 0 }
-
-                // オブザーバーを削除
-                NotificationCenter.default.removeObserver(
-                    self,
-                    name: AVCaptureSession.runtimeErrorNotification,
-                    object: session
-                )
-
-                logger.info("Capture state reset due to session error")
-                frameDelegate?.cameraService(self, didEncounterError: cameraError)
-            } else if captureSession != nil {
-                // セッションが実行中でもエラーが発生した場合は停止してクリーンアップ
-                logger.warning("Stopping due to session runtime error")
-                stopCapturing()
-                frameDelegate?.cameraService(self, didEncounterError: cameraError)
-            } else {
-                // セッションが既に nil の場合（すでにクリーンアップ済み）
-                frameDelegate?.cameraService(self, didEncounterError: cameraError)
-            }
-        }
-    }
-}
-
-// MARK: - SendableSampleBuffer
-
-/// CMSampleBuffer を Sendable としてラップするヘルパー
-///
-/// CMSampleBuffer は Core Foundation 型でスレッドセーフではないが、
-/// カメラキャプチャからメインスレッドへの受け渡しは即時処理されるため安全。
-/// nonisolated により非同期コンテキストからもアクセス可能。
-private nonisolated struct SendableSampleBuffer: @unchecked Sendable {
-    let buffer: CMSampleBuffer
-}
-
-// MARK: - CameraService + AVCaptureVideoDataOutputSampleBufferDelegate
-
-extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
-    nonisolated func captureOutput(
-        _: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from _: AVCaptureConnection
-    ) {
-        // フレームスキップ（パフォーマンス最適化）
-        let shouldProcess = frameCounter.withLock { counter -> Bool in
-            counter += 1
-            return counter % frameProcessingInterval == 0
-        }
-        guard shouldProcess else {
-            return
-        }
-
-        // Sendable ラッパーでメインスレッドに送信
-        let sendableBuffer = SendableSampleBuffer(buffer: sampleBuffer)
-
-        // メインスレッドでデリゲートに通知
-        Task { @MainActor [weak self] in
-            guard let self, isCapturing else { return }
-            frameDelegate?.cameraService(self, didCaptureFrame: sendableBuffer.buffer)
-        }
-    }
-
-    nonisolated func captureOutput(
-        _: AVCaptureOutput,
-        didDrop _: CMSampleBuffer,
-        from _: AVCaptureConnection
-    ) {
-        // フレームがドロップされた場合は警告ログ（過剰にならないよう制限）
-        Task { @MainActor [weak self] in
-            self?.logger.debug("Frame dropped")
-        }
     }
 }

@@ -6,6 +6,7 @@
 //
 
 @preconcurrency import AVFoundation
+import Combine
 import Foundation
 import Observation
 import OSLog
@@ -28,6 +29,9 @@ final class PostureViewModel {
     /// スコア履歴 (スムージング用、最大10件)
     private(set) var scoreHistory: [PostureScore] = []
 
+    /// 現在選択されているカメラのID（UIバインディング用）
+    private(set) var selectedCameraID: String?
+
     // MARK: - Dependencies
 
     private let cameraService: CameraServiceProtocol
@@ -49,6 +53,9 @@ final class PostureViewModel {
 
     /// キャリブレーションリセット通知の購読
     private var calibrationResetObserver: NSObjectProtocol?
+
+    /// CameraService の selectedCameraID 変更を購読
+    private var cameraSubscription: AnyCancellable?
 
     // MARK: - Constants
 
@@ -85,6 +92,26 @@ final class PostureViewModel {
     /// StatusMenuView からカメラ選択機能にアクセスするために使用します。
     var cameraServiceAccess: CameraServiceProtocol { cameraService }
 
+    /// 利用可能なカメラ一覧
+    var availableCameras: [CameraDevice] { cameraService.availableCameras }
+
+    /// カメラ権限状態
+    var cameraAuthorizationStatus: CameraAuthorizationStatus { cameraService.authorizationStatus }
+
+    // MARK: - Camera Selection
+
+    /// カメラを選択
+    ///
+    /// - Parameter deviceID: 選択するカメラのuniqueID (nil でシステムデフォルト)
+    func selectCamera(_ deviceID: String?) {
+        cameraService.selectCamera(deviceID)
+        // Combine 購読で selectedCameraID は自動更新される
+        // Mock の場合は手動で更新
+        if !(cameraService is CameraService) {
+            selectedCameraID = deviceID
+        }
+    }
+
     // MARK: - Initialization
 
     /// イニシャライザ
@@ -104,7 +131,20 @@ final class PostureViewModel {
         self.postureAnalyzer = postureAnalyzer
         self.faceScoreCalculator = faceScoreCalculator
         self.calibrationService = calibrationService
+
+        // 初期値を同期
+        selectedCameraID = cameraService.selectedCameraID
+
         logger.debug("PostureViewModel initialized")
+
+        // CameraService の selectedCameraID 変更を購読（具象型の場合のみ）
+        if let concreteService = cameraService as? CameraService {
+            cameraSubscription = concreteService.$selectedCameraID
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] newValue in
+                    self?.selectedCameraID = newValue
+                }
+        }
 
         // キャリブレーションリセット通知を購読
         calibrationResetObserver = NotificationCenter.default.addObserver(
@@ -354,6 +394,9 @@ extension PostureViewModel: CameraFrameDelegate {
                 monitoringState = .paused(.cameraInitializing)
             case .selectedCameraDisconnected:
                 monitoringState = .paused(.selectedCameraDisconnected)
+            case .selectedCameraFailed:
+                // フォールバック成功: 状態は変更しない（カメラは動作中）
+                logger.warning("Selected camera failed, using fallback camera")
             }
         } else {
             // 未知のエラーに対するフォールバック

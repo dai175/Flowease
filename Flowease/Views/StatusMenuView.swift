@@ -74,12 +74,12 @@ struct StatusMenuView: View {
         )
 
         // カメラ選択（authorized 時のみ表示）
-        if viewModel.cameraServiceAccess.authorizationStatus == .authorized {
+        if viewModel.cameraAuthorizationStatus == .authorized {
             Divider()
             CameraSelectionView(
-                availableCameras: viewModel.cameraServiceAccess.availableCameras,
-                selectedCameraID: viewModel.cameraServiceAccess.selectedCameraID,
-                onSelect: { viewModel.cameraServiceAccess.selectCamera($0) }
+                availableCameras: viewModel.availableCameras,
+                selectedCameraID: viewModel.selectedCameraID,
+                onSelect: { viewModel.selectCamera($0) }
             )
         }
 
