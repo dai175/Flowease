@@ -81,16 +81,15 @@ struct CameraDeviceTests {
 
     /// CameraDevice が Sendable に準拠していることを確認
     /// コンパイル時にチェックされるが、明示的なテストとして記述
-    @Test func deviceIsSendable() {
+    @Test func deviceIsSendable() async {
         let device = makeDevice()
 
-        // Sendable 準拠の確認: 別スレッドに渡せることを検証
-        // Task への受け渡しがコンパイルできれば Sendable
-        Task {
-            let _ = device
-        }
+        // Sendable 準拠の確認: 別のタスクでデバイスを使用できることを検証
+        let capturedID = await Task {
+            return device.id
+        }.value
 
-        #expect(true, "CameraDevice conforms to Sendable")
+        #expect(capturedID == device.id)
     }
 
     // MARK: - Property Tests
