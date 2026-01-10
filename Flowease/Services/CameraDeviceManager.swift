@@ -27,7 +27,7 @@ final class CameraDeviceManager {
 
     /// ロガー
     private let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.flowease",
+        subsystem: Bundle.main.bundleIdentifier ?? "cc.focuswave.Flowease",
         category: "CameraDeviceManager"
     )
 
