@@ -24,14 +24,20 @@ final class LocalizationTests: XCTestCase {
     /// StatusMenuView で使用されるローカライズ文字列が存在することを確認
     ///
     /// 以下の文字列をテスト:
+    /// - "Flowease" (アプリ名)
     /// - "Monitoring Posture" (姿勢モニタリング中)
     /// - "Calibration:" (キャリブレーション:)
     /// - "Reset" (リセット)
     /// - "Reconfigure" (再設定)
     /// - "Configure" (設定)
+    /// - "Quit" (終了)
     func testStatusMenuViewLocalizedStringsExist() {
         // 各文字列が空でないことを確認
         // String(localized:) は Development Language（英語）の値を返す
+        let flowease = String(localized: "Flowease")
+        XCTAssertFalse(flowease.isEmpty, "Flowease string should exist")
+        XCTAssertEqual(flowease, "Flowease", "English string should match")
+
         let monitoringPosture = String(localized: "Monitoring Posture")
         XCTAssertFalse(monitoringPosture.isEmpty, "Monitoring Posture string should exist")
         XCTAssertEqual(monitoringPosture, "Monitoring Posture", "English string should match")
@@ -47,6 +53,10 @@ final class LocalizationTests: XCTestCase {
         let configure = String(localized: "Configure")
         XCTAssertFalse(configure.isEmpty, "Configure string should exist")
         XCTAssertEqual(configure, "Configure", "English string should match")
+
+        let quit = String(localized: "Quit")
+        XCTAssertFalse(quit.isEmpty, "Quit string should exist")
+        XCTAssertEqual(quit, "Quit", "English string should match")
     }
 
     /// StatusMenuView で使用される補間文字列（Calibration: %@）が正しく動作することを確認
