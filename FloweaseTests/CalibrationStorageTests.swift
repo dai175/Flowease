@@ -26,8 +26,8 @@ final class CalibrationStorageTests: XCTestCase {
     // MARK: - Test Helpers
 
     /// テスト用のストレージを作成
-    private func makeStorage() -> CalibrationStorage {
-        let defaults = UserDefaults(suiteName: Self.testSuiteName)!
+    private func makeStorage() throws -> CalibrationStorage {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: Self.testSuiteName))
         defaults.removePersistentDomain(forName: Self.testSuiteName)
         return CalibrationStorage(userDefaults: defaults)
     }
@@ -53,9 +53,9 @@ final class CalibrationStorageTests: XCTestCase {
 
     // MARK: - Load Tests
 
-    func testLoadFaceReferencePostureReturnsNilWhenEmpty() {
+    func testLoadFaceReferencePostureReturnsNilWhenEmpty() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
 
         // When
         let result = storage.loadFaceReferencePosture()
@@ -64,9 +64,9 @@ final class CalibrationStorageTests: XCTestCase {
         XCTAssertNil(result)
     }
 
-    func testLoadFaceReferencePostureReturnsStoredData() {
+    func testLoadFaceReferencePostureReturnsStoredData() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
         let originalPosture = createValidFaceReferencePosture()
         storage.saveFaceReferencePosture(originalPosture)
 
@@ -87,9 +87,9 @@ final class CalibrationStorageTests: XCTestCase {
 
     // MARK: - Save Tests
 
-    func testSaveFaceReferencePostureReturnsTrue() {
+    func testSaveFaceReferencePostureReturnsTrue() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
         let posture = createValidFaceReferencePosture()
 
         // When
@@ -99,9 +99,9 @@ final class CalibrationStorageTests: XCTestCase {
         XCTAssertTrue(result)
     }
 
-    func testSaveFaceReferencePostureOverwritesPrevious() {
+    func testSaveFaceReferencePostureOverwritesPrevious() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
         let posture1 = createValidFaceReferencePosture(frameCount: 20)
         let posture2 = createValidFaceReferencePosture(frameCount: 40)
         storage.saveFaceReferencePosture(posture1)
@@ -116,9 +116,9 @@ final class CalibrationStorageTests: XCTestCase {
 
     // MARK: - Delete Tests
 
-    func testDeleteFaceReferencePostureRemovesData() {
+    func testDeleteFaceReferencePostureRemovesData() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
         let posture = createValidFaceReferencePosture()
         storage.saveFaceReferencePosture(posture)
 
@@ -130,9 +130,9 @@ final class CalibrationStorageTests: XCTestCase {
         XCTAssertNil(loadedPosture)
     }
 
-    func testDeleteFaceReferencePostureWhenEmptyDoesNotCrash() {
+    func testDeleteFaceReferencePostureWhenEmptyDoesNotCrash() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
 
         // When / Then
         storage.deleteFaceReferencePosture()
@@ -141,17 +141,17 @@ final class CalibrationStorageTests: XCTestCase {
 
     // MARK: - isCalibrated Tests
 
-    func testIsCalibratedReturnsFalseWhenEmpty() {
+    func testIsCalibratedReturnsFalseWhenEmpty() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
 
         // Then
         XCTAssertFalse(storage.isCalibrated)
     }
 
-    func testIsCalibratedReturnsTrueWhenDataExists() {
+    func testIsCalibratedReturnsTrueWhenDataExists() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
         let posture = createValidFaceReferencePosture()
         storage.saveFaceReferencePosture(posture)
 
@@ -159,9 +159,9 @@ final class CalibrationStorageTests: XCTestCase {
         XCTAssertTrue(storage.isCalibrated)
     }
 
-    func testIsCalibratedReturnsFalseAfterDelete() {
+    func testIsCalibratedReturnsFalseAfterDelete() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
         let posture = createValidFaceReferencePosture()
         storage.saveFaceReferencePosture(posture)
 
@@ -174,17 +174,17 @@ final class CalibrationStorageTests: XCTestCase {
 
     // MARK: - lastCalibratedAt Tests
 
-    func testLastCalibratedAtReturnsNilWhenEmpty() {
+    func testLastCalibratedAtReturnsNilWhenEmpty() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
 
         // Then
         XCTAssertNil(storage.lastCalibratedAt)
     }
 
-    func testLastCalibratedAtReturnsCorrectDate() {
+    func testLastCalibratedAtReturnsCorrectDate() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
         let specificDate = Date(timeIntervalSince1970: 1_704_067_200) // 2024-01-01 00:00:00 UTC
         let posture = createValidFaceReferencePosture(calibratedAt: specificDate)
         storage.saveFaceReferencePosture(posture)
@@ -193,9 +193,9 @@ final class CalibrationStorageTests: XCTestCase {
         let lastCalibrated = storage.lastCalibratedAt
 
         // Then
-        XCTAssertNotNil(lastCalibrated)
+        let lastCalibratedUnwrapped = try XCTUnwrap(lastCalibrated)
         XCTAssertEqual(
-            lastCalibrated!.timeIntervalSince1970,
+            lastCalibratedUnwrapped.timeIntervalSince1970,
             specificDate.timeIntervalSince1970,
             accuracy: 1.0
         )
@@ -203,9 +203,9 @@ final class CalibrationStorageTests: XCTestCase {
 
     // MARK: - Data Integrity Tests
 
-    func testDataIntegrityForFaceReferencePosture() {
+    func testDataIntegrityForFaceReferencePosture() throws {
         // Given
-        let storage = makeStorage()
+        let storage = try makeStorage()
         let baselineMetrics = FaceBaselineMetrics(
             baselineY: 0.55,
             baselineArea: 0.08,
@@ -248,9 +248,9 @@ final class CalibrationStorageTests: XCTestCase {
 
     // MARK: - Corrupted Data Tests
 
-    func testLoadFaceReferencePostureReturnsNilForCorruptedData() {
+    func testLoadFaceReferencePostureReturnsNilForCorruptedData() throws {
         // Given
-        let defaults = UserDefaults(suiteName: Self.testSuiteName)!
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: Self.testSuiteName))
         defaults.removePersistentDomain(forName: Self.testSuiteName)
         defaults.set(Data([0x00, 0x01, 0x02]), forKey: CalibrationStorageKeys.referencePosture)
         let storage = CalibrationStorage(userDefaults: defaults)
@@ -262,9 +262,9 @@ final class CalibrationStorageTests: XCTestCase {
         XCTAssertNil(result)
     }
 
-    func testLoadFaceReferencePostureWithAutoCleanClearsCorruptedData() {
+    func testLoadFaceReferencePostureWithAutoCleanClearsCorruptedData() throws {
         // Given: 破損データが保存されている
-        let defaults = UserDefaults(suiteName: Self.testSuiteName)!
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: Self.testSuiteName))
         defaults.removePersistentDomain(forName: Self.testSuiteName)
         defaults.set(Data([0x00, 0x01, 0x02]), forKey: CalibrationStorageKeys.referencePosture)
         let storage = CalibrationStorage(userDefaults: defaults)
