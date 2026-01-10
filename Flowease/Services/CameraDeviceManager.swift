@@ -84,6 +84,7 @@ final class CameraDeviceManager {
     ///
     /// DiscoverySession からデバイスを取得し、CameraDevice 配列に変換します。
     /// システムデフォルトカメラを特定し、isDefault フラグを設定します。
+    /// 同名のカメラがある場合は番号サフィックスを付与して区別します。
     func enumerateCameras() {
         guard let session = discoverySession else {
             logger.warning("DiscoverySession not initialized")
@@ -93,10 +94,33 @@ final class CameraDeviceManager {
         let devices = session.devices
         let defaultDevice = AVCaptureDevice.default(for: .video)
 
+        // 同名カメラの処理: 名前の出現回数をカウント
+        var nameCountMap: [String: Int] = [:]
+        var nameOccurrenceMap: [String: Int] = [:]
+
+        // 最初のパスで名前の出現回数をカウント
+        for device in devices {
+            nameCountMap[device.localizedName, default: 0] += 1
+        }
+
         availableCameras = devices.map { device in
-            CameraDevice(
+            let originalName = device.localizedName
+            var displayName = originalName
+
+            // 同名のカメラが複数ある場合のみサフィックスを付与
+            if let count = nameCountMap[originalName], count > 1 {
+                let occurrence = nameOccurrenceMap[originalName, default: 0] + 1
+                nameOccurrenceMap[originalName] = occurrence
+
+                // 2台目以降に番号を付与（例: "Logitech C920 (2)"）
+                if occurrence > 1 {
+                    displayName = "\(originalName) (\(occurrence))"
+                }
+            }
+
+            return CameraDevice(
                 id: device.uniqueID,
-                name: device.localizedName,
+                name: displayName,
                 isConnected: device.isConnected,
                 isDefault: device.uniqueID == defaultDevice?.uniqueID
             )

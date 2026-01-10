@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - CameraSelectionView
+
 /// カメラ選択コンポーネント
 ///
 /// メニューバーに統合されるカメラ選択UI。
@@ -47,3 +49,82 @@ struct CameraSelectionView: View {
         }
     }
 }
+
+// MARK: - Previews
+
+#if DEBUG
+    #Preview("Multiple Cameras") {
+        CameraSelectionView(
+            availableCameras: [
+                CameraDevice(
+                    id: "camera-1",
+                    name: "FaceTime HD Camera",
+                    isConnected: true,
+                    isDefault: true
+                ),
+                CameraDevice(
+                    id: "camera-2",
+                    name: "Logitech C920",
+                    isConnected: true,
+                    isDefault: false
+                ),
+                CameraDevice(
+                    id: "camera-3",
+                    name: "OBS Virtual Camera",
+                    isConnected: true,
+                    isDefault: false
+                )
+            ],
+            selectedCameraID: "camera-1",
+            onSelect: { _ in }
+        )
+        .frame(width: 250)
+    }
+
+    #Preview("Single Camera") {
+        CameraSelectionView(
+            availableCameras: [
+                CameraDevice(
+                    id: "camera-1",
+                    name: "FaceTime HD Camera",
+                    isConnected: true,
+                    isDefault: true
+                )
+            ],
+            selectedCameraID: nil,
+            onSelect: { _ in }
+        )
+        .frame(width: 250)
+    }
+
+    #Preview("No Cameras") {
+        CameraSelectionView(
+            availableCameras: [],
+            selectedCameraID: nil,
+            onSelect: { _ in }
+        )
+        .frame(width: 250)
+    }
+
+    #Preview("Duplicate Camera Names") {
+        CameraSelectionView(
+            availableCameras: [
+                CameraDevice(
+                    id: "camera-1",
+                    name: "Logitech C920",
+                    isConnected: true,
+                    isDefault: true
+                ),
+                CameraDevice(
+                    id: "camera-2",
+                    name: "Logitech C920 (2)",
+                    isConnected: true,
+                    isDefault: false
+                )
+            ],
+            selectedCameraID: "camera-1",
+            onSelect: { _ in }
+        )
+        .frame(width: 250)
+    }
+#endif

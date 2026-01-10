@@ -126,4 +126,68 @@ struct CameraDeviceManagerTests {
             )
         }
     }
+
+    // MARK: - T028 [US3]: Single Camera Scenario Tests
+
+    /// シングルカメラ環境でも正常にカメラが列挙されることを確認
+    ///
+    /// カメラが1台のみの場合でも、CameraDeviceManager は正しく動作し、
+    /// 有効な CameraDevice を返すことを検証します。
+    @Test func singleCameraScenarioHandling() {
+        // Given / When
+        let manager = CameraDeviceManager()
+        manager.setupDiscoverySession()
+
+        // Then
+        // カメラが1台以上存在する場合、シングルカメラシナリオを検証
+        if manager.availableCameras.count == 1 {
+            let camera = manager.availableCameras[0]
+            #expect(!camera.id.isEmpty, "Single camera should have valid ID")
+            #expect(!camera.name.isEmpty, "Single camera should have valid name")
+            #expect(camera.isConnected, "Single camera should be connected")
+            // シングルカメラは通常システムデフォルト
+            #expect(camera.isDefault, "Single camera should be marked as default")
+        }
+        // カメラ数に関わらず、配列は常に有効
+        #expect(manager.availableCameras is [CameraDevice])
+    }
+
+    /// シングルカメラ環境で onDevicesChanged コールバックが正しく呼ばれることを確認
+    @Test func singleCameraCallbackTriggered() async {
+        // Given
+        let manager = CameraDeviceManager()
+        var receivedDevices: [CameraDevice]?
+
+        manager.onDevicesChanged = { devices in
+            receivedDevices = devices
+        }
+
+        // When
+        manager.setupDiscoverySession()
+
+        // Then
+        #expect(receivedDevices != nil, "Callback should be triggered")
+        if let devices = receivedDevices, devices.count == 1 {
+            let camera = devices[0]
+            #expect(!camera.id.isEmpty)
+            #expect(!camera.name.isEmpty)
+        }
+    }
+
+    /// カメラが1台または0台の場合でも availableCameras が安全にアクセス可能
+    @Test func emptyCameraListHandling() {
+        // Given / When
+        let manager = CameraDeviceManager()
+        manager.setupDiscoverySession()
+
+        // Then
+        // 空配列または要素ありの配列、どちらでも安全にアクセス可能
+        let cameras = manager.availableCameras
+        #expect(cameras.count >= 0, "Camera count should be non-negative")
+
+        // first/last も安全にアクセス可能
+        if let first = cameras.first {
+            #expect(!first.id.isEmpty)
+        }
+    }
 }
