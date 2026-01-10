@@ -101,4 +101,6 @@ enum CameraServiceError: Error, Sendable, Equatable {
     case sessionConfigurationFailed
     /// 他のアプリがカメラを使用中
     case cameraInUse
+    /// 選択されたカメラが切断された
+    case selectedCameraDisconnected
 }

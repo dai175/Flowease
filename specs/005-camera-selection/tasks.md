@@ -100,13 +100,13 @@ Based on plan.md structure:
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Implement KVO observation for device list changes (detect connect/disconnect events, notify CameraService) in Flowease/Services/CameraDeviceManager.swift
-- [ ] T022 [US2] Implement device disconnection detection and notification in Flowease/Services/CameraService.swift
-- [ ] T023 [US2] Implement MonitoringState transition to .paused(.selectedCameraDisconnected) in Flowease/Services/CameraService.swift
-- [ ] T024 [US2] Implement auto-resume on selected camera reconnection in Flowease/Services/CameraService.swift
-- [ ] T025 [US2] Update StatusMenuView to show disconnection feedback and fallback notification (FR-004) in Flowease/Views/StatusMenuView.swift
-- [ ] T026 [US2] Update CameraSelectionView to show real-time device list updates in Flowease/Views/CameraSelectionView.swift
-- [ ] T027 [US2] Add logging for disconnect/reconnect events in Flowease/Services/CameraService.swift
+- [x] T021 [US2] Implement KVO observation for device list changes (detect connect/disconnect events, notify CameraService) in Flowease/Services/CameraDeviceManager.swift
+- [x] T022 [US2] Implement device disconnection detection and notification in Flowease/Services/CameraService.swift
+- [x] T023 [US2] Implement MonitoringState transition to .paused(.selectedCameraDisconnected) in Flowease/Services/CameraService.swift
+- [x] T024 [US2] Implement auto-resume on selected camera reconnection in Flowease/Services/CameraService.swift
+- [x] T025 [US2] Update StatusMenuView to show disconnection feedback and fallback notification (FR-004) in Flowease/Views/StatusMenuView.swift
+- [x] T026 [US2] Update CameraSelectionView to show real-time device list updates in Flowease/Views/CameraSelectionView.swift
+- [x] T027 [US2] Add logging for disconnect/reconnect events in Flowease/Services/CameraService.swift
 
 **Checkpoint**: User Stories 1 AND 2 should both work independently
 
