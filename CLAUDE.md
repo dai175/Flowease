@@ -54,6 +54,7 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - **メニューバー常駐**: Dockに表示されず、メニューバーからのみアクセス可能
 - **色グラデーション**: スコアに応じてアイコンの色が変化（緑=良好、赤=要改善）
 - **エッジケース対応**: カメラ利用不可、顔未検出時はグレーアイコンで表示
+- **カメラ選択**: 複数カメラから使用するカメラを選択、切断・再接続を自動処理
 
 ## Localization
 
@@ -61,10 +62,3 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - Supported languages: English (base), Japanese
 - Logger messages: English only (not localized)
 - Date formatting: System locale via `DateFormatter`
-
-## Active Technologies
-- Swift 6.0 + AVFoundation, SwiftUI, OSLog (005-camera-selection)
-- UserDefaults（カメラ選択の永続化） (005-camera-selection)
-
-## Recent Changes
-- 005-camera-selection: Added Swift 6.0 + AVFoundation, SwiftUI, OSLog
