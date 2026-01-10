@@ -26,6 +26,12 @@ enum AnalysisResult: Sendable, Equatable {
     /// 顔は検出されるが、検出品質が低い場合。
     /// 照明条件、角度、距離など様々な原因が考えられる。
     case lowDetectionQuality
+
+    /// Vision フレームワークエラー
+    ///
+    /// 顔検出処理自体が失敗した場合。
+    /// エラーの詳細は FaceDetector のログに記録される。
+    case visionError
 }
 
 // MARK: - PostureAnalyzing
@@ -72,20 +78,29 @@ final class PostureAnalyzer: PostureAnalyzing {
     /// - Returns: 分析結果（成功時は FacePosition、失敗時は原因を含む）
     nonisolated func analyze(sampleBuffer: sending CMSampleBuffer) async -> AnalysisResult {
         // FaceDetectorで顔を検出
-        guard let facePosition = await faceDetector.detect(from: sampleBuffer) else {
-            return .noFaceDetected
-        }
+        let detectionResult = await faceDetector.detect(from: sampleBuffer)
 
-        // 検出品質のチェック
-        guard facePosition.hasAcceptableQuality else {
-            return .lowDetectionQuality
-        }
+        switch detectionResult {
+        case let .success(facePosition):
+            // 検出品質のチェック
+            guard facePosition.hasAcceptableQuality else {
+                return .lowDetectionQuality
+            }
 
-        // バリデーションのチェック
-        guard facePosition.isValid else {
-            return .lowDetectionQuality
-        }
+            // バリデーションのチェック
+            guard facePosition.isValid else {
+                return .lowDetectionQuality
+            }
 
-        return .success(facePosition)
+            return .success(facePosition)
+
+        case let .failure(error):
+            switch error {
+            case .noFaceDetected:
+                return .noFaceDetected
+            case .visionRequestFailed:
+                return .visionError
+            }
+        }
     }
 }

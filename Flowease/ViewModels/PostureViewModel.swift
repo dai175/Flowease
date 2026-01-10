@@ -52,7 +52,10 @@ final class PostureViewModel {
     private var processingTask: Task<Void, Never>?
 
     /// キャリブレーションリセット通知の購読
-    private var calibrationResetObserver: NSObjectProtocol?
+    ///
+    /// Note: deinit からアクセスするため nonisolated(unsafe) を使用。
+    /// このプロパティは init と deinit でのみ変更される。
+    private nonisolated(unsafe) var calibrationResetObserver: NSObjectProtocol?
 
     /// CameraService の selectedCameraID 変更を購読
     private var cameraSubscription: AnyCancellable?
@@ -156,9 +159,21 @@ final class PostureViewModel {
         }
     }
 
+    // MARK: - Deinitialization
+
+    deinit {
+        // NotificationCenter observer を解除してメモリリークを防止
+        if let observer = calibrationResetObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+
     // MARK: - Calibration Reset Handler
 
     /// キャリブレーションリセット時の処理
+    ///
+    /// Note: NotificationCenter コールバックの要件上 nonisolated ですが、
+    /// Task ブロック内で @MainActor コンテキストに移行します
     private nonisolated func handleCalibrationReset() {
         Task { @MainActor in
             faceScoreCalculator.setReferencePosture(nil)
@@ -347,21 +362,27 @@ final class PostureViewModel {
             addScore(score)
 
         case .noFaceDetected:
-            // 顔が検出されない場合、スコア履歴をクリアして一時停止
-            if case .active = monitoringState {
-                monitoringState = .paused(.noFaceDetected)
-                clearScoreHistory()
-                logger.debug("Paused due to no face detected (score history cleared)")
-            }
+            pauseIfActive(reason: .noFaceDetected, logMessage: "Paused due to no face detected")
 
         case .lowDetectionQuality:
-            // 検出精度が低下している場合、スコア履歴をクリアして一時停止
-            if case .active = monitoringState {
-                monitoringState = .paused(.lowDetectionQuality)
-                clearScoreHistory()
-                logger.debug("Paused due to low detection quality (score history cleared)")
-            }
+            pauseIfActive(reason: .lowDetectionQuality, logMessage: "Paused due to low detection quality")
+
+        case .visionError:
+            pauseIfActive(reason: .cameraInitializing, logMessage: "Paused due to Vision framework error")
         }
+    }
+
+    /// アクティブ状態の場合のみ一時停止する
+    ///
+    /// スコア履歴をクリアし、指定された理由で一時停止状態に遷移する。
+    /// - Parameters:
+    ///   - reason: 一時停止の理由
+    ///   - logMessage: ログに出力するメッセージ
+    private func pauseIfActive(reason: PauseReason, logMessage: String) {
+        guard case .active = monitoringState else { return }
+        monitoringState = .paused(reason)
+        clearScoreHistory()
+        logger.debug("\(logMessage) (score history cleared)")
     }
 }
 
