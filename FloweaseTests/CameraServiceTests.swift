@@ -336,4 +336,66 @@ struct CameraServiceTests {
 
         cleanupUserDefaults()
     }
+
+    // MARK: - Response Time Tests
+
+    /// CameraService 初期化の応答時間を計測
+    ///
+    /// 初期化は 100ms 以内に完了すべき（UX 要件）
+    @Test func initializationResponseTime() {
+        cleanupUserDefaults()
+
+        let startTime = CFAbsoluteTimeGetCurrent()
+        _ = CameraService()
+        let elapsedTime = CFAbsoluteTimeGetCurrent() - startTime
+
+        // 初期化は 100ms (0.1秒) 以内に完了すべき
+        #expect(
+            elapsedTime < 0.1,
+            "CameraService initialization should complete within 100ms (actual: \(elapsedTime * 1000)ms)"
+        )
+
+        cleanupUserDefaults()
+    }
+
+    /// availableCameras プロパティへのアクセス時間を計測
+    ///
+    /// デバイスリストの取得は 50ms 以内に完了すべき
+    @Test func availableCamerasAccessTime() {
+        cleanupUserDefaults()
+        let service = CameraService()
+
+        let startTime = CFAbsoluteTimeGetCurrent()
+        _ = service.availableCameras
+        let elapsedTime = CFAbsoluteTimeGetCurrent() - startTime
+
+        // デバイスリスト取得は 50ms (0.05秒) 以内に完了すべき
+        #expect(
+            elapsedTime < 0.05,
+            "availableCameras access should complete within 50ms (actual: \(elapsedTime * 1000)ms)"
+        )
+
+        cleanupUserDefaults()
+    }
+
+    /// selectCamera の応答時間を計測
+    ///
+    /// カメラ選択操作は 10ms 以内に完了すべき（即時フィードバック要件）
+    @Test func selectCameraResponseTime() {
+        cleanupUserDefaults()
+        let service = CameraService()
+        let testID = "test-camera-response-time"
+
+        let startTime = CFAbsoluteTimeGetCurrent()
+        service.selectCamera(testID)
+        let elapsedTime = CFAbsoluteTimeGetCurrent() - startTime
+
+        // カメラ選択は 10ms (0.01秒) 以内に完了すべき
+        #expect(
+            elapsedTime < 0.01,
+            "selectCamera should complete within 10ms (actual: \(elapsedTime * 1000)ms)"
+        )
+
+        cleanupUserDefaults()
+    }
 }

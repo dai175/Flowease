@@ -18,7 +18,7 @@
       }
     },
     "%lld" : {
-
+      "comment" : "Numeric score display - no translation needed"
     },
     "An unexpected error occurred" : {
       "localizations" : {
@@ -375,7 +375,7 @@
       }
     },
     "Flowease" : {
-
+      "comment" : "App name - no translation needed"
     },
     "Go to System Settings > Privacy & Security > Camera to grant permission" : {
       "localizations" : {
@@ -394,7 +394,7 @@
       }
     },
     "Hello, world!" : {
-
+      "comment" : "Template placeholder - unused"
     },
     "Initializing camera..." : {
       "localizations" : {
