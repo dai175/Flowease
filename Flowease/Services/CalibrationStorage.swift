@@ -54,6 +54,11 @@ protocol CalibrationStorageProtocol: Sendable {
 
 /// CalibrationStorageProtocolのUserDefaults実装
 /// アプリケーションのキャリブレーションデータを永続化する
+///
+/// `@unchecked Sendable` の安全性:
+/// - `userDefaults`: UserDefaults は内部でスレッドセーフに実装されている
+/// - `lock`: NSLock によりすべての読み書き操作が排他制御されている
+/// - `logger`: Logger はスレッドセーフ
 final class CalibrationStorage: CalibrationStorageProtocol, @unchecked Sendable {
     // MARK: - Private Properties
 

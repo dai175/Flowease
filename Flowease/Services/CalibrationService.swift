@@ -196,16 +196,14 @@ final class CalibrationService: CalibrationServiceProtocol {
         // 失敗判定（顔未検出を優先）
         if progress.shouldFailNoFaceDetected {
             state = .failed(.noFaceDetected)
-            currentProgress = nil
-            accumulatedFacePositions = nil
+            clearCalibrationData()
             logger.warning("Calibration failed: consecutive face detection failures")
             return
         }
 
         if progress.shouldFailLowConfidence {
             state = .failed(.lowConfidence)
-            currentProgress = nil
-            accumulatedFacePositions = nil
+            clearCalibrationData()
             logger.warning("Calibration failed: consecutive low quality frames")
             return
         }
@@ -223,6 +221,14 @@ final class CalibrationService: CalibrationServiceProtocol {
     }
 
     // MARK: - Private Methods
+
+    /// キャリブレーションデータをクリア
+    ///
+    /// 失敗時・完了時の共通クリーンアップ処理。
+    private func clearCalibrationData() {
+        currentProgress = nil
+        accumulatedFacePositions = nil
+    }
 
     /// 顔フレームの品質を評価
     ///
@@ -247,8 +253,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         // フレーム数が不足していれば失敗
         guard accumulated.frameCount >= FaceReferencePosture.minimumFrameCount else {
             state = .failed(.insufficientFrames)
-            currentProgress = nil
-            accumulatedFacePositions = nil
+            clearCalibrationData()
             logger.warning("""
             Calibration failed: insufficient frames \
             (\(accumulated.frameCount) < \(FaceReferencePosture.minimumFrameCount))
@@ -262,8 +267,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         // 品質チェック
         guard facePosture.isValid else {
             state = .failed(.lowConfidence)
-            currentProgress = nil
-            accumulatedFacePositions = nil
+            clearCalibrationData()
             logger.warning("Calibration failed: average quality insufficient")
             return
         }
@@ -273,8 +277,7 @@ final class CalibrationService: CalibrationServiceProtocol {
 
         // 状態を完了に
         state = .completed
-        currentProgress = nil
-        accumulatedFacePositions = nil
+        clearCalibrationData()
 
         logger.info("""
         Calibration complete: frameCount=\(facePosture.frameCount), \
