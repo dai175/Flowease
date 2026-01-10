@@ -148,8 +148,8 @@ struct FaceDetectorTests {
 
 /// テスト用のモックFaceDetector
 final class MockFaceDetector: FaceDetectorProtocol, Sendable {
-    /// 返却するFacePosition
-    private let positionToReturn: FacePosition?
+    /// 返却する結果
+    private let resultToReturn: Result<FacePosition, FaceDetectionError>
 
     /// detectが呼ばれた回数をアトミックに管理
     private let callCountActor = CallCountActor()
@@ -159,13 +159,19 @@ final class MockFaceDetector: FaceDetectorProtocol, Sendable {
         get async { await callCountActor.count }
     }
 
-    init(positionToReturn: FacePosition? = nil) {
-        self.positionToReturn = positionToReturn
+    /// 成功ケース用イニシャライザ
+    init(positionToReturn: FacePosition) {
+        self.resultToReturn = .success(positionToReturn)
     }
 
-    func detect(from _: sending CMSampleBuffer) async -> FacePosition? {
+    /// 失敗ケース用イニシャライザ
+    init(errorToReturn: FaceDetectionError = .noFaceDetected) {
+        self.resultToReturn = .failure(errorToReturn)
+    }
+
+    func detect(from _: sending CMSampleBuffer) async -> Result<FacePosition, FaceDetectionError> {
         await callCountActor.increment()
-        return positionToReturn
+        return resultToReturn
     }
 }
 

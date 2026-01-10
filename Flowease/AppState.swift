@@ -72,16 +72,14 @@ final class AppState {
     }
 
     /// 監視状態に応じたアイコン色を取得
+    ///
+    /// ColorGradient を使用してスコアから色を計算（重複実装を排除）
     private func iconColor(for state: MonitoringState) -> NSColor {
         switch state {
         case .active:
-            let score = postureViewModel.smoothedScore
-            let clampedScore = min(max(score, 0), 100)
-            let hue = CGFloat(clampedScore) / 300.0
-            return NSColor(hue: hue, saturation: 0.8, brightness: 0.9, alpha: 1.0)
-
+            return ColorGradient.nsColor(fromScore: postureViewModel.smoothedScore)
         case .paused, .disabled:
-            return .gray
+            return ColorGradient.nsGray
         }
     }
 }

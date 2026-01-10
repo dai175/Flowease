@@ -9,6 +9,21 @@ import Foundation
 import OSLog
 @preconcurrency import Vision
 
+// MARK: - FaceDetectionError
+
+/// 顔検出エラー
+///
+/// Vision Framework で発生する可能性のあるエラーを分類する。
+enum FaceDetectionError: Error, Sendable, Equatable {
+    /// 顔が検出されなかった
+    case noFaceDetected
+
+    /// Vision Framework のリクエスト実行エラー
+    ///
+    /// - Parameter description: エラーの詳細説明
+    case visionRequestFailed(String)
+}
+
 // MARK: - FaceDetectorProtocol
 
 /// 顔検出プロトコル
@@ -18,8 +33,8 @@ import OSLog
 protocol FaceDetectorProtocol: Sendable {
     /// CMSampleBufferから顔を検出
     /// - Parameter sampleBuffer: カメラからのフレームデータ
-    /// - Returns: 検出された顔の位置情報、検出失敗時は nil
-    func detect(from sampleBuffer: sending CMSampleBuffer) async -> FacePosition?
+    /// - Returns: 検出結果（成功時は FacePosition、失敗時はエラー）
+    func detect(from sampleBuffer: sending CMSampleBuffer) async -> Result<FacePosition, FaceDetectionError>
 }
 
 // MARK: - FaceDetector
@@ -49,8 +64,9 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
     /// 複数の顔が検出された場合は最大面積の顔を選択する（FR-007）。
     ///
     /// - Parameter sampleBuffer: カメラからのフレームデータ
-    /// - Returns: 検出された顔の位置情報、検出失敗時は nil
-    nonisolated func detect(from sampleBuffer: sending CMSampleBuffer) async -> FacePosition? {
+    /// - Returns: 検出結果（成功時は FacePosition、失敗時はエラー）
+    nonisolated func detect(from sampleBuffer: sending CMSampleBuffer) async
+        -> Result<FacePosition, FaceDetectionError> {
         // Vision処理はCPU負荷が高いためバックグラウンドスレッドで実行
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async { [self] in
@@ -66,7 +82,8 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
     ///
     /// 単一のVNImageRequestHandlerでfaceRectRequestとcaptureQualityRequestを
     /// バンドル実行し、効率的に顔検出と品質評価を行う（research.md参照）。
-    private nonisolated func performDetection(sampleBuffer: CMSampleBuffer) -> FacePosition? {
+    private nonisolated func performDetection(sampleBuffer: CMSampleBuffer)
+        -> Result<FacePosition, FaceDetectionError> {
         let faceRectRequest = VNDetectFaceRectanglesRequest()
         let captureQualityRequest = VNDetectFaceCaptureQualityRequest()
 
@@ -82,13 +99,13 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
 
             guard let rectResults = faceRectRequest.results else {
                 logger.debug("No face detection result: results is nil")
-                return nil
+                return .failure(.noFaceDetected)
             }
 
             // 複数顔から最大面積を選択（FR-007）
             guard let largestFace = selectLargestFace(from: rectResults) else {
                 logger.debug("No face detection result: 0 faces detected")
-                return nil
+                return .failure(.noFaceDetected)
             }
 
             // 最大面積の顔に対応する品質値を取得
@@ -107,10 +124,10 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
             quality=\(String(format: "%.2f", position.captureQuality))
             """)
 
-            return position
+            return .success(position)
         } catch {
-            logger.error("Face detection error: \(error.localizedDescription)")
-            return nil
+            logger.error("Vision request failed: \(error.localizedDescription)")
+            return .failure(.visionRequestFailed(error.localizedDescription))
         }
     }
 
