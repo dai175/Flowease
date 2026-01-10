@@ -94,9 +94,9 @@ Based on plan.md structure:
 
 ### Tests for User Story 2
 
-- [ ] T018 [P] [US2] Test device disconnection detection in CameraDeviceManager in FloweaseTests/CameraDeviceManagerTests.swift
-- [ ] T019 [P] [US2] Test auto-resume on reconnection in CameraService in FloweaseTests/CameraServiceTests.swift
-- [ ] T020 [P] [US2] Test PauseReason.selectedCameraDisconnected handling in FloweaseTests/MonitoringStateTests.swift
+- [x] T018 [P] [US2] Test device disconnection detection in CameraDeviceManager in FloweaseTests/CameraDeviceManagerTests.swift
+- [x] T019 [P] [US2] Test auto-resume on reconnection in CameraService in FloweaseTests/CameraServiceTests.swift
+- [x] T020 [P] [US2] Test PauseReason.selectedCameraDisconnected handling in FloweaseTests/MonitoringStateTests.swift
 
 ### Implementation for User Story 2
 

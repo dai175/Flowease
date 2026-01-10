@@ -151,85 +151,55 @@ final class MonitoringStateTests: XCTestCase {
     }
 
     // MARK: - PauseReason Description Tests
+    //
+    // 注: description/actionHint は String(localized:) を使用しローカライズされるため、
+    // ロケールに依存しない検証として「空でないこと」のみを確認します。
 
     func testPauseReason_cameraInitializing_description() {
-        // Given / When
         let reason = PauseReason.cameraInitializing
-
-        // Then
-        XCTAssertEqual(reason.description, "Initializing camera...")
+        XCTAssertFalse(reason.description.isEmpty)
     }
 
     func testPauseReason_noFaceDetected_description() {
-        // Given / When
         let reason = PauseReason.noFaceDetected
-
-        // Then
-        XCTAssertEqual(reason.description, "Face not detected")
+        XCTAssertFalse(reason.description.isEmpty)
     }
 
     func testPauseReason_cameraInUse_description() {
-        // Given / When
         let reason = PauseReason.cameraInUse
-
-        // Then
-        XCTAssertEqual(reason.description, "Camera is being used by another app")
+        XCTAssertFalse(reason.description.isEmpty)
     }
 
     // MARK: - DisableReason Description Tests
 
     func testDisableReason_cameraPermissionDenied_description() {
-        // Given / When
         let reason = DisableReason.cameraPermissionDenied
-
-        // Then
-        XCTAssertEqual(reason.description, "Camera access denied")
+        XCTAssertFalse(reason.description.isEmpty)
     }
 
     func testDisableReason_cameraPermissionDenied_actionHint() {
-        // Given / When
         let reason = DisableReason.cameraPermissionDenied
-
-        // Then
-        XCTAssertEqual(
-            reason.actionHint,
-            "Go to System Settings > Privacy & Security > Camera to grant permission"
-        )
+        XCTAssertFalse(reason.actionHint.isEmpty)
     }
 
     func testDisableReason_cameraPermissionRestricted_description() {
-        // Given / When
         let reason = DisableReason.cameraPermissionRestricted
-
-        // Then
-        XCTAssertEqual(reason.description, "Camera access restricted")
+        XCTAssertFalse(reason.description.isEmpty)
     }
 
     func testDisableReason_cameraPermissionRestricted_actionHint() {
-        // Given / When
         let reason = DisableReason.cameraPermissionRestricted
-
-        // Then
-        XCTAssertEqual(
-            reason.actionHint,
-            "Contact your system administrator to request camera access"
-        )
+        XCTAssertFalse(reason.actionHint.isEmpty)
     }
 
     func testDisableReason_noCameraAvailable_description() {
-        // Given / When
         let reason = DisableReason.noCameraAvailable
-
-        // Then
-        XCTAssertEqual(reason.description, "Camera not found")
+        XCTAssertFalse(reason.description.isEmpty)
     }
 
     func testDisableReason_noCameraAvailable_actionHint() {
-        // Given / When
         let reason = DisableReason.noCameraAvailable
-
-        // Then
-        XCTAssertEqual(reason.actionHint, "Please connect an external camera")
+        XCTAssertFalse(reason.actionHint.isEmpty)
     }
 
     // MARK: - State Transition Scenario Tests
@@ -339,5 +309,102 @@ final class MonitoringStateTests: XCTestCase {
         } else {
             XCTFail("Expected active state after transition")
         }
+    }
+
+    // MARK: - T020: PauseReason.selectedCameraDisconnected Tests
+
+    /// PauseReason.selectedCameraDisconnected のハンドリングテスト
+    ///
+    /// T020 [US2]: Test PauseReason.selectedCameraDisconnected handling
+    ///
+    /// これらのテストは selectedCameraDisconnected ケースの状態遷移を検証
+
+    /// PauseReason.selectedCameraDisconnected の description を確認
+    func testPauseReason_selectedCameraDisconnected_description() {
+        let reason = PauseReason.selectedCameraDisconnected
+        XCTAssertFalse(reason.description.isEmpty)
+    }
+
+    /// 状態遷移: active → paused (.selectedCameraDisconnected)
+    /// シナリオ: 監視中に選択されたカメラが切断された
+    func testStateTransition_activeToPaused_selectedCameraDisconnected() {
+        // Given: 初期状態は監視中
+        let score = makePostureScore(value: 80)
+        var currentState: MonitoringState = .active(score)
+
+        // When: 選択されたカメラが切断された
+        currentState = .paused(.selectedCameraDisconnected)
+
+        // Then: paused 状態に遷移
+        if case let .paused(reason) = currentState {
+            XCTAssertEqual(reason, .selectedCameraDisconnected)
+        } else {
+            XCTFail("Expected paused state after camera disconnection")
+        }
+    }
+
+    /// 状態遷移: paused (.selectedCameraDisconnected) → active
+    /// シナリオ: 選択されたカメラが再接続され、顔を検出した
+    func testStateTransition_pausedSelectedCameraDisconnectedToActive() {
+        // Given: 初期状態はカメラ切断
+        var currentState: MonitoringState = .paused(.selectedCameraDisconnected)
+
+        // When: カメラが再接続され、顔を検出
+        let score = makePostureScore(value: 75)
+        currentState = .active(score)
+
+        // Then: active 状態に遷移
+        if case let .active(resultScore) = currentState {
+            XCTAssertEqual(resultScore.value, 75)
+        } else {
+            XCTFail("Expected active state after camera reconnection")
+        }
+    }
+
+    /// 状態遷移: paused (.selectedCameraDisconnected) → paused (.cameraInitializing)
+    /// シナリオ: 選択されたカメラが再接続され、初期化開始
+    func testStateTransition_pausedDisconnectedToPausedInitializing() {
+        // Given: 初期状態はカメラ切断
+        var currentState: MonitoringState = .paused(.selectedCameraDisconnected)
+
+        // When: カメラが再接続され、初期化開始
+        currentState = .paused(.cameraInitializing)
+
+        // Then: cameraInitializing 状態に遷移
+        if case let .paused(reason) = currentState {
+            XCTAssertEqual(reason, .cameraInitializing)
+        } else {
+            XCTFail("Expected paused(.cameraInitializing) state")
+        }
+    }
+
+    /// PauseReason.selectedCameraDisconnected の Equatable 準拠を確認
+    func testPauseReason_selectedCameraDisconnected_equatable() {
+        // Given
+        let reason1 = PauseReason.selectedCameraDisconnected
+        let reason2 = PauseReason.selectedCameraDisconnected
+        let reason3 = PauseReason.noFaceDetected
+
+        // Then
+        XCTAssertEqual(reason1, reason2, "Same reasons should be equal")
+        XCTAssertNotEqual(reason1, reason3, "Different reasons should not be equal")
+    }
+
+    /// MonitoringState.paused(.selectedCameraDisconnected) の Equatable 準拠を確認
+    func testMonitoringState_pausedSelectedCameraDisconnected_equatable() {
+        // Given
+        let state1 = MonitoringState.paused(.selectedCameraDisconnected)
+        let state2 = MonitoringState.paused(.selectedCameraDisconnected)
+        let state3 = MonitoringState.paused(.cameraInUse)
+
+        // Then
+        XCTAssertEqual(state1, state2, "Same states should be equal")
+        XCTAssertNotEqual(state1, state3, "Different states should not be equal")
+    }
+
+    /// PauseReason.lowDetectionQuality の description を確認
+    func testPauseReason_lowDetectionQuality_description() {
+        let reason = PauseReason.lowDetectionQuality
+        XCTAssertFalse(reason.description.isEmpty)
     }
 }
