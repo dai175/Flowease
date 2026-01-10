@@ -27,8 +27,10 @@ final class AppState {
 
     /// メニューバーアイコン（スコアに応じた色）
     var menuBarIcon: NSImage {
-        let color = iconColor(for: postureViewModel.monitoringState)
-        return createIcon(color: color)
+        MenuBarIcon.create(
+            for: postureViewModel.monitoringState,
+            score: postureViewModel.smoothedScore
+        )
     }
 
     // MARK: - Initialization
@@ -52,34 +54,6 @@ final class AppState {
         // 初期化を開始
         Task {
             await postureViewModel.initialize()
-        }
-    }
-
-    // MARK: - Private Methods
-
-    /// アイコン画像を作成
-    private func createIcon(color: NSColor) -> NSImage {
-        let size = CGSize(width: 18, height: 18)
-        let image = NSImage(size: size)
-
-        image.lockFocus()
-        color.setFill()
-        NSBezierPath(ovalIn: NSRect(x: 3, y: 3, width: 12, height: 12)).fill()
-        image.unlockFocus()
-
-        image.isTemplate = false
-        return image
-    }
-
-    /// 監視状態に応じたアイコン色を取得
-    ///
-    /// ColorGradient を使用してスコアから色を計算（重複実装を排除）
-    private func iconColor(for state: MonitoringState) -> NSColor {
-        switch state {
-        case .active:
-            return ColorGradient.nsColor(fromScore: postureViewModel.smoothedScore)
-        case .paused, .disabled:
-            return ColorGradient.nsGray
         }
     }
 }
