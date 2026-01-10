@@ -53,8 +53,11 @@ final class PostureViewModel {
 
     /// キャリブレーションリセット通知の購読
     ///
-    /// Note: deinit からアクセスするため nonisolated(unsafe) を使用。
-    /// このプロパティは init と deinit でのみ変更される。
+    /// Note: @MainActor クラスの deinit は nonisolated であるため、
+    /// deinit からこのプロパティにアクセスするには nonisolated(unsafe) が必要。
+    /// このプロパティは init で設定され、deinit でのみ読み取られる。
+    /// Xcode の警告「has no effect」は Swift の @Observable マクロとの相互作用による
+    /// 誤検知であり、実際には deinit でのアクセスに必要。
     private nonisolated(unsafe) var calibrationResetObserver: NSObjectProtocol?
 
     /// CameraService の selectedCameraID 変更を購読
