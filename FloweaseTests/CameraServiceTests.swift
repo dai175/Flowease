@@ -181,22 +181,25 @@ struct CameraServiceTests {
     // MARK: - Edge Case Tests
 
     /// 空文字列の ID を選択した場合の動作
+    ///
+    /// 空文字列は有効な String として UserDefaults に保存される。
+    /// カメラ解決時にはマッチするデバイスが見つからず、フォールバックが発生する。
     @Test func selectCameraWithEmptyStringID() {
         cleanupUserDefaults()
         let service = CameraService()
 
         service.selectCamera("")
 
-        // 空文字列は有効な ID として扱われるべきではない
-        // 実装により nil と同等に扱われるか、または保存されるかは設計次第
-        // ここでは UserDefaults の動作を確認
+        // 空文字列は有効な ID として UserDefaults に保存される
         let storedID = UserDefaults.standard.string(forKey: selectedCameraKey)
-
-        // 空文字列が保存された場合、フォールバックが発生するべき
         #expect(
-            storedID == "" || storedID == nil,
-            "Empty string ID handling should be consistent"
+            storedID == "",
+            "Empty string should be stored as-is in UserDefaults"
         )
+
+        // 空文字列は availableCameras のどのデバイスIDともマッチしない
+        let matchesAnyDevice = service.availableCameras.contains { $0.id == "" }
+        #expect(!matchesAnyDevice, "Empty string should not match any device ID")
 
         cleanupUserDefaults()
     }

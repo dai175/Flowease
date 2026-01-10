@@ -31,7 +31,7 @@ test:
 	xcodebuild -scheme Flowease -destination 'platform=macOS' test
 
 lint:
-	@swiftlint lint --quiet
+	@swiftlint lint --strict
 
 format:
 	@swiftformat .
