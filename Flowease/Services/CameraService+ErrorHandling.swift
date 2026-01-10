@@ -31,6 +31,9 @@ extension CameraService {
             case .deviceInUseByAnotherApplication:
                 // 他のアプリがカメラを使用中
                 .cameraInUse
+            case .deviceWasDisconnected, .deviceNotConnected:
+                // カメラが切断された
+                .selectedCameraDisconnected
             default:
                 // その他のエラー（セッション設定エラーとして扱う）
                 .sessionConfigurationFailed
