@@ -43,8 +43,14 @@ struct StatusMenuView: View {
                 .foregroundStyle(.secondary)
 
         case let .paused(reason):
-            Label(reason.description, systemImage: "pause.circle")
-                .foregroundStyle(.secondary)
+            if reason == .selectedCameraDisconnected {
+                // カメラ切断時は警告色で表示
+                Label(reason.description, systemImage: "video.slash")
+                    .foregroundStyle(.orange)
+            } else {
+                Label(reason.description, systemImage: "pause.circle")
+                    .foregroundStyle(.secondary)
+            }
 
         case let .disabled(reason):
             CameraPermissionView(reason: reason)

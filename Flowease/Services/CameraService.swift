@@ -71,8 +71,33 @@ final class CameraService: NSObject, CameraServiceProtocol {
 
     override init() {
         super.init()
+
+        // 保存された選択カメラIDを deviceManager に設定
+        deviceManager.selectedCameraID = UserDefaults.standard.string(forKey: Self.selectedCameraKey)
+
+        // 切断/再接続コールバックを設定
+        deviceManager.onSelectedCameraDisconnected = { [weak self] in
+            self?.handleSelectedCameraDisconnected()
+        }
+        deviceManager.onSelectedCameraReconnected = { [weak self] in
+            self?.handleSelectedCameraReconnected()
+        }
+
         deviceManager.setupDiscoverySession()
         logger.debug("CameraService initialized")
+    }
+
+    // MARK: - Device Change Handlers
+
+    private func handleSelectedCameraDisconnected() {
+        logger.warning("Selected camera disconnected: \(self.selectedCameraID ?? "unknown")")
+        stopCapturing()
+        frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.selectedCameraDisconnected)
+    }
+
+    private func handleSelectedCameraReconnected() {
+        logger.info("Selected camera reconnected: \(self.selectedCameraID ?? "unknown"), auto-resuming capture")
+        startCapturing()
     }
 
     // MARK: - Public Methods
@@ -247,6 +272,10 @@ final class CameraService: NSObject, CameraServiceProtocol {
             UserDefaults.standard.removeObject(forKey: Self.selectedCameraKey)
             logger.info("Camera selection cleared (using system default)")
         }
+
+        // deviceManager にも selectedCameraID を同期
+        deviceManager.selectedCameraID = deviceID
+        deviceManager.resetDisconnectionState()
 
         // キャプチャ中であれば新しいカメラでセッションを再起動
         if isCapturing {
