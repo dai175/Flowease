@@ -605,7 +605,20 @@
       }
     },
     "Recalibrate" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recalibrate"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再キャリブレーション"
+          }
+        }
+      }
     },
     "Reconfigure" : {
       "localizations" : {
