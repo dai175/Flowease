@@ -75,7 +75,7 @@
 
 ### Tests for User Story 1
 
-- [ ] T012 [P] [US1] Create PostureAlertServiceTests in FloweaseTests/PostureAlertServiceTests.swift
+- [X] T012 [P] [US1] Create PostureAlertServiceTests in FloweaseTests/PostureAlertServiceTests.swift
   - Test: 平均スコアが閾値以下で通知がトリガーされる
   - Test: 姿勢改善後に通知状態がリセットされる
   - Test: 最短通知間隔内は再通知されない
@@ -83,23 +83,23 @@
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Create PostureAlertService in Flowease/Services/PostureAlertService.swift
+- [X] T013 [US1] Create PostureAlertService in Flowease/Services/PostureAlertService.swift
   - Implement evaluate() method with notification logic
   - Implement state management (AlertState)
   - Implement data completeness check
   - Add Logger for debugging
 
-- [ ] T014 [US1] Integrate PostureAlertService into AppState in Flowease/ViewModels/AppState.swift
+- [X] T014 [US1] Integrate PostureAlertService into AppState in Flowease/ViewModels/AppState.swift
   - Add ScoreHistory instance
   - Add PostureAlertService instance
   - Call scoreHistory.add() when score updates
   - Call alertService.evaluate() after adding score
 
-- [ ] T015 [US1] Request notification permission at appropriate time
+- [X] T015 [US1] Request notification permission at appropriate time
   - Check authorization status in NotificationManager
   - Request permission when alert is enabled and not yet authorized
 
-- [ ] T016 [US1] Verify tests pass and notification flow works end-to-end
+- [X] T016 [US1] Verify tests pass and notification flow works end-to-end
 
 **Checkpoint**: User Story 1 complete - core notification functionality works independently
 
