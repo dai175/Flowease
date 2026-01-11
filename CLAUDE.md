@@ -64,3 +64,10 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - Date formatting: System locale via `DateFormatter`
 
 **Important**: When adding new UI strings (Button labels, Text, etc.), always add localizations to `Localizable.xcstrings` for both `en` and `ja`. Empty entries will cause raw key names to display in non-English locales.
+
+## Active Technologies
+- Swift 6.0 + SwiftUI, UserNotifications, OSLog (006-posture-alert)
+- UserDefaults（既存のCalibrationStorageパターンを踏襲） (006-posture-alert)
+
+## Recent Changes
+- 006-posture-alert: Added Swift 6.0 + SwiftUI, UserNotifications, OSLog
