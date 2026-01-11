@@ -27,72 +27,215 @@ struct StatusMenuView: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        // アプリ名
-        Text("Flowease")
-            .font(.headline)
+        VStack(spacing: 12) {
+            // ヒーローセクション（スコア or 状態表示）
+            heroSection
 
-        Divider()
+            // キャリブレーションカード
+            CalibrationCard(
+                isCalibrated: calibrationViewModel.isCalibrated,
+                statusSummary: calibrationViewModel.statusSummary,
+                recommendationMessage: calibrationViewModel.recommendationMessage,
+                onReset: {
+                    calibrationViewModel.resetCalibration()
+                    NotificationCenter.default.post(name: .calibrationReset, object: nil)
+                },
+                onConfigure: {
+                    openWindow(id: "calibration")
+                }
+            )
 
-        // 監視状態に応じた表示（高さを固定して状態変化時のジャンプを防止）
-        VStack {
-            switch viewModel.monitoringState {
-            case .active:
-                Text("\(viewModel.smoothedScore)")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(viewModel.iconColor)
-                Text("Monitoring Posture")
+            // カメラ選択（authorized 時のみ表示）
+            if viewModel.cameraAuthorizationStatus == .authorized {
+                HStack {
+                    Image(systemName: "camera")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                    CameraSelectionView(
+                        availableCameras: viewModel.availableCameras,
+                        selectedCameraID: viewModel.selectedCameraID,
+                        onSelect: { viewModel.selectCamera($0) }
+                    )
+                }
+            }
+
+            // 終了ボタン
+            Button {
+                NSApplication.shared.terminate(nil)
+            } label: {
+                HStack {
+                    Text("Quit")
+                        .font(.subheadline)
+                    Spacer()
+                    Text("⌘Q")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            .buttonStyle(.plain)
+            .keyboardShortcut("q")
+        }
+        .padding(12)
+    }
+
+    // MARK: - Private Views
+
+    @ViewBuilder
+    private var heroSection: some View {
+        switch viewModel.monitoringState {
+        case .active:
+            ScoreHeroSection(score: viewModel.smoothedScore, color: viewModel.iconColor)
+        case let .paused(reason):
+            PausedStateView(reason: reason)
+        case let .disabled(reason):
+            CameraPermissionView(reason: reason)
+                .frame(height: 80)
+        }
+    }
+}
+
+// MARK: - ScoreHeroSection
+
+/// スコアを大きく表示するヒーローセクション
+private struct ScoreHeroSection: View {
+    let score: Int
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text("\(score)")
+                .font(.system(size: 48, weight: .bold, design: .rounded))
+                .foregroundStyle(color)
+                .contentTransition(.numericText())
+
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(color)
+                    .frame(width: 6, height: 6)
+                Text("Monitoring")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+        }
+        .frame(height: 80)
+    }
+}
 
-            case let .paused(reason):
-                if reason == .selectedCameraDisconnected {
-                    // カメラ切断時は警告色で表示
-                    Label(reason.description, systemImage: "video.slash")
-                        .foregroundStyle(.orange)
-                } else {
-                    Label(reason.description, systemImage: "pause.circle")
+// MARK: - PausedStateView
+
+/// 一時停止状態を表示するビュー
+private struct PausedStateView: View {
+    let reason: PauseReason
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: iconName)
+                .font(.system(size: 28))
+                .foregroundStyle(iconColor)
+
+            Text(reason.description)
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(height: 80)
+    }
+
+    private var iconName: String {
+        switch reason {
+        case .cameraInitializing:
+            "camera.aperture"
+        case .noFaceDetected:
+            "person.crop.circle.badge.questionmark"
+        case .cameraInUse:
+            "video.badge.ellipsis"
+        case .lowDetectionQuality:
+            "exclamationmark.circle"
+        case .selectedCameraDisconnected:
+            "video.slash.fill"
+        }
+    }
+
+    private var iconColor: Color {
+        switch reason {
+        case .selectedCameraDisconnected, .lowDetectionQuality:
+            .orange
+        default:
+            .secondary
+        }
+    }
+}
+
+// MARK: - CalibrationCard
+
+/// キャリブレーション状態を表示するカード
+private struct CalibrationCard: View {
+    let isCalibrated: Bool
+    let statusSummary: String
+    let recommendationMessage: String?
+    let onReset: () -> Void
+    let onConfigure: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                // ステータスアイコン（円形バッジ）
+                ZStack {
+                    Circle()
+                        .fill(statusColor.opacity(0.15))
+                        .frame(width: 28, height: 28)
+                    Image(systemName: isCalibrated ? "checkmark" : "person.crop.circle.badge.plus")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(statusColor)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Calibration")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    Text(statusSummary)
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                 }
 
-            case let .disabled(reason):
-                CameraPermissionView(reason: reason)
+                Spacer()
+
+                // アクション
+                if isCalibrated {
+                    Menu {
+                        Button("Reconfigure", action: onConfigure)
+                        Divider()
+                        Button("Reset", role: .destructive, action: onReset)
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 16))
+                            .foregroundStyle(.secondary)
+                    }
+                    .menuStyle(.borderlessButton)
+                } else {
+                    Button("Configure", action: onConfigure)
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                }
+            }
+
+            // 未キャリブレーション時の推奨メッセージ
+            if let message = recommendationMessage {
+                Text(message)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, 36)
             }
         }
-        .frame(height: 60)
-
-        Divider()
-
-        // キャリブレーション状態表示
-        CalibrationStatusRow(
-            isCalibrated: calibrationViewModel.isCalibrated,
-            statusSummary: calibrationViewModel.statusSummary,
-            recommendationMessage: calibrationViewModel.recommendationMessage,
-            onReset: {
-                calibrationViewModel.resetCalibration()
-                // 通知を送信してPostureViewModelでScoreCalculatorをクリア
-                NotificationCenter.default.post(name: .calibrationReset, object: nil)
-            },
-            onConfigure: {
-                openWindow(id: "calibration")
-            }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(.controlBackgroundColor))
         )
+    }
 
-        // カメラ選択（authorized 時のみ表示）
-        if viewModel.cameraAuthorizationStatus == .authorized {
-            Divider()
-            CameraSelectionView(
-                availableCameras: viewModel.availableCameras,
-                selectedCameraID: viewModel.selectedCameraID,
-                onSelect: { viewModel.selectCamera($0) }
-            )
-        }
-
-        Divider()
-
-        // 終了ボタン
-        Button("Quit") {
-            NSApplication.shared.terminate(nil)
-        }
-        .keyboardShortcut("q")
+    private var statusColor: Color {
+        isCalibrated ? .green : .blue
     }
 }
 
@@ -101,69 +244,6 @@ struct StatusMenuView: View {
 /// キャリブレーションリセット通知
 extension Notification.Name {
     static let calibrationReset = Notification.Name("calibrationReset")
-}
-
-// MARK: - CalibrationStatusRow
-
-/// キャリブレーション状態を表示する行
-private struct CalibrationStatusRow: View {
-    /// キャリブレーション済みかどうか
-    let isCalibrated: Bool
-
-    /// キャリブレーション状態のサマリー（日時含む）
-    let statusSummary: String
-
-    /// 推奨メッセージ（未キャリブレーション時のみ）
-    let recommendationMessage: String?
-
-    /// リセットアクション
-    let onReset: () -> Void
-
-    /// 設定アクション
-    let onConfigure: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                // 状態アイコン
-                Image(systemName: isCalibrated ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(isCalibrated ? .green : .secondary)
-
-                // 状態テキスト
-                Text("Calibration: \(statusSummary)")
-                    .font(.subheadline)
-                    .foregroundStyle(isCalibrated ? .primary : .secondary)
-
-                Spacer()
-
-                // リセットボタン（キャリブレーション済みの場合のみ表示）
-                if isCalibrated {
-                    Button("Reset") {
-                        onReset()
-                    }
-                    .buttonStyle(.borderless)
-                    .foregroundStyle(.secondary)
-                    .controlSize(.small)
-                }
-
-                // キャリブレーションボタン
-                Button(isCalibrated ? "Reconfigure" : "Configure") {
-                    onConfigure()
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-            }
-
-            // 未キャリブレーション時の推奨メッセージ
-            if let message = recommendationMessage {
-                Text(message)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.leading, 24) // アイコンの幅に合わせてインデント
-            }
-        }
-        .frame(height: 44, alignment: .top)
-    }
 }
 
 // MARK: - MockCameraService
