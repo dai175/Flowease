@@ -21,7 +21,7 @@
       "comment" : "Numeric score display - no translation needed"
     },
     "⌘Q" : {
-
+      "comment" : "Keyboard shortcut - no translation needed"
     },
     "An unexpected error occurred" : {
       "localizations" : {
@@ -56,7 +56,20 @@
       }
     },
     "Calibration" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibration"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーション"
+          }
+        }
+      }
     },
     "Calibration Complete" : {
       "localizations" : {
@@ -106,23 +119,7 @@
         }
       }
     },
-    "Calibration: %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Calibration: %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "キャリブレーション: %@"
-          }
-        }
-      }
-    },
+
     "Camera" : {
       "comment" : "Camera selection picker label",
       "localizations" : {
@@ -433,25 +430,22 @@
       }
     },
     "Monitoring" : {
-
-    },
-    "Monitoring Posture" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitoring Posture"
+            "value" : "Monitoring"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "姿勢モニタリング中"
+            "value" : "モニタリング中"
           }
         }
       }
     },
+
     "Not configured" : {
       "localizations" : {
         "en" : {

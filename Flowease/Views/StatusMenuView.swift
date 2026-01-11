@@ -38,7 +38,6 @@ struct StatusMenuView: View {
                 recommendationMessage: calibrationViewModel.recommendationMessage,
                 onReset: {
                     calibrationViewModel.resetCalibration()
-                    NotificationCenter.default.post(name: .calibrationReset, object: nil)
                 },
                 onConfigure: {
                     openWindow(id: "calibration")
