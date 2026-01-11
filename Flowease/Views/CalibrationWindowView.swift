@@ -168,10 +168,19 @@ struct CalibrationWindowView: View {
             .buttonStyle(.bordered)
 
         case .completed:
-            Button("Close") {
-                dismissWindow(id: "calibration")
+            HStack(spacing: 12) {
+                Button("Recalibrate") {
+                    Task {
+                        await viewModel.startCalibration()
+                    }
+                }
+                .buttonStyle(.bordered)
+
+                Button("Close") {
+                    dismissWindow(id: "calibration")
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
         }
     }
 }

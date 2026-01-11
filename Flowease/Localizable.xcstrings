@@ -119,7 +119,6 @@
         }
       }
     },
-
     "Camera" : {
       "comment" : "Camera selection picker label",
       "localizations" : {
@@ -445,7 +444,6 @@
         }
       }
     },
-
     "Not configured" : {
       "localizations" : {
         "en" : {
@@ -605,6 +603,9 @@
           }
         }
       }
+    },
+    "Recalibrate" : {
+
     },
     "Reconfigure" : {
       "localizations" : {
