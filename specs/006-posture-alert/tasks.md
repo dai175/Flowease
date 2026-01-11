@@ -28,8 +28,8 @@
 
 **Purpose**: Project structure verification (existing project)
 
-- [ ] T001 Verify project builds successfully with `make build`
-- [ ] T002 Verify tests pass with `make test`
+- [X] T001 Verify project builds successfully with `make build`
+- [X] T002 Verify tests pass with `make test`
 
 ---
 
@@ -41,27 +41,27 @@
 
 ### Tests for Foundational
 
-- [ ] T003 [P] Create ScoreHistoryTests in FloweaseTests/ScoreHistoryTests.swift
-- [ ] T004 [P] Create AlertSettingsTests in FloweaseTests/AlertSettingsTests.swift
+- [X] T003 [P] Create ScoreHistoryTests in FloweaseTests/ScoreHistoryTests.swift
+- [X] T004 [P] Create AlertSettingsTests in FloweaseTests/AlertSettingsTests.swift
 
 ### Models
 
-- [ ] T005 [P] Create ScoreRecord struct in Flowease/Models/ScoreRecord.swift
-- [ ] T006 [P] Create AlertSettings struct with validation in Flowease/Models/AlertSettings.swift
-- [ ] T007 [P] Create AlertState struct in Flowease/Models/AlertState.swift
+- [X] T005 [P] Create ScoreRecord struct in Flowease/Models/ScoreRecord.swift
+- [X] T006 [P] Create AlertSettings struct with validation in Flowease/Models/AlertSettings.swift
+- [X] T007 [P] Create AlertState struct in Flowease/Models/AlertState.swift
 
 ### Storage
 
-- [ ] T008 Create AlertSettingsStorage in Flowease/Services/AlertSettingsStorage.swift (depends on T006)
+- [X] T008 Create AlertSettingsStorage in Flowease/Services/AlertSettingsStorage.swift (depends on T006)
 
 ### Core Services
 
-- [ ] T009 Create ScoreHistory class in Flowease/Services/ScoreHistory.swift (depends on T005)
-- [ ] T010 Create NotificationManager in Flowease/Services/NotificationManager.swift
+- [X] T009 Create ScoreHistory class in Flowease/Services/ScoreHistory.swift (depends on T005)
+- [X] T010 Create NotificationManager in Flowease/Services/NotificationManager.swift
 
 ### Localization
 
-- [ ] T011 Add alert notification strings to Flowease/Localizable.xcstrings (en/ja)
+- [X] T011 Add alert notification strings to Flowease/Localizable.xcstrings (en/ja)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 

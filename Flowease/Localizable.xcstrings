@@ -23,6 +23,40 @@
     "⌘Q" : {
       "comment" : "Keyboard shortcut - no translation needed"
     },
+    "alert.body" : {
+      "comment" : "Posture alert notification body",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your posture needs attention"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "姿勢が崩れています"
+          }
+        }
+      }
+    },
+    "alert.title" : {
+      "comment" : "Posture alert notification title",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flowease"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flowease"
+          }
+        }
+      }
+    },
     "An unexpected error occurred" : {
       "localizations" : {
         "en" : {
