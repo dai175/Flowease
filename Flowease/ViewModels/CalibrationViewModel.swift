@@ -119,8 +119,10 @@ final class CalibrationViewModel {
     /// キャリブレーションをリセット（基準姿勢を削除）
     ///
     /// 保存された基準姿勢を削除し、固定しきい値モードに戻る。
+    /// リセット完了後、`.calibrationReset` 通知を送信する。
     func resetCalibration() {
         calibrationService.resetCalibration()
+        NotificationCenter.default.post(name: .calibrationReset, object: nil)
         logger.info("Calibration reset")
     }
 
