@@ -62,3 +62,5 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - Supported languages: English (base), Japanese
 - Logger messages: English only (not localized)
 - Date formatting: System locale via `DateFormatter`
+
+**Important**: When adding new UI strings (Button labels, Text, etc.), always add localizations to `Localizable.xcstrings` for both `en` and `ja`. Empty entries will cause raw key names to display in non-English locales.
