@@ -23,6 +23,17 @@ final class AppState {
 
     private let calibrationService: CalibrationService
 
+    // MARK: - Alert Properties
+
+    /// アラート設定ストレージ
+    let alertSettingsStorage: AlertSettingsStorage
+
+    /// アラート用スコア履歴
+    private let alertScoreHistory: ScoreHistory
+
+    /// 姿勢アラートサービス
+    let alertService: PostureAlertService
+
     // MARK: - Computed Properties
 
     /// メニューバーアイコン（スコアに応じた色）
@@ -36,17 +47,35 @@ final class AppState {
     // MARK: - Initialization
 
     init() {
-        // サービスを作成
+        // キャリブレーションサービスを作成
         let storage = CalibrationStorage()
         let calibrationService = CalibrationService(storage: storage)
         self.calibrationService = calibrationService
+
+        // アラート関連サービスを作成
+        let alertSettingsStorage = AlertSettingsStorage()
+        self.alertSettingsStorage = alertSettingsStorage
+
+        let alertScoreHistory = ScoreHistory()
+        self.alertScoreHistory = alertScoreHistory
+
+        let alertSettings = alertSettingsStorage.load()
+        let notificationManager = NotificationManager()
+        let alertService = PostureAlertService(
+            scoreHistory: alertScoreHistory,
+            settings: alertSettings,
+            notificationManager: notificationManager
+        )
+        self.alertService = alertService
 
         // ViewModel を作成
         postureViewModel = PostureViewModel(
             cameraService: CameraService(),
             postureAnalyzer: PostureAnalyzer(),
             faceScoreCalculator: FaceScoreCalculator(),
-            calibrationService: calibrationService
+            calibrationService: calibrationService,
+            alertScoreHistory: alertScoreHistory,
+            alertService: alertService
         )
 
         calibrationViewModel = CalibrationViewModel(calibrationService: calibrationService)

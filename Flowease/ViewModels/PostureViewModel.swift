@@ -42,6 +42,14 @@ final class PostureViewModel {
     private let calibrationService: CalibrationService
     private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureViewModel")
 
+    // MARK: - Alert Dependencies
+
+    /// アラート用スコア履歴（通知判定用、UI表示用scoreHistoryとは別管理）
+    private let alertScoreHistory: ScoreHistory?
+
+    /// 姿勢アラートサービス
+    private let alertService: PostureAlertService?
+
     // MARK: - Private State
 
     /// 初期化済みフラグ（重複初期化を防止）
@@ -127,16 +135,22 @@ final class PostureViewModel {
     ///   - postureAnalyzer: 姿勢分析サービス
     ///   - faceScoreCalculator: 顔ベーススコア計算サービス
     ///   - calibrationService: キャリブレーションサービス
+    ///   - alertScoreHistory: アラート用スコア履歴（nilでアラート無効）
+    ///   - alertService: 姿勢アラートサービス（nilでアラート無効）
     init(
         cameraService: CameraServiceProtocol,
         postureAnalyzer: PostureAnalyzing,
         faceScoreCalculator: FaceScoreCalculator,
-        calibrationService: CalibrationService
+        calibrationService: CalibrationService,
+        alertScoreHistory: ScoreHistory? = nil,
+        alertService: PostureAlertService? = nil
     ) {
         self.cameraService = cameraService
         self.postureAnalyzer = postureAnalyzer
         self.faceScoreCalculator = faceScoreCalculator
         self.calibrationService = calibrationService
+        self.alertScoreHistory = alertScoreHistory
+        self.alertService = alertService
 
         // 初期値を同期
         selectedCameraID = cameraService.selectedCameraID
@@ -263,6 +277,7 @@ final class PostureViewModel {
     ///
     /// 新しいスコアを履歴に追加し、監視状態を `active` に更新する。
     /// 履歴が最大件数を超えた場合は古いものから削除する。
+    /// アラートサービスが設定されている場合は通知判定も実行する。
     ///
     /// - Parameter score: 追加する姿勢スコア
     func addScore(_ score: PostureScore) {
@@ -276,14 +291,24 @@ final class PostureViewModel {
         // 状態を active に更新
         monitoringState = .active(score)
         logger.debug("Score added: \(score.value), smoothed score: \(self.smoothedScore)")
+
+        // アラート用スコア履歴に追加し、通知判定を実行
+        if let alertHistory = alertScoreHistory, let service = alertService {
+            alertHistory.add(score)
+            Task {
+                await service.evaluate()
+            }
+        }
     }
 
     /// スコア履歴をクリア
     ///
     /// 監視が中断された場合などに呼び出す。
+    /// アラートサービスの状態と履歴もリセットする。
     func clearScoreHistory() {
         scoreHistory.removeAll()
-        logger.debug("Score history cleared")
+        alertService?.reset()
+        logger.debug("Score history cleared (including alert history)")
     }
 
     /// 姿勢監視を開始
