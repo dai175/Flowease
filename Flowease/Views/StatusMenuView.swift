@@ -33,28 +33,31 @@ struct StatusMenuView: View {
 
         Divider()
 
-        // 監視状態に応じた表示
-        switch viewModel.monitoringState {
-        case .active:
-            Text("\(viewModel.smoothedScore)")
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundStyle(viewModel.iconColor)
-            Text("Monitoring Posture")
-                .foregroundStyle(.secondary)
-
-        case let .paused(reason):
-            if reason == .selectedCameraDisconnected {
-                // カメラ切断時は警告色で表示
-                Label(reason.description, systemImage: "video.slash")
-                    .foregroundStyle(.orange)
-            } else {
-                Label(reason.description, systemImage: "pause.circle")
+        // 監視状態に応じた表示（高さを固定して状態変化時のジャンプを防止）
+        VStack {
+            switch viewModel.monitoringState {
+            case .active:
+                Text("\(viewModel.smoothedScore)")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundStyle(viewModel.iconColor)
+                Text("Monitoring Posture")
                     .foregroundStyle(.secondary)
-            }
 
-        case let .disabled(reason):
-            CameraPermissionView(reason: reason)
+            case let .paused(reason):
+                if reason == .selectedCameraDisconnected {
+                    // カメラ切断時は警告色で表示
+                    Label(reason.description, systemImage: "video.slash")
+                        .foregroundStyle(.orange)
+                } else {
+                    Label(reason.description, systemImage: "pause.circle")
+                        .foregroundStyle(.secondary)
+                }
+
+            case let .disabled(reason):
+                CameraPermissionView(reason: reason)
+            }
         }
+        .frame(height: 60)
 
         Divider()
 
@@ -159,6 +162,7 @@ private struct CalibrationStatusRow: View {
                     .padding(.leading, 24) // アイコンの幅に合わせてインデント
             }
         }
+        .frame(height: 44, alignment: .top)
     }
 }
 
