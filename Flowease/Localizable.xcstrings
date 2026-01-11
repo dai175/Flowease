@@ -20,6 +20,9 @@
     "%lld" : {
       "comment" : "Numeric score display - no translation needed"
     },
+    "⌘Q" : {
+
+    },
     "An unexpected error occurred" : {
       "localizations" : {
         "en" : {
@@ -51,6 +54,9 @@
           }
         }
       }
+    },
+    "Calibration" : {
+
     },
     "Calibration Complete" : {
       "localizations" : {
@@ -101,6 +107,7 @@
       }
     },
     "Calibration: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -374,9 +381,6 @@
         }
       }
     },
-    "Flowease" : {
-      "comment" : "App name - no translation needed"
-    },
     "Go to System Settings > Privacy & Security > Camera to grant permission" : {
       "localizations" : {
         "en" : {
@@ -428,7 +432,11 @@
         }
       }
     },
+    "Monitoring" : {
+
+    },
     "Monitoring Posture" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
