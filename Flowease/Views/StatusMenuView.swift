@@ -45,41 +45,37 @@ struct StatusMenuView: View {
                 calibrationSection
             }
 
+            // カメラ選択（authorized 時のみ表示）
+            if viewModel.cameraAuthorizationStatus == .authorized {
+                HStack {
+                    Image(systemName: "camera")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                    CameraSelectionView(
+                        availableCameras: viewModel.availableCameras,
+                        selectedCameraID: viewModel.selectedCameraID,
+                        onSelect: { viewModel.selectCamera($0) }
+                    )
+                }
+            }
+
             Divider()
 
-            // === Utility: カメラ選択 + 終了 ===
-            HStack {
-                // カメラ選択（authorized 時のみ表示）
-                if viewModel.cameraAuthorizationStatus == .authorized {
-                    HStack(spacing: 4) {
-                        Image(systemName: "camera")
-                            .font(.system(size: 11))
-                            .foregroundStyle(.tertiary)
-                        CameraSelectionView(
-                            availableCameras: viewModel.availableCameras,
-                            selectedCameraID: viewModel.selectedCameraID,
-                            onSelect: { viewModel.selectCamera($0) }
-                        )
-                    }
+            // 終了ボタン
+            Button {
+                NSApplication.shared.terminate(nil)
+            } label: {
+                HStack {
+                    Text("Quit")
+                        .font(.subheadline)
+                    Spacer()
+                    Text("⌘Q")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
-
-                Spacer()
-
-                // 終了ボタン
-                Button {
-                    NSApplication.shared.terminate(nil)
-                } label: {
-                    HStack(spacing: 4) {
-                        Text("Quit")
-                            .font(.caption)
-                        Text("⌘Q")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-                .buttonStyle(.plain)
-                .keyboardShortcut("q")
             }
+            .buttonStyle(.plain)
+            .keyboardShortcut("q")
         }
         .padding(12)
     }
