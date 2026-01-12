@@ -154,14 +154,18 @@ private struct ScoreHeroSection: View {
     }
 
     private var scoreDisplay: String {
-        score.map { "\($0)" } ?? "--"
+        if let score {
+            return "\(score)"
+        } else {
+            return "--"
+        }
     }
 
     private var statusLabel: String {
         if let score {
-            ScoreStatus(score: score).label
+            return ScoreStatus(score: score).label
         } else {
-            String(localized: "Paused")
+            return String(localized: "Paused")
         }
     }
 }
