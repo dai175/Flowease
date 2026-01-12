@@ -187,6 +187,186 @@ struct AlertSettingsTests {
     }
 }
 
+/// AlertSettingsStorageのテスト
+@MainActor
+struct AlertSettingsStorageTests {
+    // MARK: - Test Helper
+
+    /// テスト用のUserDefaultsスイート
+    private func makeTestUserDefaults() -> UserDefaults {
+        let suiteName = "cc.focuswave.Flowease.AlertSettingsStorageTests.\(UUID().uuidString)"
+        let userDefaults = UserDefaults(suiteName: suiteName)!
+        // テスト開始時に既存データをクリア
+        userDefaults.removePersistentDomain(forName: suiteName)
+        return userDefaults
+    }
+
+    // MARK: - Persistence Tests
+
+    @Test func settingsAreSavedAndLoaded() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+        let customSettings = AlertSettings(
+            isEnabled: false,
+            threshold: 45,
+            evaluationPeriodSeconds: 180,
+            minimumIntervalSeconds: 1800
+        )
+
+        // When
+        storage.save(customSettings)
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings.isEnabled == false)
+        #expect(loadedSettings.threshold == 45)
+        #expect(loadedSettings.evaluationPeriodSeconds == 180)
+        #expect(loadedSettings.minimumIntervalSeconds == 1800)
+        #expect(loadedSettings == customSettings)
+    }
+
+    @Test func loadReturnsDefaultsWhenNoDataSaved() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+
+        // When
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings == AlertSettings.default)
+    }
+
+    @Test func resetClearsAllSettings() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+        let customSettings = AlertSettings(
+            isEnabled: false,
+            threshold: 30,
+            evaluationPeriodSeconds: 120,
+            minimumIntervalSeconds: 600
+        )
+        storage.save(customSettings)
+
+        // When
+        storage.reset()
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings == AlertSettings.default)
+    }
+
+    // MARK: - Validation Tests (Clamping)
+
+    @Test func loadClampsThresholdBelowMinimum() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        userDefaults.set(10, forKey: AlertSettingsKeys.threshold) // 範囲外（下限20未満）
+
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+
+        // When
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings.threshold == 20) // 下限にクランプ
+    }
+
+    @Test func loadClampsThresholdAboveMaximum() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        userDefaults.set(100, forKey: AlertSettingsKeys.threshold) // 範囲外（上限80超過）
+
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+
+        // When
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings.threshold == 80) // 上限にクランプ
+    }
+
+    @Test func loadClampsEvaluationPeriodBelowMinimum() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        userDefaults.set(30, forKey: AlertSettingsKeys.evaluationPeriod) // 範囲外（下限60未満）
+
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+
+        // When
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings.evaluationPeriodSeconds == 60) // 下限にクランプ
+    }
+
+    @Test func loadClampsEvaluationPeriodAboveMaximum() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        userDefaults.set(1200, forKey: AlertSettingsKeys.evaluationPeriod) // 範囲外（上限600超過）
+
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+
+        // When
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings.evaluationPeriodSeconds == 600) // 上限にクランプ
+    }
+
+    @Test func loadClampsMinimumIntervalBelowMinimum() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        userDefaults.set(100, forKey: AlertSettingsKeys.minimumInterval) // 範囲外（下限300未満）
+
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+
+        // When
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings.minimumIntervalSeconds == 300) // 下限にクランプ
+    }
+
+    @Test func loadClampsMinimumIntervalAboveMaximum() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        userDefaults.set(7200, forKey: AlertSettingsKeys.minimumInterval) // 範囲外（上限3600超過）
+
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+
+        // When
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings.minimumIntervalSeconds == 3600) // 上限にクランプ
+    }
+
+    // MARK: - Partial Save Tests
+
+    @Test func loadPreservesValidValuesWhenSomeInvalid() {
+        // Given
+        let userDefaults = makeTestUserDefaults()
+        userDefaults.set(false, forKey: AlertSettingsKeys.isEnabled)
+        userDefaults.set(50, forKey: AlertSettingsKeys.threshold) // 有効
+        userDefaults.set(30, forKey: AlertSettingsKeys.evaluationPeriod) // 無効（下限未満）
+        userDefaults.set(1200, forKey: AlertSettingsKeys.minimumInterval) // 有効
+
+        let storage = AlertSettingsStorage(userDefaults: userDefaults)
+
+        // When
+        let loadedSettings = storage.load()
+
+        // Then
+        #expect(loadedSettings.isEnabled == false)
+        #expect(loadedSettings.threshold == 50)
+        #expect(loadedSettings.evaluationPeriodSeconds == 60) // クランプ
+        #expect(loadedSettings.minimumIntervalSeconds == 1200)
+    }
+}
+
 /// AlertStateのテスト
 @MainActor
 struct AlertStateTests {

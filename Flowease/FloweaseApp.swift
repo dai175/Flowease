@@ -22,7 +22,8 @@ struct FloweaseApp: App {
         MenuBarExtra {
             StatusMenuView(
                 viewModel: appState.postureViewModel,
-                calibrationViewModel: appState.calibrationViewModel
+                calibrationViewModel: appState.calibrationViewModel,
+                appState: appState
             )
             .frame(width: 280)
         } label: {
