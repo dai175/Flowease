@@ -9,7 +9,7 @@ import Foundation
 ///
 /// Note: この状態は永続化されない。アプリ再起動時は`referencePosture`の有無から
 /// `notCalibrated`または`completed`に復帰する。
-enum CalibrationState: Sendable {
+enum CalibrationState: Sendable, Equatable {
     /// キャリブレーション未実行
     /// 初回起動時、またはリセット後の状態
     case notCalibrated
@@ -69,25 +69,6 @@ enum CalibrationState: Sendable {
             return "設定済み"
         case .failed:
             return "設定失敗"
-        }
-    }
-}
-
-// MARK: Equatable
-
-extension CalibrationState: Equatable {
-    static func == (lhs: CalibrationState, rhs: CalibrationState) -> Bool {
-        switch (lhs, rhs) {
-        case (.notCalibrated, .notCalibrated):
-            return true
-        case let (.inProgress(lhsProgress), .inProgress(rhsProgress)):
-            return lhsProgress == rhsProgress
-        case (.completed, .completed):
-            return true
-        case let (.failed(lhsFailure), .failed(rhsFailure)):
-            return lhsFailure == rhsFailure
-        default:
-            return false
         }
     }
 }
