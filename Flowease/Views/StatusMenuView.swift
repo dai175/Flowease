@@ -133,9 +133,7 @@ private struct ScoreHeroSection: View {
             }
 
             HStack(spacing: 4) {
-                Circle()
-                    .fill(color)
-                    .frame(width: 6, height: 6)
+                PulsingDot(color: color)
                 Text("Monitoring")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -167,6 +165,41 @@ private enum ScoreStatus {
         case .fair: String(localized: "Fair")
         case .poor: String(localized: "Poor")
         }
+    }
+}
+
+// MARK: - PulsingDot
+
+/// パルスアニメーション付きのドット（外側に広がるリング効果）
+private struct PulsingDot: View {
+    let color: Color
+
+    private static let dotSize: CGFloat = 6
+    private static let pulseAnimation = Animation.easeOut(duration: 1.2).repeatForever(autoreverses: false)
+
+    @State private var isPulsing = false
+
+    var body: some View {
+        ZStack {
+            pulseRing
+            centerDot
+        }
+        .onAppear { isPulsing = true }
+    }
+
+    private var pulseRing: some View {
+        Circle()
+            .stroke(color, lineWidth: 1)
+            .frame(width: Self.dotSize, height: Self.dotSize)
+            .scaleEffect(isPulsing ? 2.5 : 1.0)
+            .opacity(isPulsing ? 0 : 0.8)
+            .animation(Self.pulseAnimation, value: isPulsing)
+    }
+
+    private var centerDot: some View {
+        Circle()
+            .fill(color)
+            .frame(width: Self.dotSize, height: Self.dotSize)
     }
 }
 
