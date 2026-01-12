@@ -18,7 +18,7 @@ import UserNotifications
 /// - または、最短通知間隔が経過した場合（リマインド）
 @MainActor
 final class PostureAlertService {
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureAlertService")
+    private let logger = Logger.postureAlertService
 
     // MARK: - Dependencies
 

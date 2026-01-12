@@ -85,7 +85,7 @@ final class CalibrationStorage: CalibrationStorageProtocol, @unchecked Sendable 
     private let userDefaults: UserDefaults
 
     /// ロガー
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "CalibrationStorage")
+    private let logger = Logger.calibrationStorage
 
     /// スレッドセーフなアクセスのためのロック
     private let lock = NSLock()

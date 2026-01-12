@@ -29,39 +29,33 @@ enum CalibrationState: Sendable {
     // MARK: - Convenience Properties
 
     /// キャリブレーション未実行かどうか
-    var isNotCalibrated: Bool {
-        if case .notCalibrated = self { return true }
-        return false
-    }
+    var isNotCalibrated: Bool { self == .notCalibrated }
 
     /// キャリブレーション実行中かどうか
     var isInProgress: Bool {
-        if case .inProgress = self { return true }
-        return false
+        guard case .inProgress = self else { return false }
+        return true
     }
 
     /// キャリブレーション完了かどうか
-    var isCompleted: Bool {
-        if case .completed = self { return true }
-        return false
-    }
+    var isCompleted: Bool { self == .completed }
 
     /// キャリブレーション失敗かどうか
     var isFailed: Bool {
-        if case .failed = self { return true }
-        return false
+        guard case .failed = self else { return false }
+        return true
     }
 
     /// 進行状況（実行中の場合のみ）
     var progress: CalibrationProgress? {
-        if case let .inProgress(progress) = self { return progress }
-        return nil
+        guard case let .inProgress(progress) = self else { return nil }
+        return progress
     }
 
     /// 失敗理由（失敗の場合のみ）
     var failure: CalibrationFailure? {
-        if case let .failed(failure) = self { return failure }
-        return nil
+        guard case let .failed(failure) = self else { return nil }
+        return failure
     }
 
     /// ユーザー向けの状態説明

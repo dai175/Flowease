@@ -24,7 +24,7 @@ protocol NotificationManagerProtocol: Sendable {
 /// UNUserNotificationCenterを使用してローカル通知を管理する。
 /// 権限リクエストと通知送信を担当。
 final class NotificationManager: NotificationManagerProtocol, Sendable {
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "NotificationManager")
+    private let logger = Logger.notificationManager
     private let notificationCenter: UNUserNotificationCenter
 
     /// 姿勢アラート通知の固定識別子（新しい通知が古い通知を置き換える）

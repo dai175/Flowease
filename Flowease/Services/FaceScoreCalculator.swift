@@ -41,7 +41,7 @@ protocol FaceScoreCalculatorProtocol: AnyObject {
 final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     // MARK: - Properties
 
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "FaceScoreCalculator")
+    private let logger = Logger.faceScoreCalculator
 
     /// 基準姿勢（キャリブレーション済みの場合に設定）
     private(set) var referencePosture: FaceReferencePosture?

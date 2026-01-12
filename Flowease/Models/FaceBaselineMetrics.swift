@@ -43,9 +43,6 @@ struct FaceBaselineMetrics: Codable, Sendable, Equatable {
 
     /// NaN/Infinite値をデフォルト値にサニタイズ
     private static func sanitize(_ value: Double, default defaultValue: Double) -> Double {
-        if value.isNaN || value.isInfinite {
-            return defaultValue
-        }
-        return value
+        value.isFinite ? value : defaultValue
     }
 }

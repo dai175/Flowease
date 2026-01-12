@@ -46,111 +46,21 @@ struct CalibrationView: View {
     private var contentView: some View {
         switch viewModel.state {
         case .notCalibrated:
-            notCalibratedView
+            CalibrationNotCalibratedView()
 
         case .inProgress:
-            inProgressView
-
-        case .completed:
-            completedView
-
-        case let .failed(failure):
-            failedView(failure: failure)
-        }
-    }
-
-    // MARK: - Not Calibrated View
-
-    private var notCalibratedView: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "person.crop.circle")
-                .font(.system(size: 40))
-                .foregroundStyle(.secondary)
-
-            Text("Please assume good posture")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            Text("Face the camera and maintain a relaxed, good posture for 3 seconds.")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.vertical, 8)
-    }
-
-    // MARK: - In Progress View
-
-    private var inProgressView: some View {
-        VStack(spacing: 16) {
-            CalibrationProgressView(
+            CalibrationInProgressView(
                 progress: viewModel.progress,
-                remainingSeconds: viewModel.remainingSeconds
+                remainingSeconds: viewModel.remainingSeconds,
+                warningMessage: viewModel.qualityWarningMessage
             )
 
-            Text("Maintain your posture...")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        case .completed:
+            CalibrationCompletedView()
 
-            // 検出品質警告
-            if let warningMessage = viewModel.qualityWarningMessage {
-                HStack(spacing: 6) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.orange)
-                    Text(warningMessage)
-                        .font(.caption)
-                        .foregroundStyle(.orange)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(.orange.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 6))
-            }
+        case let .failed(failure):
+            CalibrationFailedView(failure: failure)
         }
-        .padding(.vertical, 8)
-    }
-
-    // MARK: - Completed View
-
-    private var completedView: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(.green)
-
-            Text("Calibration Complete")
-                .font(.subheadline)
-                .foregroundStyle(.primary)
-
-            Text("Your good posture has been recorded as the baseline.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.vertical, 8)
-    }
-
-    // MARK: - Failed View
-
-    private func failedView(failure: CalibrationFailure) -> some View {
-        VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(.orange)
-
-            Text("Calibration Failed")
-                .font(.subheadline)
-                .foregroundStyle(.primary)
-
-            if !failure.userMessage.isEmpty {
-                Text(failure.userMessage)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .padding(.vertical, 8)
     }
 
     // MARK: - Action Buttons

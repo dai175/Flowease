@@ -79,7 +79,7 @@ final class CalibrationViewModel {
     private let calibrationService: CalibrationServiceProtocol
 
     /// ロガー
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "CalibrationViewModel")
+    private let logger = Logger.calibrationViewModel
 
     // MARK: - Initialization
 

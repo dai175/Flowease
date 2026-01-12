@@ -29,6 +29,21 @@ extension Logger {
     /// FaceScoreCalculator 用ロガー
     static let faceScoreCalculator = Logger(subsystem: subsystem, category: "FaceScoreCalculator")
 
+    /// ScoreHistory 用ロガー
+    static let scoreHistory = Logger(subsystem: subsystem, category: "ScoreHistory")
+
+    /// PostureAlertService 用ロガー
+    static let postureAlertService = Logger(subsystem: subsystem, category: "PostureAlertService")
+
+    /// AlertSettingsStorage 用ロガー
+    static let alertSettingsStorage = Logger(subsystem: subsystem, category: "AlertSettingsStorage")
+
+    /// CameraDeviceManager 用ロガー
+    static let cameraDeviceManager = Logger(subsystem: subsystem, category: "CameraDeviceManager")
+
+    /// NotificationManager 用ロガー
+    static let notificationManager = Logger(subsystem: subsystem, category: "NotificationManager")
+
     // MARK: - ViewModels
 
     /// PostureViewModel 用ロガー

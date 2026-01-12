@@ -40,7 +40,7 @@ final class PostureViewModel {
     /// キャリブレーションサービス
     /// Note: @Observableの追跡を有効にするため、具象型で保持
     private let calibrationService: CalibrationService
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureViewModel")
+    private let logger = Logger.postureViewModel
 
     // MARK: - Alert Dependencies
 
