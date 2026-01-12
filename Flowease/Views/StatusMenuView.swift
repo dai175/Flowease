@@ -66,6 +66,8 @@ struct StatusMenuView: View {
                 }
             }
 
+            Divider()
+
             // 終了ボタン
             Button {
                 NSApplication.shared.terminate(nil)
