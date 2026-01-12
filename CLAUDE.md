@@ -28,10 +28,10 @@ make setup          # Install pre-commit hooks
 ## Architecture
 
 SwiftUI App with MVVM architecture for macOS menu bar:
-- `Models/` - Data models (PostureScore, FacePosition, FaceReferencePosture, MonitoringState, etc.)
+- `Models/` - Data models (PostureScore, FacePosition, FaceReferencePosture, MonitoringState, AlertSettings, AlertState, ScoreRecord, etc.)
 - `ViewModels/` - View models for state management
-- `Views/` - SwiftUI views (StatusMenuView, CameraPermissionView, CalibrationView)
-- `Services/` - Business logic (CameraService, PostureAnalyzer, FaceDetector, FaceScoreCalculator, CalibrationService)
+- `Views/` - SwiftUI views (StatusMenuView, CameraPermissionView, CalibrationView, AlertSettingsView)
+- `Services/` - Business logic (CameraService, PostureAnalyzer, FaceDetector, FaceScoreCalculator, CalibrationService, PostureAlertService, NotificationManager, ScoreHistory, AlertSettingsStorage)
 - `Utilities/` - Helper functions (ColorGradient)
 
 ## Language
@@ -45,12 +45,14 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - **UI**: Swift 6.0 + SwiftUI
 - **Camera**: AVFoundation (video capture, CMSampleBuffer)
 - **Face Detection**: Vision framework (VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest)
-- **Persistence**: UserDefaults (calibration data)
+- **Notifications**: UserNotifications framework (macOS system notifications)
+- **Persistence**: UserDefaults (calibration data, alert settings)
 
 ## Features
 
 - **姿勢スコア表示**: カメラ映像から顔の位置・大きさ・傾きをリアルタイムで分析し、0〜100のスコアで評価
 - **姿勢キャリブレーション**: ユーザー個人の「良い姿勢」を基準として登録し、パーソナライズされた評価を提供
+- **姿勢アラート通知**: 悪い姿勢が一定期間続いた場合にmacOS通知でユーザーに気づきを与える（閾値、評価期間、通知間隔をカスタマイズ可能）
 - **メニューバー常駐**: Dockに表示されず、メニューバーからのみアクセス可能
 - **色グラデーション**: スコアに応じてアイコンの色が変化（緑=良好、赤=要改善）
 - **エッジケース対応**: カメラ利用不可、顔未検出時はグレーアイコンで表示
@@ -64,10 +66,3 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - Date formatting: System locale via `DateFormatter`
 
 **Important**: When adding new UI strings (Button labels, Text, etc.), always add localizations to `Localizable.xcstrings` for both `en` and `ja`. Empty entries will cause raw key names to display in non-English locales.
-
-## Active Technologies
-- Swift 6.0 + SwiftUI, UserNotifications, OSLog (006-posture-alert)
-- UserDefaults（既存のCalibrationStorageパターンを踏襲） (006-posture-alert)
-
-## Recent Changes
-- 006-posture-alert: Added Swift 6.0 + SwiftUI, UserNotifications, OSLog
