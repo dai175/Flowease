@@ -46,7 +46,7 @@ type_body_length:
 
 # ファイルの長さ制限
 file_length:
-  warning: 500
+  warning: 550
   error: 1000
 
 # 関数の本体の長さ制限

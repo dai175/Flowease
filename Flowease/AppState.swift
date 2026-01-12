@@ -42,10 +42,14 @@ final class AppState {
     // MARK: - Computed Properties
 
     /// メニューバーアイコン（スコアに応じた色）
+    ///
+    /// 評価期間平均スコアを使用。データ不足時はリアルタイムスコアにフォールバック。
     var menuBarIcon: NSImage {
-        MenuBarIcon.create(
+        let score = postureViewModel.evaluationPeriodAverageScore.map { Int($0) }
+            ?? postureViewModel.smoothedScore
+        return MenuBarIcon.create(
             for: postureViewModel.monitoringState,
-            score: postureViewModel.smoothedScore
+            score: score
         )
     }
 

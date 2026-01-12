@@ -110,14 +110,16 @@ struct StatusMenuView: View {
         switch viewModel.monitoringState {
         case .active:
             ScoreHeroSection(
-                score: viewModel.smoothedScore,
-                color: viewModel.iconColor,
+                averageScore: viewModel.evaluationPeriodAverageScore.map { Int($0) },
+                realtimeScore: viewModel.smoothedScore,
+                fallbackColor: viewModel.iconColor,
                 status: viewModel.stabilizedScoreStatus
             )
         case let .paused(reason):
             ScoreHeroSection(
-                score: nil,
-                color: .secondary,
+                averageScore: nil,
+                realtimeScore: nil,
+                fallbackColor: .secondary,
                 pauseReason: reason.description
             )
         case let .disabled(reason):
@@ -141,48 +143,84 @@ struct StatusMenuView: View {
 // MARK: - ScoreHeroSection
 
 /// スコアを大きく表示するヒーローセクション
+///
+/// 評価期間平均をメインに表示し、リアルタイムスコアをアークゲージで補助表示する。
 private struct ScoreHeroSection: View {
-    let score: Int?
-    let color: Color
+    /// 評価期間平均スコア（メイン表示）
+    let averageScore: Int?
+    /// リアルタイムスコア（ゲージ表示）
+    let realtimeScore: Int?
+    /// フォールバック用の色（paused時など）
+    let fallbackColor: Color
     /// 外部から渡された安定化されたステータス（3秒平均）
     var status: ScoreStatus?
     var pauseReason: String?
 
     private var isPaused: Bool { pauseReason != nil }
 
+    /// スコアに基づくグラデーション色
+    private var scoreColor: Color {
+        if let avg = averageScore {
+            return ColorGradient.color(fromScore: avg)
+        }
+        if let realtime = realtimeScore {
+            return ColorGradient.color(fromScore: realtime)
+        }
+        return fallbackColor
+    }
+
     var body: some View {
         VStack(spacing: 4) {
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(scoreDisplay)
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
-                    .foregroundStyle(color)
-                    .contentTransition(.numericText())
+            ZStack {
+                // リアルタイムスコアのアークゲージ（外側）
+                if let realtime = realtimeScore {
+                    RealtimeScoreGauge(score: realtime)
+                } else {
+                    // 一時停止時は空のゲージを表示
+                    RealtimeScoreGauge(score: 0)
+                        .opacity(0.3)
+                }
 
-                Text(statusLabel)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(color.opacity(0.8))
+                // 評価期間平均スコア（中央）
+                VStack(spacing: 0) {
+                    Text(scoreDisplay)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundStyle(scoreColor)
+                        .contentTransition(.numericText())
+
+                    Text(statusLabel)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(scoreColor.opacity(0.8))
+                }
             }
 
             HStack(spacing: 4) {
-                PulsingDot(color: color, isPaused: isPaused)
+                PulsingDot(color: scoreColor, isPaused: isPaused)
                 Text(pauseReason ?? String(localized: "Monitoring"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
-                    .frame(width: 140, alignment: .leading)
             }
         }
-        .frame(height: 80)
+        .frame(height: 100)
     }
 
     private var scoreDisplay: String {
-        score.map { "\($0)" } ?? "--"
+        // 評価期間平均があれば表示、なければリアルタイムスコアにフォールバック
+        if let avg = averageScore {
+            return "\(avg)"
+        }
+        if let realtime = realtimeScore {
+            return "\(realtime)"
+        }
+        return "--"
     }
 
     private var statusLabel: String {
         // 外部から渡されたステータスを優先（3秒平均の安定化された状態）
         if let status { return status.label }
-        if let score { return ScoreStatus(score: score).label }
+        if let averageScore { return ScoreStatus(score: averageScore).label }
+        if let realtimeScore { return ScoreStatus(score: realtimeScore).label }
         return String(localized: "Paused")
     }
 }

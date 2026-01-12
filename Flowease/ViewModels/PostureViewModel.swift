@@ -79,6 +79,17 @@ final class PostureViewModel {
     /// 状態平均化の期間（秒）
     private let stateAveragingPeriodSeconds: TimeInterval = 3.0
 
+    // MARK: - Detection Failure Stabilization
+
+    /// 連続検出失敗のカウンター
+    private var consecutiveFailureCount: Int = 0
+
+    /// 状態遷移に必要な連続失敗回数の閾値（一時的な検出失敗を無視するため）
+    private let failureThreshold: Int = 5
+
+    /// 検出失敗時のスコア減少量（1フレームあたり）
+    private let scoreDecayPerFrame: Int = 5
+
     // MARK: - Constants
 
     /// スコア履歴の最大保持件数
@@ -86,13 +97,33 @@ final class PostureViewModel {
 
     // MARK: - Computed Properties
 
-    /// 平滑化されたスコア
+    /// 平滑化されたスコア（リアルタイム表示用）
     ///
     /// スコア履歴の移動平均を返す。履歴が空の場合は 0 を返す。
     var smoothedScore: Int {
         guard !scoreHistory.isEmpty else { return 0 }
         let sum = scoreHistory.reduce(0) { $0 + $1.value }
         return sum / scoreHistory.count
+    }
+
+    /// 評価期間内の平均スコア（メイン表示・通知判定用）
+    ///
+    /// アラート設定の評価期間内の平均スコアを返す。
+    /// アラートサービスが設定されていない場合、または評価期間内にデータがない場合は nil を返す。
+    var evaluationPeriodAverageScore: Double? {
+        guard let history = alertScoreHistory,
+              let service = alertService else { return nil }
+        return history.averageScore(within: service.settings.evaluationPeriodSeconds)
+    }
+
+    /// 評価期間（分）
+    ///
+    /// アラート設定から評価期間を取得する。
+    /// アラートサービスが設定されていない場合はデフォルト値を返す。
+    var evaluationPeriodMinutes: Int {
+        let seconds = alertService?.settings.evaluationPeriodSeconds
+            ?? AlertSettings.default.evaluationPeriodSeconds
+        return seconds / 60
     }
 
     /// 安定化されたスコアステータス
@@ -373,6 +404,7 @@ final class PostureViewModel {
         cameraService.stopCapturing()
         cameraService.frameDelegate = nil
         clearScoreHistory()
+        consecutiveFailureCount = 0
         monitoringState = .paused(.cameraInitializing)
         logger.info("Posture monitoring stopped")
     }
@@ -380,56 +412,73 @@ final class PostureViewModel {
     // MARK: - Private Methods
 
     /// フレームから顔を分析してスコアを更新
-    ///
-    /// - Parameter sampleBuffer: カメラからのフレームデータ
     private func processFrame(_ sampleBuffer: CMSampleBuffer) async {
-        // タスク完了時に参照をクリア（次のフレーム処理を許可）
         defer { processingTask = nil }
+        guard cameraService.isCapturing else { return }
 
-        // 停止後に飛んできたフレームは無視
-        guard cameraService.isCapturing else {
-            return
-        }
-
-        // 顔を分析
         let result = await postureAnalyzer.analyze(sampleBuffer: sampleBuffer)
 
         switch result {
         case let .success(facePosition):
-            // 顔分析中に停止された場合は無視
-            guard cameraService.isCapturing else {
-                return
-            }
-
-            // キャリブレーション中であればフレームを渡す
-            if calibrationService.state.isInProgress {
-                calibrationService.processFaceFrame(facePosition)
-
-                // キャリブレーション完了後、基準姿勢を設定
-                if calibrationService.state.isCompleted,
-                   let referencePosture = calibrationService.faceReferencePosture {
-                    faceScoreCalculator.setReferencePosture(referencePosture)
-                    logger.info("Calibration complete: Set reference posture to FaceScoreCalculator")
-                }
-                return
-            }
-
-            // スコアを計算
-            guard let score = faceScoreCalculator.calculate(from: facePosition) else {
-                logger.debug("Score calculation failed (reference posture not set or invalid data)")
-                return
-            }
-
-            // スコアを追加（状態は addScore 内で active に更新される）
-            addScore(score)
-
+            handleSuccessfulDetection(facePosition)
         case .noFaceDetected:
-            pauseIfActive(reason: .noFaceDetected, logMessage: "Paused due to no face detected")
-
+            handleNoFaceDetected()
         case .lowDetectionQuality:
-            pauseIfActive(reason: .lowDetectionQuality, logMessage: "Paused due to low detection quality")
-
+            break // 一時的な品質低下は無視
         case .visionError:
+            handleVisionError()
+        }
+    }
+
+    /// 顔検出成功時の処理
+    private func handleSuccessfulDetection(_ facePosition: FacePosition) {
+        consecutiveFailureCount = 0
+        guard cameraService.isCapturing else { return }
+
+        if calibrationService.state.isInProgress {
+            calibrationService.processFaceFrame(facePosition)
+            if calibrationService.state.isCompleted,
+               let referencePosture = calibrationService.faceReferencePosture {
+                faceScoreCalculator.setReferencePosture(referencePosture)
+                logger.info("Calibration complete: Set reference posture to FaceScoreCalculator")
+            }
+            return
+        }
+
+        guard let score = faceScoreCalculator.calculate(from: facePosition) else {
+            logger.debug("Score calculation failed (reference posture not set or invalid data)")
+            return
+        }
+        addScore(score)
+    }
+
+    /// 顔未検出時の処理（スコアを徐々に減少）
+    private func handleNoFaceDetected() {
+        if let lastScore = scoreHistory.last {
+            let decayedValue = lastScore.value - scoreDecayPerFrame
+            if decayedValue > 0 {
+                let decayedScore = PostureScore(
+                    value: decayedValue,
+                    timestamp: Date(),
+                    breakdown: lastScore.breakdown,
+                    confidence: 0.0
+                )
+                addScore(decayedScore)
+            } else {
+                pauseIfActive(reason: .noFaceDetected, logMessage: "Paused due to no face detected (score decayed)")
+            }
+        } else {
+            consecutiveFailureCount += 1
+            if consecutiveFailureCount >= failureThreshold {
+                pauseIfActive(reason: .noFaceDetected, logMessage: "Paused due to no face detected")
+            }
+        }
+    }
+
+    /// Vision エラー時の処理
+    private func handleVisionError() {
+        consecutiveFailureCount += 1
+        if consecutiveFailureCount >= failureThreshold {
             pauseIfActive(reason: .cameraInitializing, logMessage: "Paused due to Vision framework error")
         }
     }
@@ -437,6 +486,7 @@ final class PostureViewModel {
     /// アクティブ状態の場合のみ一時停止する
     ///
     /// スコア履歴をクリアし、指定された理由で一時停止状態に遷移する。
+    /// 連続失敗カウンターもリセットする。
     /// - Parameters:
     ///   - reason: 一時停止の理由
     ///   - logMessage: ログに出力するメッセージ
@@ -444,6 +494,7 @@ final class PostureViewModel {
         guard case .active = monitoringState else { return }
         monitoringState = .paused(reason)
         clearScoreHistory()
+        consecutiveFailureCount = 0
         logger.debug("\(logMessage) (score history cleared)")
     }
 }
