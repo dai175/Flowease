@@ -105,4 +105,23 @@ enum CameraServiceError: Error, Sendable, Equatable {
     case selectedCameraDisconnected
     /// 選択されたカメラが失敗し、システムデフォルトにフォールバックした
     case selectedCameraFailed
+
+    /// MonitoringStateへの変換
+    /// selectedCameraFailedはフォールバック成功を意味するためnilを返す
+    var asMonitoringState: MonitoringState? {
+        switch self {
+        case .noCameraAvailable:
+            .disabled(.noCameraAvailable)
+        case .permissionDenied:
+            .disabled(.cameraPermissionDenied)
+        case .cameraInUse:
+            .paused(.cameraInUse)
+        case .sessionConfigurationFailed:
+            .paused(.cameraInitializing)
+        case .selectedCameraDisconnected:
+            .paused(.selectedCameraDisconnected)
+        case .selectedCameraFailed:
+            nil // フォールバック成功、状態変更なし
+        }
+    }
 }

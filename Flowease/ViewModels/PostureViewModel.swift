@@ -432,19 +432,10 @@ extension PostureViewModel: CameraFrameDelegate {
 
         // エラーの種類に応じて状態を更新
         if let cameraError = error as? CameraServiceError {
-            switch cameraError {
-            case .noCameraAvailable:
-                monitoringState = .disabled(.noCameraAvailable)
-            case .permissionDenied:
-                monitoringState = .disabled(.cameraPermissionDenied)
-            case .cameraInUse:
-                monitoringState = .paused(.cameraInUse)
-            case .sessionConfigurationFailed:
-                monitoringState = .paused(.cameraInitializing)
-            case .selectedCameraDisconnected:
-                monitoringState = .paused(.selectedCameraDisconnected)
-            case .selectedCameraFailed:
-                // フォールバック成功: 状態は変更しない（カメラは動作中）
+            if let newState = cameraError.asMonitoringState {
+                monitoringState = newState
+            } else {
+                // selectedCameraFailed: フォールバック成功、状態変更なし
                 logger.warning("Selected camera failed, using fallback camera")
             }
         } else {

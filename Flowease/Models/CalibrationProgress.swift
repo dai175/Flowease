@@ -69,21 +69,17 @@ struct CalibrationProgress: Sendable, Equatable {
         max(0.0, targetDuration - elapsedTime)
     }
 
-    /// 失敗すべきかどうか
-    /// 低信頼度または顔未検出が約1秒（30フレーム）連続したら失敗
-    var shouldFail: Bool {
-        lowConfidenceStreak >= CalibrationProgress.failureThreshold ||
-            noFaceStreak >= CalibrationProgress.failureThreshold
-    }
-
-    /// 顔未検出で失敗すべきかどうか
-    var shouldFailNoFaceDetected: Bool {
-        noFaceStreak >= CalibrationProgress.failureThreshold
-    }
-
-    /// 低信頼度で失敗すべきかどうか
-    var shouldFailLowConfidence: Bool {
-        lowConfidenceStreak >= CalibrationProgress.failureThreshold
+    /// 失敗理由（失敗すべき状態でない場合はnil）
+    /// 低信頼度または顔未検出が約1秒（30フレーム）連続したら失敗と判定
+    /// 顔未検出を優先して判定
+    var failureReason: CalibrationFailure? {
+        if noFaceStreak >= Self.failureThreshold {
+            return .noFaceDetected
+        }
+        if lowConfidenceStreak >= Self.failureThreshold {
+            return .lowConfidence
+        }
+        return nil
     }
 
     /// キャリブレーション完了判定
