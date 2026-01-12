@@ -63,4 +63,50 @@ enum ColorGradient {
 
     /// グレー色（NSColor）
     static let nsGray: NSColor = .gray
+
+    // MARK: - Fixed Status Colors
+
+    /// ステータスに対応する固定色（SwiftUI）
+    ///
+    /// グラデーションではなく、Good/Fair/Poor の3段階で固定色を返す。
+    /// - Good: 緑 (hue: 0.333)
+    /// - Fair: 黄 (hue: 0.166)
+    /// - Poor: 橙 (hue: 0.05)
+    ///
+    /// - Parameter status: スコアステータス
+    /// - Returns: ステータスに対応した固定色
+    static func color(for status: ScoreStatus) -> Color {
+        Color(
+            hue: hue(for: status),
+            saturation: saturation,
+            brightness: brightness
+        )
+    }
+
+    /// ステータスに対応する固定色（NSColor）
+    ///
+    /// メニューバーアイコンなど AppKit コンポーネントで使用。
+    ///
+    /// - Parameter status: スコアステータス
+    /// - Returns: ステータスに対応した NSColor
+    static func nsColor(for status: ScoreStatus) -> NSColor {
+        NSColor(
+            hue: hue(for: status),
+            saturation: saturation,
+            brightness: brightness,
+            alpha: 1.0
+        )
+    }
+
+    /// ステータスから Hue 値を取得
+    ///
+    /// - Parameter status: スコアステータス
+    /// - Returns: 固定の Hue 値
+    private static func hue(for status: ScoreStatus) -> CGFloat {
+        switch status {
+        case .good: 0.333 // 緑
+        case .fair: 0.166 // 黄
+        case .poor: 0.05 // 橙
+        }
+    }
 }

@@ -31,60 +31,80 @@ struct StatusMenuView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            // ヒーローセクション（スコア or 状態表示）
+            // === Primary: スコア + 状態 + モニタリング ===
             heroSection
 
-            // キャリブレーションカード
-            CalibrationCard(
-                isCalibrated: calibrationViewModel.isCalibrated,
-                statusSummary: calibrationViewModel.statusSummary,
-                recommendationMessage: calibrationViewModel.recommendationMessage,
-                onReset: {
-                    calibrationViewModel.resetCalibration()
-                },
-                onConfigure: {
-                    openWindow(id: "calibration")
+            // === Secondary: 設定 ===
+            VStack(spacing: 8) {
+                // 通知設定カード（appStateがある場合のみ表示）
+                if let appState {
+                    alertSettingsCard(appState: appState)
                 }
-            )
 
-            // 通知設定カード（appStateがある場合のみ表示）
-            if let appState {
-                alertSettingsCard(appState: appState)
-            }
-
-            // カメラ選択（authorized 時のみ表示）
-            if viewModel.cameraAuthorizationStatus == .authorized {
-                HStack {
-                    Image(systemName: "camera")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.secondary)
-                    CameraSelectionView(
-                        availableCameras: viewModel.availableCameras,
-                        selectedCameraID: viewModel.selectedCameraID,
-                        onSelect: { viewModel.selectCamera($0) }
-                    )
-                }
+                // キャリブレーションセクション（コンパクト/フル）
+                calibrationSection
             }
 
             Divider()
 
-            // 終了ボタン
-            Button {
-                NSApplication.shared.terminate(nil)
-            } label: {
-                HStack {
-                    Text("Quit")
-                        .font(.subheadline)
-                    Spacer()
-                    Text("⌘Q")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
+            // === Utility: カメラ選択 + 終了 ===
+            HStack {
+                // カメラ選択（authorized 時のみ表示）
+                if viewModel.cameraAuthorizationStatus == .authorized {
+                    HStack(spacing: 4) {
+                        Image(systemName: "camera")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.tertiary)
+                        CameraSelectionView(
+                            availableCameras: viewModel.availableCameras,
+                            selectedCameraID: viewModel.selectedCameraID,
+                            onSelect: { viewModel.selectCamera($0) }
+                        )
+                    }
                 }
+
+                Spacer()
+
+                // 終了ボタン
+                Button {
+                    NSApplication.shared.terminate(nil)
+                } label: {
+                    HStack(spacing: 4) {
+                        Text("Quit")
+                            .font(.caption)
+                        Text("⌘Q")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .buttonStyle(.plain)
+                .keyboardShortcut("q")
             }
-            .buttonStyle(.plain)
-            .keyboardShortcut("q")
         }
         .padding(12)
+    }
+
+    // MARK: - Calibration Section
+
+    /// キャリブレーションセクション
+    ///
+    /// キャリブレーション済みの場合はコンパクト表示、未設定の場合はフルカード表示
+    @ViewBuilder
+    private var calibrationSection: some View {
+        if calibrationViewModel.isCalibrated {
+            CompactCalibrationCard(
+                statusSummary: calibrationViewModel.statusSummary,
+                onReconfigure: { openWindow(id: "calibration") }
+            )
+        } else {
+            CalibrationCard(
+                isCalibrated: calibrationViewModel.isCalibrated,
+                statusSummary: calibrationViewModel.statusSummary,
+                recommendationMessage: calibrationViewModel.recommendationMessage,
+                onReset: { calibrationViewModel.resetCalibration() },
+                onConfigure: { openWindow(id: "calibration") }
+            )
+        }
     }
 
     // MARK: - Private Views
@@ -93,7 +113,11 @@ struct StatusMenuView: View {
     private var heroSection: some View {
         switch viewModel.monitoringState {
         case .active:
-            ScoreHeroSection(score: viewModel.smoothedScore, color: viewModel.iconColor)
+            ScoreHeroSection(
+                score: viewModel.smoothedScore,
+                color: viewModel.iconColor,
+                status: viewModel.stabilizedScoreStatus
+            )
         case let .paused(reason):
             ScoreHeroSection(
                 score: nil,
@@ -124,6 +148,8 @@ struct StatusMenuView: View {
 private struct ScoreHeroSection: View {
     let score: Int?
     let color: Color
+    /// 外部から渡された安定化されたステータス（3秒平均）
+    var status: ScoreStatus?
     var pauseReason: String?
 
     private var isPaused: Bool { pauseReason != nil }
@@ -162,35 +188,13 @@ private struct ScoreHeroSection: View {
     }
 
     private var statusLabel: String {
-        if let score {
+        // 外部から渡されたステータスを優先（3秒平均の安定化された状態）
+        if let status {
+            return status.label
+        } else if let score {
             return ScoreStatus(score: score).label
         } else {
             return String(localized: "Paused")
-        }
-    }
-}
-
-// MARK: - ScoreStatus
-
-/// スコアのステータス（Good/Fair/Poor）
-private enum ScoreStatus {
-    case good
-    case fair
-    case poor
-
-    init(score: Int) {
-        switch score {
-        case 80...: self = .good
-        case 60 ..< 80: self = .fair
-        default: self = .poor
-        }
-    }
-
-    var label: String {
-        switch self {
-        case .good: String(localized: "Good")
-        case .fair: String(localized: "Fair")
-        case .poor: String(localized: "Poor")
         }
     }
 }
@@ -234,79 +238,6 @@ private struct PulsingDot: View {
         Circle()
             .fill(color)
             .frame(width: Self.dotSize, height: Self.dotSize)
-    }
-}
-
-// MARK: - CalibrationCard
-
-/// キャリブレーション状態を表示するカード
-private struct CalibrationCard: View {
-    let isCalibrated: Bool
-    let statusSummary: String
-    let recommendationMessage: String?
-    let onReset: () -> Void
-    let onConfigure: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                // ステータスアイコン（円形バッジ）
-                ZStack {
-                    Circle()
-                        .fill(statusColor.opacity(0.15))
-                        .frame(width: 28, height: 28)
-                    Image(systemName: isCalibrated ? "checkmark" : "person.crop.circle.badge.plus")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(statusColor)
-                }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Calibration")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Text(statusSummary)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                // アクション
-                if isCalibrated {
-                    Menu {
-                        Button("Reconfigure", action: onConfigure)
-                        Divider()
-                        Button("Reset", role: .destructive, action: onReset)
-                    } label: {
-                        Image(systemName: "gearshape")
-                            .font(.system(size: 16))
-                            .foregroundStyle(.secondary)
-                    }
-                    .menuStyle(.borderlessButton)
-                } else {
-                    Button("Configure", action: onConfigure)
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.small)
-                }
-            }
-
-            // 未キャリブレーション時の推奨メッセージ
-            if let message = recommendationMessage {
-                Text(message)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .padding(.leading, 36)
-            }
-        }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(.controlBackgroundColor))
-        )
-    }
-
-    private var statusColor: Color {
-        isCalibrated ? .green : .blue
     }
 }
 
