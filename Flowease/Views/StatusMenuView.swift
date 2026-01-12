@@ -121,10 +121,16 @@ private struct ScoreHeroSection: View {
 
     var body: some View {
         VStack(spacing: 4) {
-            Text("\(score)")
-                .font(.system(size: 48, weight: .bold, design: .rounded))
-                .foregroundStyle(color)
-                .contentTransition(.numericText())
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text("\(score)")
+                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .foregroundStyle(color)
+                    .contentTransition(.numericText())
+
+                Text(ScoreStatus(score: score).label)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(color.opacity(0.8))
+            }
 
             HStack(spacing: 4) {
                 Circle()
@@ -136,6 +142,31 @@ private struct ScoreHeroSection: View {
             }
         }
         .frame(height: 80)
+    }
+}
+
+// MARK: - ScoreStatus
+
+/// スコアのステータス（Good/Fair/Poor）
+private enum ScoreStatus {
+    case good
+    case fair
+    case poor
+
+    init(score: Int) {
+        switch score {
+        case 80...: self = .good
+        case 60 ..< 80: self = .fair
+        default: self = .poor
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .good: String(localized: "Good")
+        case .fair: String(localized: "Fair")
+        case .poor: String(localized: "Poor")
+        }
     }
 }
 

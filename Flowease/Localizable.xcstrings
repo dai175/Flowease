@@ -602,6 +602,23 @@
         }
       }
     },
+    "Fair" : {
+      "comment" : "Score status label for fair posture (60-79)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fair"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "普通"
+          }
+        }
+      }
+    },
     "Face the camera and maintain a relaxed, good posture for 3 seconds." : {
       "localizations" : {
         "en" : {
@@ -630,6 +647,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "システム設定 > プライバシーとセキュリティ > カメラ から許可してください"
+          }
+        }
+      }
+    },
+    "Good" : {
+      "comment" : "Score status label for good posture (80+)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Good"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "良好"
           }
         }
       }
@@ -807,6 +841,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "もう一度お試しください"
+          }
+        }
+      }
+    },
+    "Poor" : {
+      "comment" : "Score status label for poor posture (below 60)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poor"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要改善"
           }
         }
       }
