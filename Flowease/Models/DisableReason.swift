@@ -51,3 +51,19 @@ extension DisableReason: CustomStringConvertible {
         }
     }
 }
+
+// MARK: - UI Properties
+
+extension DisableReason {
+    /// SF Symbol アイコン名
+    var iconName: String {
+        switch self {
+        case .cameraPermissionDenied:
+            "camera.fill"
+        case .cameraPermissionRestricted:
+            "lock.fill"
+        case .noCameraAvailable:
+            "video.slash.fill"
+        }
+    }
+}

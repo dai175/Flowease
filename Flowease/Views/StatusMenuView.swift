@@ -147,9 +147,9 @@ private struct PausedStateView: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Image(systemName: iconName)
+            Image(systemName: reason.iconName)
                 .font(.system(size: 28))
-                .foregroundStyle(iconColor)
+                .foregroundStyle(reason.isWarning ? .orange : .secondary)
 
             Text(reason.description)
                 .font(.subheadline)
@@ -157,30 +157,6 @@ private struct PausedStateView: View {
                 .multilineTextAlignment(.center)
         }
         .frame(height: 80)
-    }
-
-    private var iconName: String {
-        switch reason {
-        case .cameraInitializing:
-            "camera.aperture"
-        case .noFaceDetected:
-            "person.crop.circle.badge.questionmark"
-        case .cameraInUse:
-            "video.badge.ellipsis"
-        case .lowDetectionQuality:
-            "exclamationmark.circle"
-        case .selectedCameraDisconnected:
-            "video.slash.fill"
-        }
-    }
-
-    private var iconColor: Color {
-        switch reason {
-        case .selectedCameraDisconnected, .lowDetectionQuality:
-            .orange
-        default:
-            .secondary
-        }
     }
 }
 

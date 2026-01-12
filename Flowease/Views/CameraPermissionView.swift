@@ -21,7 +21,7 @@ struct CameraPermissionView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 12) {
             // アイコン
-            Image(systemName: iconName)
+            Image(systemName: reason.iconName)
                 .font(.system(size: 32))
                 .foregroundStyle(.secondary)
 
@@ -51,18 +51,6 @@ struct CameraPermissionView: View {
     }
 
     // MARK: - Private
-
-    /// 理由に応じたSFSymbolアイコン名
-    private var iconName: String {
-        switch reason {
-        case .cameraPermissionDenied:
-            "camera.fill"
-        case .cameraPermissionRestricted:
-            "lock.fill"
-        case .noCameraAvailable:
-            "video.slash.fill"
-        }
-    }
 
     /// システム設定のプライバシー > カメラを開く
     private func openSystemSettings() {
