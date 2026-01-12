@@ -150,15 +150,15 @@
 
 **Purpose**: Final validation and cleanup
 
-- [ ] T023 Run full test suite with `make test`
-- [ ] T024 Run linter and formatter with `make fix`
-- [ ] T025 Verify all acceptance scenarios from spec.md manually
-- [ ] T026 Test edge cases:
+- [X] T023 Run full test suite with `make test`
+- [X] T024 Run linter and formatter with `make fix`
+- [X] T025 Verify all acceptance scenarios from spec.md manually
+- [X] T026 Test edge cases:
   - App startup with no score history
   - Camera disconnection during monitoring
   - Notification permission denied
   - Settings at boundary values (20, 80, 1min, 10min, etc.)
-- [ ] T027 Review and update documentation if needed
+- [X] T027 Review and update documentation if needed
 
 ---
 
