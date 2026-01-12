@@ -232,9 +232,14 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
             logger.debug("Capture already stopped")
             return
         }
-
-        // 先にフラグを下げて新しいフレーム処理を止める
         isCapturing = false
+        cleanupSession()
+        logger.info("Frame capture stopped")
+    }
+
+    /// セッションをクリーンアップし、完了後にコールバックを実行
+    /// - Parameter completion: クリーンアップ完了後に実行するクロージャ（nil可）
+    private func cleanupSession(completion: (@Sendable () -> Void)? = nil) {
         let session = captureSession
         let output = videoOutput
         let input = captureInput
@@ -261,18 +266,16 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
 
             // セッションの入出力を原子的に削除
             session?.beginConfiguration()
-            if let input {
-                session?.removeInput(input)
-            }
-            if let output {
-                session?.removeOutput(output)
-            }
+            if let input { session?.removeInput(input) }
+            if let output { session?.removeOutput(output) }
             session?.commitConfiguration()
 
             // セッションを停止
             session?.stopRunning()
+
+            // 完了コールバックを実行
+            completion?()
         }
-        logger.info("Frame capture stopped")
     }
 
     /// カメラを選択
@@ -311,47 +314,8 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
     /// 競合状態を避けるため、古いセッションの停止を待ってから新しいセッションを開始します。
     private func restartCapturing() {
         guard isCapturing else { return }
-
-        // 先にフラグを下げて新しいフレーム処理を止める
         isCapturing = false
-        let session = captureSession
-        let output = videoOutput
-        let input = captureInput
-
-        captureSession = nil
-        videoOutput = nil
-        captureInput = nil
-        currentCameraID = nil
-        frameCounter.withLock { $0 = 0 }
-
-        // セッション通知のオブザーバーを削除
-        if let session {
-            NotificationCenter.default.removeObserver(
-                self,
-                name: AVCaptureSession.runtimeErrorNotification,
-                object: session
-            )
-        }
-
-        // クリーンアップ処理をバックグラウンドで実行し、完了後に新しいセッションを開始
-        captureQueue.async { [weak self] in
-            // デリゲート参照を削除してコールバックを停止
-            output?.setSampleBufferDelegate(nil, queue: nil)
-
-            // セッションの入出力を原子的に削除
-            session?.beginConfiguration()
-            if let input {
-                session?.removeInput(input)
-            }
-            if let output {
-                session?.removeOutput(output)
-            }
-            session?.commitConfiguration()
-
-            // セッションを停止
-            session?.stopRunning()
-
-            // 停止完了後、メインスレッドで新しいセッションを開始
+        cleanupSession { [weak self] in
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 logger.info("Old session stopped, starting new session")
