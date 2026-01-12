@@ -35,11 +35,15 @@ enum MenuBarIcon {
 
     /// 監視状態に応じたアイコン色を取得
     ///
-    /// ColorGradient を使用してスコアから色を計算。
+    /// ColorGradient の固定色を使用してステータスに応じた色を返す。
+    /// - Good: 緑
+    /// - Fair: 黄
+    /// - Poor: 橙
     private static func iconColor(for state: MonitoringState, score: Int) -> NSColor {
         switch state {
         case .active:
-            return ColorGradient.nsColor(fromScore: score)
+            let status = ScoreStatus(score: score)
+            return ColorGradient.nsColor(for: status)
         case .paused, .disabled:
             return ColorGradient.nsGray
         }

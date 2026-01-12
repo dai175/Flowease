@@ -71,6 +71,14 @@ final class PostureViewModel {
     /// CameraService の selectedCameraID 変更を購読
     private var cameraSubscription: AnyCancellable?
 
+    // MARK: - State Stabilization
+
+    /// 状態安定化用のスコア履歴（3秒平均用）
+    private var stateScoreHistory: [PostureScore] = []
+
+    /// 状態平均化の期間（秒）
+    private let stateAveragingPeriodSeconds: TimeInterval = 3.0
+
     // MARK: - Constants
 
     /// スコア履歴の最大保持件数
@@ -87,15 +95,32 @@ final class PostureViewModel {
         return sum / scoreHistory.count
     }
 
+    /// 安定化されたスコアステータス
+    ///
+    /// 3秒間の平均スコアに基づくステータスを返す。
+    /// これにより、状態ラベル（Good/Fair/Poor）が頻繁に切り替わることを防ぐ。
+    var stabilizedScoreStatus: ScoreStatus {
+        let cutoff = Date().addingTimeInterval(-stateAveragingPeriodSeconds)
+        let recentScores = stateScoreHistory.filter { $0.timestamp >= cutoff }
+
+        guard !recentScores.isEmpty else {
+            // 履歴がない場合は現在のスムージングスコアから計算
+            return ScoreStatus(score: smoothedScore)
+        }
+
+        let average = recentScores.map(\.value).reduce(0, +) / recentScores.count
+        return ScoreStatus(score: average)
+    }
+
     /// 現在のアイコン色
     ///
     /// `monitoringState` に基づいて色を返す。
-    /// - active: スコアに応じた緑〜赤のグラデーション
+    /// - active: 安定化されたステータスに応じた固定色（緑/黄/橙）
     /// - paused / disabled: グレー
     var iconColor: Color {
         switch monitoringState {
         case .active:
-            return ColorGradient.color(fromScore: smoothedScore)
+            return ColorGradient.color(for: stabilizedScoreStatus)
         case .paused, .disabled:
             return ColorGradient.gray
         }
@@ -288,6 +313,12 @@ final class PostureViewModel {
             scoreHistory.removeFirst()
         }
 
+        // 状態安定化用履歴に追加
+        stateScoreHistory.append(score)
+        // 古いスコアを削除（平均化期間 + 1秒のバッファ）
+        let cutoff = Date().addingTimeInterval(-(stateAveragingPeriodSeconds + 1.0))
+        stateScoreHistory.removeAll { $0.timestamp < cutoff }
+
         // 状態を active に更新
         monitoringState = .active(score)
         logger.debug("Score added: \(score.value), smoothed score: \(self.smoothedScore)")
@@ -304,11 +335,12 @@ final class PostureViewModel {
     /// スコア履歴をクリア
     ///
     /// 監視が中断された場合などに呼び出す。
-    /// アラートサービスの状態と履歴もリセットする。
+    /// 状態安定化用履歴とアラートサービスの状態・履歴もリセットする。
     func clearScoreHistory() {
         scoreHistory.removeAll()
+        stateScoreHistory.removeAll()
         alertService?.reset()
-        logger.debug("Score history cleared (including alert history)")
+        logger.debug("Score history cleared (including state and alert history)")
     }
 
     /// 姿勢監視を開始
