@@ -171,7 +171,7 @@ struct AlertSettingsCard: View {
 
     private var evaluationPeriodPicker: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Evaluation Period")
+            Text("Check Duration")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -189,7 +189,7 @@ struct AlertSettingsCard: View {
 
     private var minimumIntervalPicker: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Minimum Interval")
+            Text("Notification Cooldown")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 

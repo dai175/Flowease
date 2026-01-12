@@ -569,19 +569,19 @@
         }
       }
     },
-    "Evaluation Period" : {
-      "comment" : "Label for evaluation period setting",
+    "Check Duration" : {
+      "comment" : "Label for check duration setting",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Evaluation Period"
+            "value" : "Check Duration"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "評価期間"
+            "value" : "監視期間"
           }
         }
       }
@@ -700,19 +700,19 @@
         }
       }
     },
-    "Minimum Interval" : {
-      "comment" : "Label for minimum notification interval setting",
+    "Notification Cooldown" : {
+      "comment" : "Label for notification cooldown setting",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minimum Interval"
+            "value" : "Notification Cooldown"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最短通知間隔"
+            "value" : "通知クールダウン"
           }
         }
       }
