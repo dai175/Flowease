@@ -47,30 +47,29 @@ final class AlertSettingsStorage: AlertSettingsStorageProtocol, @unchecked Senda
     /// UserDefaultsから各設定値を読み込む。
     /// 値が存在しない場合はデフォルト値を使用。
     func load() -> AlertSettings {
-        lock.lock()
-        defer { lock.unlock() }
-
-        let settings = AlertSettings(
-            isEnabled: loadBool(forKey: AlertSettingsKeys.isEnabled, default: AlertSettings.default.isEnabled),
-            threshold: loadInt(
-                forKey: AlertSettingsKeys.threshold,
-                default: AlertSettings.default.threshold,
-                range: AlertSettings.thresholdRange
-            ),
-            evaluationPeriodSeconds: loadInt(
-                forKey: AlertSettingsKeys.evaluationPeriod,
-                default: AlertSettings.default.evaluationPeriodSeconds,
-                range: AlertSettings.evaluationPeriodSecondsRange
-            ),
-            minimumIntervalSeconds: loadInt(
-                forKey: AlertSettingsKeys.minimumInterval,
-                default: AlertSettings.default.minimumIntervalSeconds,
-                range: AlertSettings.minimumIntervalSecondsRange
+        lock.withLock {
+            let settings = AlertSettings(
+                isEnabled: loadBool(forKey: AlertSettingsKeys.isEnabled, default: AlertSettings.default.isEnabled),
+                threshold: loadInt(
+                    forKey: AlertSettingsKeys.threshold,
+                    default: AlertSettings.default.threshold,
+                    range: AlertSettings.thresholdRange
+                ),
+                evaluationPeriodSeconds: loadInt(
+                    forKey: AlertSettingsKeys.evaluationPeriod,
+                    default: AlertSettings.default.evaluationPeriodSeconds,
+                    range: AlertSettings.evaluationPeriodSecondsRange
+                ),
+                minimumIntervalSeconds: loadInt(
+                    forKey: AlertSettingsKeys.minimumInterval,
+                    default: AlertSettings.default.minimumIntervalSeconds,
+                    range: AlertSettings.minimumIntervalSecondsRange
+                )
             )
-        )
 
-        logger.debug("Alert settings loaded")
-        return settings
+            logger.debug("Alert settings loaded")
+            return settings
+        }
     }
 
     /// Bool値を読み込む（存在しない場合はデフォルト値を返す）
@@ -89,28 +88,26 @@ final class AlertSettingsStorage: AlertSettingsStorageProtocol, @unchecked Senda
     ///
     /// - Parameter settings: 保存する設定
     func save(_ settings: AlertSettings) {
-        lock.lock()
-        defer { lock.unlock() }
+        lock.withLock {
+            userDefaults.set(settings.isEnabled, forKey: AlertSettingsKeys.isEnabled)
+            userDefaults.set(settings.threshold, forKey: AlertSettingsKeys.threshold)
+            userDefaults.set(settings.evaluationPeriodSeconds, forKey: AlertSettingsKeys.evaluationPeriod)
+            userDefaults.set(settings.minimumIntervalSeconds, forKey: AlertSettingsKeys.minimumInterval)
 
-        userDefaults.set(settings.isEnabled, forKey: AlertSettingsKeys.isEnabled)
-        userDefaults.set(settings.threshold, forKey: AlertSettingsKeys.threshold)
-        userDefaults.set(settings.evaluationPeriodSeconds, forKey: AlertSettingsKeys.evaluationPeriod)
-        userDefaults.set(settings.minimumIntervalSeconds, forKey: AlertSettingsKeys.minimumInterval)
-
-        logger.info("Alert settings saved")
+            logger.info("Alert settings saved")
+        }
     }
 
     /// 設定をデフォルトにリセットする
     func reset() {
-        lock.lock()
-        defer { lock.unlock() }
+        lock.withLock {
+            userDefaults.removeObject(forKey: AlertSettingsKeys.isEnabled)
+            userDefaults.removeObject(forKey: AlertSettingsKeys.threshold)
+            userDefaults.removeObject(forKey: AlertSettingsKeys.evaluationPeriod)
+            userDefaults.removeObject(forKey: AlertSettingsKeys.minimumInterval)
 
-        userDefaults.removeObject(forKey: AlertSettingsKeys.isEnabled)
-        userDefaults.removeObject(forKey: AlertSettingsKeys.threshold)
-        userDefaults.removeObject(forKey: AlertSettingsKeys.evaluationPeriod)
-        userDefaults.removeObject(forKey: AlertSettingsKeys.minimumInterval)
-
-        logger.info("Settings reset to defaults")
+            logger.info("Settings reset to defaults")
+        }
     }
 
     // MARK: - Private Helpers

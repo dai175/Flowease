@@ -22,9 +22,7 @@ final class ScoreHistory: @unchecked Sendable {
 
     /// 現在のレコード数
     var recordCount: Int {
-        lock.lock()
-        defer { lock.unlock() }
-        return records.count
+        lock.withLock { records.count }
     }
 
     /// スコアを追加する
@@ -33,13 +31,11 @@ final class ScoreHistory: @unchecked Sendable {
     ///
     /// - Parameter record: 追加するスコアレコード
     func add(_ record: ScoreRecord) {
-        lock.lock()
-        defer { lock.unlock() }
-
-        records.insert(record, at: 0)
-        pruneOldRecords()
-
-        logger.debug("Score added: \(record.value) at \(record.timestamp), total records: \(self.records.count)")
+        lock.withLock {
+            records.insert(record, at: 0)
+            pruneOldRecords()
+            logger.debug("Score added: \(record.value) at \(record.timestamp), total records: \(self.records.count)")
+        }
     }
 
     /// PostureScoreからスコアを追加する
@@ -55,22 +51,21 @@ final class ScoreHistory: @unchecked Sendable {
     /// - Parameter seconds: 現在時刻からの秒数
     /// - Returns: 平均スコア、またはデータがない場合はnil
     func averageScore(within seconds: Int) -> Double? {
-        lock.lock()
-        defer { lock.unlock() }
+        lock.withLock {
+            let cutoff = Date().addingTimeInterval(-Double(seconds))
+            let relevant = records.filter { $0.timestamp >= cutoff }
 
-        let cutoff = Date().addingTimeInterval(-Double(seconds))
-        let relevant = records.filter { $0.timestamp >= cutoff }
+            guard !relevant.isEmpty else {
+                logger.debug("No records within \(seconds) seconds")
+                return nil
+            }
 
-        guard !relevant.isEmpty else {
-            logger.debug("No records within \(seconds) seconds")
-            return nil
+            let sum = relevant.map(\.value).reduce(0, +)
+            let average = Double(sum) / Double(relevant.count)
+
+            logger.debug("Average score within \(seconds)s: \(average) (from \(relevant.count) records)")
+            return average
         }
-
-        let sum = relevant.map(\.value).reduce(0, +)
-        let average = Double(sum) / Double(relevant.count)
-
-        logger.debug("Average score within \(seconds)s: \(average) (from \(relevant.count) records)")
-        return average
     }
 
     /// 指定期間内のデータ充足率を計算
@@ -89,27 +84,25 @@ final class ScoreHistory: @unchecked Sendable {
             return 0.0
         }
 
-        lock.lock()
-        defer { lock.unlock() }
+        return lock.withLock {
+            let cutoff = Date().addingTimeInterval(-Double(seconds))
+            let count = records.count(where: { $0.timestamp >= cutoff })
+            let expected = Double(seconds) / expectedInterval
 
-        let cutoff = Date().addingTimeInterval(-Double(seconds))
-        let count = records.count(where: { $0.timestamp >= cutoff })
-        let expected = Double(seconds) / expectedInterval
+            let completeness = min(Double(count) / expected, 1.0)
 
-        let completeness = min(Double(count) / expected, 1.0)
+            logger.debug("Data completeness: \(completeness)")
 
-        logger.debug("Data completeness: \(completeness)")
-
-        return completeness
+            return completeness
+        }
     }
 
     /// 履歴をクリアする
     func clear() {
-        lock.lock()
-        defer { lock.unlock() }
-
-        records.removeAll()
-        logger.debug("Score history cleared")
+        lock.withLock {
+            records.removeAll()
+            logger.debug("Score history cleared")
+        }
     }
 
     /// 古いレコードを削除する

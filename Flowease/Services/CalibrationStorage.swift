@@ -125,74 +125,70 @@ final class CalibrationStorage: CalibrationStorageProtocol, @unchecked Sendable 
     }
 
     func loadFaceReferencePosture() -> FaceReferencePosture? {
-        lock.lock()
-        defer { lock.unlock() }
+        lock.withLock {
+            guard let data = userDefaults.data(forKey: CalibrationStorageKeys.referencePosture) else {
+                logger.debug("Reference posture data not found")
+                return nil
+            }
 
-        guard let data = userDefaults.data(forKey: CalibrationStorageKeys.referencePosture) else {
-            logger.debug("Reference posture data not found")
-            return nil
-        }
-
-        do {
-            let decoder = makeDecoder()
-            // 顔ベース形式でデコード試行
-            let facePosture = try decoder.decode(FaceReferencePosture.self, from: data)
-            logger.debug("Face-based reference posture data loaded (frame count: \(facePosture.frameCount))")
-            return facePosture
-        } catch {
-            // デコード失敗 = 旧形式または破損データ
-            logger.debug("Failed to decode face-based format: \(error.localizedDescription)")
-            return nil
+            do {
+                let decoder = makeDecoder()
+                // 顔ベース形式でデコード試行
+                let facePosture = try decoder.decode(FaceReferencePosture.self, from: data)
+                logger.debug("Face-based reference posture data loaded (frame count: \(facePosture.frameCount))")
+                return facePosture
+            } catch {
+                // デコード失敗 = 旧形式または破損データ
+                logger.debug("Failed to decode face-based format: \(error.localizedDescription)")
+                return nil
+            }
         }
     }
 
     @discardableResult
     func saveFaceReferencePosture(_ posture: FaceReferencePosture) -> Bool {
-        lock.lock()
-        defer { lock.unlock() }
-
-        do {
-            let encoder = makeEncoder()
-            let data = try encoder.encode(posture)
-            userDefaults.set(data, forKey: CalibrationStorageKeys.referencePosture)
-            logger.info("Face-based reference posture data saved (frame count: \(posture.frameCount))")
-            return true
-        } catch {
-            logger.error("Failed to encode face-based reference posture data: \(error.localizedDescription)")
-            return false
+        lock.withLock {
+            do {
+                let encoder = makeEncoder()
+                let data = try encoder.encode(posture)
+                userDefaults.set(data, forKey: CalibrationStorageKeys.referencePosture)
+                logger.info("Face-based reference posture data saved (frame count: \(posture.frameCount))")
+                return true
+            } catch {
+                logger.error("Failed to encode face-based reference posture data: \(error.localizedDescription)")
+                return false
+            }
         }
     }
 
     func deleteFaceReferencePosture() {
-        lock.lock()
-        defer { lock.unlock() }
-
-        userDefaults.removeObject(forKey: CalibrationStorageKeys.referencePosture)
-        logger.info("Reference posture data deleted")
+        lock.withLock {
+            userDefaults.removeObject(forKey: CalibrationStorageKeys.referencePosture)
+            logger.info("Reference posture data deleted")
+        }
     }
 
     // MARK: - Auto-Clean on Load
 
     func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? {
-        lock.lock()
-        defer { lock.unlock() }
+        lock.withLock {
+            guard let data = userDefaults.data(forKey: CalibrationStorageKeys.referencePosture) else {
+                logger.debug("Reference posture data not found")
+                return nil
+            }
 
-        guard let data = userDefaults.data(forKey: CalibrationStorageKeys.referencePosture) else {
-            logger.debug("Reference posture data not found")
-            return nil
-        }
-
-        do {
-            let decoder = makeDecoder()
-            // 顔ベース形式でデコード試行
-            let facePosture = try decoder.decode(FaceReferencePosture.self, from: data)
-            logger.debug("Face-based reference posture data loaded (frame count: \(facePosture.frameCount))")
-            return facePosture
-        } catch {
-            // デコード失敗 = 旧形式または破損データ → クリア
-            logger.info("Calibration data cleared (format mismatch or corrupted): \(error.localizedDescription)")
-            userDefaults.removeObject(forKey: CalibrationStorageKeys.referencePosture)
-            return nil
+            do {
+                let decoder = makeDecoder()
+                // 顔ベース形式でデコード試行
+                let facePosture = try decoder.decode(FaceReferencePosture.self, from: data)
+                logger.debug("Face-based reference posture data loaded (frame count: \(facePosture.frameCount))")
+                return facePosture
+            } catch {
+                // デコード失敗 = 旧形式または破損データ → クリア
+                logger.info("Calibration data cleared (format mismatch or corrupted): \(error.localizedDescription)")
+                userDefaults.removeObject(forKey: CalibrationStorageKeys.referencePosture)
+                return nil
+            }
         }
     }
 }

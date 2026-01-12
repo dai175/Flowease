@@ -81,6 +81,14 @@ final class CalibrationViewModel {
     /// ロガー
     private let logger = Logger.calibrationViewModel
 
+    /// 日付フォーマッター（キャッシュ）
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+    }()
+
     // MARK: - Initialization
 
     /// イニシャライザ
@@ -163,10 +171,7 @@ final class CalibrationViewModel {
     /// キャリブレーション完了日時のフォーマット済みテキスト
     var calibratedAtText: String? {
         guard let date = faceReferencePosture?.calibratedAt else { return nil }
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        return Self.dateFormatter.string(from: date)
     }
 
     /// キャリブレーション状態の短い説明

@@ -193,18 +193,11 @@ final class CalibrationService: CalibrationServiceProtocol {
             accumulated.add(face)
         }
 
-        // 失敗判定（顔未検出を優先）
-        if progress.shouldFailNoFaceDetected {
-            state = .failed(.noFaceDetected)
+        // 失敗判定
+        if let failure = progress.failureReason {
+            state = .failed(failure)
             clearCalibrationData()
-            logger.warning("Calibration failed: consecutive face detection failures")
-            return
-        }
-
-        if progress.shouldFailLowConfidence {
-            state = .failed(.lowConfidence)
-            clearCalibrationData()
-            logger.warning("Calibration failed: consecutive low quality frames")
+            logger.warning("Calibration failed: \(failure.logDescription)")
             return
         }
 
