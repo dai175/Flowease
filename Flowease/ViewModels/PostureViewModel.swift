@@ -101,14 +101,16 @@ final class PostureViewModel {
     /// これにより、状態ラベル（Good/Fair/Poor）が頻繁に切り替わることを防ぐ。
     var stabilizedScoreStatus: ScoreStatus {
         let cutoff = Date().addingTimeInterval(-stateAveragingPeriodSeconds)
-        let recentScores = stateScoreHistory.filter { $0.timestamp >= cutoff }
+        let recentValues = stateScoreHistory
+            .filter { $0.timestamp >= cutoff }
+            .map(\.value)
 
-        guard !recentScores.isEmpty else {
-            // 履歴がない場合は現在のスムージングスコアから計算
+        // 履歴がない場合は現在のスムージングスコアから計算
+        guard !recentValues.isEmpty else {
             return ScoreStatus(score: smoothedScore)
         }
 
-        let average = recentScores.map(\.value).reduce(0, +) / recentScores.count
+        let average = recentValues.reduce(0, +) / recentValues.count
         return ScoreStatus(score: average)
     }
 

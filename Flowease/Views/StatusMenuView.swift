@@ -180,22 +180,14 @@ private struct ScoreHeroSection: View {
     }
 
     private var scoreDisplay: String {
-        if let score {
-            return "\(score)"
-        } else {
-            return "--"
-        }
+        score.map { "\($0)" } ?? "--"
     }
 
     private var statusLabel: String {
         // 外部から渡されたステータスを優先（3秒平均の安定化された状態）
-        if let status {
-            return status.label
-        } else if let score {
-            return ScoreStatus(score: score).label
-        } else {
-            return String(localized: "Paused")
-        }
+        if let status { return status.label }
+        if let score { return ScoreStatus(score: score).label }
+        return String(localized: "Paused")
     }
 }
 
