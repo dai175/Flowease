@@ -634,9 +634,6 @@
         }
       }
     },
-    "Hello, world!" : {
-      "comment" : "Template placeholder - unused"
-    },
     "Initializing camera..." : {
       "localizations" : {
         "en" : {
