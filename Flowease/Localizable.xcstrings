@@ -309,6 +309,22 @@
         }
       }
     },
+    "Calibration: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibration: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーション: %@"
+          }
+        }
+      }
+    },
     "Camera" : {
       "comment" : "Camera selection picker label",
       "localizations" : {
@@ -402,6 +418,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "キャンセル"
+          }
+        }
+      }
+    },
+    "Check Duration" : {
+      "comment" : "Label for check duration setting",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check Duration"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "監視期間"
           }
         }
       }
@@ -569,23 +602,6 @@
         }
       }
     },
-    "Check Duration" : {
-      "comment" : "Label for check duration setting",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Check Duration"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "監視期間"
-          }
-        }
-      }
-    },
     "Face not detected" : {
       "localizations" : {
         "en" : {
@@ -598,6 +614,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "顔が検出されません"
+          }
+        }
+      }
+    },
+    "Face the camera and maintain a relaxed, good posture for 3 seconds." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Face the camera and maintain a relaxed, good posture for 3 seconds."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3秒間、カメラに向かって正面を向き、リラックスした良い姿勢を維持してください。"
           }
         }
       }
@@ -615,22 +647,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "普通"
-          }
-        }
-      }
-    },
-    "Face the camera and maintain a relaxed, good posture for 3 seconds." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Face the camera and maintain a relaxed, good posture for 3 seconds."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3秒間、カメラに向かって正面を向き、リラックスした良い姿勢を維持してください。"
           }
         }
       }
@@ -700,23 +716,6 @@
         }
       }
     },
-    "Notification Cooldown" : {
-      "comment" : "Label for notification cooldown setting",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notification Cooldown"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知クールダウン"
-          }
-        }
-      }
-    },
     "Monitoring" : {
       "localizations" : {
         "en" : {
@@ -745,6 +744,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未設定"
+          }
+        }
+      }
+    },
+    "Notification Cooldown" : {
+      "comment" : "Label for notification cooldown setting",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notification Cooldown"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知クールダウン"
           }
         }
       }
@@ -992,6 +1008,23 @@
         }
       }
     },
+    "Score < %lld for %lld min" : {
+      "comment" : "Alert settings summary - natural language format",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Score < %1$lld for %2$lld min"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スコア%1$lld以下が%2$lld分続くと通知"
+          }
+        }
+      }
+    },
     "Score Threshold" : {
       "comment" : "Label for score threshold setting",
       "localizations" : {
@@ -1054,23 +1087,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "システムデフォルト"
-          }
-        }
-      }
-    },
-    "Score < %lld for %lld min" : {
-      "comment" : "Alert settings summary - natural language format",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Score < %1$lld for %2$lld min"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "スコア%1$lld以下が%2$lld分続くと通知"
           }
         }
       }
