@@ -5,6 +5,8 @@
 //  姿勢監視状態を管理する ViewModel
 //
 
+// swiftlint:disable file_length
+
 @preconcurrency import AVFoundation
 import Combine
 import Foundation
@@ -453,6 +455,9 @@ final class PostureViewModel {
     }
 
     /// 顔未検出時の処理（スコアを徐々に減少）
+    ///
+    /// 減衰スコアはUI表示用のみに追加し、アラート履歴には追加しない。
+    /// ユーザー不在時に誤って通知が送られることを防ぐ。
     private func handleNoFaceDetected() {
         if let lastScore = scoreHistory.last {
             let decayedValue = lastScore.value - scoreDecayPerFrame
@@ -463,7 +468,8 @@ final class PostureViewModel {
                     breakdown: lastScore.breakdown,
                     confidence: 0.0
                 )
-                addScore(decayedScore)
+                // UI表示用のみに追加（アラート履歴には追加しない）
+                addScoreForDisplayOnly(decayedScore)
             } else {
                 pauseIfActive(reason: .noFaceDetected, logMessage: "Paused due to no face detected (score decayed)")
             }
@@ -473,6 +479,23 @@ final class PostureViewModel {
                 pauseIfActive(reason: .noFaceDetected, logMessage: "Paused due to no face detected")
             }
         }
+    }
+
+    /// UI表示用のスコアのみを追加（アラート判定には使用しない）
+    ///
+    /// 顔未検出時の減衰スコアなど、実際の姿勢を反映しないスコアに使用する。
+    private func addScoreForDisplayOnly(_ score: PostureScore) {
+        scoreHistory.append(score)
+        if scoreHistory.count > maxScoreHistoryCount {
+            scoreHistory.removeFirst()
+        }
+
+        stateScoreHistory.append(score)
+        let cutoff = Date().addingTimeInterval(-(stateAveragingPeriodSeconds + 1.0))
+        stateScoreHistory.removeAll { $0.timestamp < cutoff }
+
+        monitoringState = .active(score)
+        logger.debug("Display-only score added: \(score.value) (not sent to alert history)")
     }
 
     /// Vision エラー時の処理
