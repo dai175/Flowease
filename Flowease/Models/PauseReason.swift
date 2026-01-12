@@ -55,3 +55,33 @@ extension PauseReason: CustomStringConvertible {
         }
     }
 }
+
+// MARK: - UI Properties
+
+extension PauseReason {
+    /// SF Symbol アイコン名
+    var iconName: String {
+        switch self {
+        case .cameraInitializing:
+            "camera.aperture"
+        case .noFaceDetected:
+            "person.crop.circle.badge.questionmark"
+        case .cameraInUse:
+            "video.badge.ellipsis"
+        case .lowDetectionQuality:
+            "exclamationmark.circle"
+        case .selectedCameraDisconnected:
+            "video.slash.fill"
+        }
+    }
+
+    /// 警告を強調すべき状態かどうか
+    var isWarning: Bool {
+        switch self {
+        case .selectedCameraDisconnected, .lowDetectionQuality:
+            true
+        default:
+            false
+        }
+    }
+}

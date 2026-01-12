@@ -39,6 +39,28 @@ protocol FaceScoreCalculatorProtocol: AnyObject {
 /// - 傾き (20%): roll角の変化（首の傾き検出）
 @MainActor
 final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
+    // MARK: - Configuration
+
+    /// スコア計算の設定値
+    ///
+    /// 重みとしきい値をまとめた構造体。将来的にカスタマイズ可能にする際の拡張点。
+    private struct Config {
+        // Score Weights（各要素の重み、合計1.0）
+        let verticalPositionWeight: Double = 0.40
+        let sizeChangeWeight: Double = 0.40
+        let tiltWeight: Double = 0.20
+
+        // Thresholds（threshold: 減少開始点、maxDeviation: スコア0になる点）
+        let verticalThreshold: Double = 0.02
+        let verticalMaxDeviation: Double = 0.15
+        let sizeThreshold: Double = 0.05
+        let sizeMaxDeviation: Double = 0.30
+        let tiltThreshold: Double = 0.05 // ~3°
+        let tiltMaxDeviation: Double = 0.35 // ~20°
+    }
+
+    private let config = Config()
+
     // MARK: - Properties
 
     private let logger = Logger.faceScoreCalculator
@@ -50,21 +72,6 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     var isCalibrated: Bool {
         referencePosture != nil
     }
-
-    // MARK: - Score Weights
-
-    private let verticalPositionWeight: Double = 0.40
-    private let sizeChangeWeight: Double = 0.40
-    private let tiltWeight: Double = 0.20
-
-    // MARK: - Thresholds (threshold: 減少開始, maxDeviation: スコア0)
-
-    private let verticalThreshold: Double = 0.02
-    private let verticalMaxDeviation: Double = 0.15
-    private let sizeThreshold: Double = 0.05
-    private let sizeMaxDeviation: Double = 0.30
-    private let tiltThreshold: Double = 0.05 // ~3°
-    private let tiltMaxDeviation: Double = 0.35 // ~20°
 
     // MARK: - Initialization
 
@@ -102,9 +109,9 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
         let tiltScore = calculateTiltScore(face: face, baseline: baseline)
 
         // 加重平均で総合スコアを算出
-        let weightedScore = Double(verticalScore) * verticalPositionWeight
-            + Double(sizeScore) * sizeChangeWeight
-            + Double(tiltScore) * tiltWeight
+        let weightedScore = Double(verticalScore) * config.verticalPositionWeight
+            + Double(sizeScore) * config.sizeChangeWeight
+            + Double(tiltScore) * config.tiltWeight
 
         let totalScore = Int(weightedScore.rounded())
 
@@ -134,8 +141,8 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
         let yDeviation = max(0, baseline.baselineY - face.centerY)
         return calculateScoreFromDeviation(
             deviation: yDeviation,
-            threshold: verticalThreshold,
-            maxDeviation: verticalMaxDeviation
+            threshold: config.verticalThreshold,
+            maxDeviation: config.verticalMaxDeviation
         )
     }
 
@@ -146,8 +153,8 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
         let sizeDeviation = max(0, sizeRatio)
         return calculateScoreFromDeviation(
             deviation: sizeDeviation,
-            threshold: sizeThreshold,
-            maxDeviation: sizeMaxDeviation
+            threshold: config.sizeThreshold,
+            maxDeviation: config.sizeMaxDeviation
         )
     }
 
@@ -164,8 +171,8 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
 
         return calculateScoreFromDeviation(
             deviation: tiltDeviation,
-            threshold: tiltThreshold,
-            maxDeviation: tiltMaxDeviation
+            threshold: config.tiltThreshold,
+            maxDeviation: config.tiltMaxDeviation
         )
     }
 
