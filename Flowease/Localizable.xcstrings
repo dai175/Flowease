@@ -765,6 +765,23 @@
         }
       }
     },
+    "Paused" : {
+      "comment" : "Score status label when monitoring is paused",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一時停止"
+          }
+        }
+      }
+    },
     "Please adjust the lighting" : {
       "localizations" : {
         "en" : {
