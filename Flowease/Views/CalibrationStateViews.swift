@@ -7,27 +7,106 @@
 
 import SwiftUI
 
+// MARK: - CalibrationStatusView
+
+/// キャリブレーション状態の統合表示ビュー
+///
+/// 未設定、完了、失敗の3状態を単一のデータ駆動型ビューで表示
+struct CalibrationStatusView: View {
+    /// 表示する状態
+    enum Status {
+        case notCalibrated
+        case completed
+        case failed(CalibrationFailure)
+
+        var iconName: String {
+            switch self {
+            case .notCalibrated: "person.crop.circle"
+            case .completed: "checkmark.circle.fill"
+            case .failed: "exclamationmark.triangle.fill"
+            }
+        }
+
+        var iconColor: Color {
+            switch self {
+            case .notCalibrated: .secondary
+            case .completed: .green
+            case .failed: .orange
+            }
+        }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .notCalibrated: "Please assume good posture"
+            case .completed: "Calibration Complete"
+            case .failed: "Calibration Failed"
+            }
+        }
+
+        var titleStyle: HierarchicalShapeStyle {
+            switch self {
+            case .notCalibrated: .secondary
+            case .completed, .failed: .primary
+            }
+        }
+
+        var description: String? {
+            switch self {
+            case .notCalibrated:
+                String(localized: "Face the camera and maintain a relaxed, good posture for 3 seconds.")
+            case .completed:
+                String(localized: "Your good posture has been recorded as the baseline.")
+            case let .failed(failure):
+                failure.userMessage.isEmpty ? nil : failure.userMessage
+            }
+        }
+    }
+
+    let status: Status
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: status.iconName)
+                .font(.system(size: 40))
+                .foregroundStyle(status.iconColor)
+
+            Text(status.title)
+                .font(.subheadline)
+                .foregroundStyle(status.titleStyle)
+                .multilineTextAlignment(.center)
+
+            if let description = status.description {
+                Text(description)
+                    .font(.caption)
+                    .foregroundStyle(status == .notCalibrated ? .tertiary : .secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+// MARK: - CalibrationStatusView.Status + Equatable
+
+extension CalibrationStatusView.Status: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.notCalibrated, .notCalibrated), (.completed, .completed):
+            true
+        case let (.failed(lhsFailure), .failed(rhsFailure)):
+            lhsFailure == rhsFailure
+        default:
+            false
+        }
+    }
+}
+
 // MARK: - CalibrationNotCalibratedView
 
 /// キャリブレーション未設定時の表示
 struct CalibrationNotCalibratedView: View {
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "person.crop.circle")
-                .font(.system(size: 40))
-                .foregroundStyle(.secondary)
-
-            Text("Please assume good posture")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            Text("Face the camera and maintain a relaxed, good posture for 3 seconds.")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.vertical, 8)
+        CalibrationStatusView(status: .notCalibrated)
     }
 }
 
@@ -36,21 +115,7 @@ struct CalibrationNotCalibratedView: View {
 /// キャリブレーション完了時の表示
 struct CalibrationCompletedView: View {
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(.green)
-
-            Text("Calibration Complete")
-                .font(.subheadline)
-                .foregroundStyle(.primary)
-
-            Text("Your good posture has been recorded as the baseline.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.vertical, 8)
+        CalibrationStatusView(status: .completed)
     }
 }
 
@@ -61,23 +126,7 @@ struct CalibrationFailedView: View {
     let failure: CalibrationFailure
 
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 40))
-                .foregroundStyle(.orange)
-
-            Text("Calibration Failed")
-                .font(.subheadline)
-                .foregroundStyle(.primary)
-
-            if !failure.userMessage.isEmpty {
-                Text(failure.userMessage)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .padding(.vertical, 8)
+        CalibrationStatusView(status: .failed(failure))
     }
 }
 
