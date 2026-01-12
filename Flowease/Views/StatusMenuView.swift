@@ -49,15 +49,7 @@ struct StatusMenuView: View {
 
             // 通知設定カード（appStateがある場合のみ表示）
             if let appState {
-                AlertSettingsCard(
-                    settings: Binding(
-                        get: { appState.alertSettings },
-                        set: { appState.alertSettings = $0 }
-                    ),
-                    onSettingsChanged: { newSettings in
-                        appState.updateAlertSettings(newSettings)
-                    }
-                )
+                alertSettingsCard(appState: appState)
             }
 
             // カメラ選択（authorized 時のみ表示）
@@ -106,6 +98,17 @@ struct StatusMenuView: View {
             CameraPermissionView(reason: reason)
                 .frame(height: 80)
         }
+    }
+
+    /// 通知設定カードを生成
+    private func alertSettingsCard(appState: AppState) -> some View {
+        AlertSettingsCard(
+            settings: Binding(
+                get: { appState.alertSettings },
+                set: { appState.alertSettings = $0 }
+            ),
+            onSettingsChanged: { appState.updateAlertSettings($0) }
+        )
     }
 }
 

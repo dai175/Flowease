@@ -175,13 +175,7 @@ struct AlertSettingsCard: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            Picker("", selection: Binding(
-                get: { settings.evaluationPeriodSeconds },
-                set: { newValue in
-                    settings.evaluationPeriodSeconds = newValue
-                    onSettingsChanged(settings)
-                }
-            )) {
+            Picker("", selection: bindingWithCallback(\.evaluationPeriodSeconds)) {
                 Text("1 min").tag(60)
                 Text("3 min").tag(180)
                 Text("5 min").tag(300)
@@ -199,13 +193,7 @@ struct AlertSettingsCard: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            Picker("", selection: Binding(
-                get: { settings.minimumIntervalSeconds },
-                set: { newValue in
-                    settings.minimumIntervalSeconds = newValue
-                    onSettingsChanged(settings)
-                }
-            )) {
+            Picker("", selection: bindingWithCallback(\.minimumIntervalSeconds)) {
                 Text("5 min").tag(300)
                 Text("15 min").tag(900)
                 Text("30 min").tag(1800)
@@ -215,6 +203,21 @@ struct AlertSettingsCard: View {
         }
     }
 
+    // MARK: - Binding Helper
+
+    /// 設定プロパティへの Binding を作成し、変更時にコールバックを呼び出す
+    private func bindingWithCallback<T>(
+        _ keyPath: WritableKeyPath<AlertSettings, T>
+    ) -> Binding<T> {
+        Binding(
+            get: { settings[keyPath: keyPath] },
+            set: { newValue in
+                settings[keyPath: keyPath] = newValue
+                onSettingsChanged(settings)
+            }
+        )
+    }
+
     // MARK: - Computed Properties
 
     private var statusColor: Color {
@@ -222,13 +225,12 @@ struct AlertSettingsCard: View {
     }
 
     private var statusSummary: String {
-        if settings.isEnabled {
-            return String(
-                localized: "Threshold: \(settings.threshold), Period: \(settings.evaluationPeriodSeconds / 60) min"
-            )
-        } else {
+        guard settings.isEnabled else {
             return String(localized: "Disabled")
         }
+        return String(
+            localized: "Threshold: \(settings.threshold), Period: \(settings.evaluationPeriodSeconds / 60) min"
+        )
     }
 }
 

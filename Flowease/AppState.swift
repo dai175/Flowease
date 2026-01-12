@@ -36,7 +36,7 @@ final class AppState {
 
     // MARK: - Alert Settings
 
-    /// 現在のアラート設定（ストアドプロパティとしてSwiftUIが変更を追跡可能）
+    /// 現在のアラート設定
     var alertSettings: AlertSettings
 
     // MARK: - Computed Properties
@@ -51,11 +51,9 @@ final class AppState {
 
     // MARK: - Alert Settings Methods
 
-    /// アラート設定を更新する
-    ///
-    /// - Parameter settings: 新しい設定値
+    /// アラート設定を更新し永続化する
     func updateAlertSettings(_ settings: AlertSettings) {
-        alertSettings = settings // ストアドプロパティを更新（SwiftUI再レンダリングをトリガー）
+        alertSettings = settings
         alertSettingsStorage.save(settings)
         alertService.updateSettings(settings)
     }
@@ -76,7 +74,7 @@ final class AppState {
         self.alertScoreHistory = alertScoreHistory
 
         let loadedAlertSettings = alertSettingsStorage.load()
-        alertSettings = loadedAlertSettings // ストアドプロパティを初期化
+        alertSettings = loadedAlertSettings
         let notificationManager = NotificationManager()
         let alertService = PostureAlertService(
             scoreHistory: alertScoreHistory,
