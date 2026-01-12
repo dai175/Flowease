@@ -229,7 +229,7 @@ struct AlertSettingsCard: View {
             return String(localized: "Disabled")
         }
         return String(
-            localized: "Threshold: \(settings.threshold), Period: \(settings.evaluationPeriodSeconds / 60) min"
+            localized: "Score < \(settings.threshold) for \(settings.evaluationPeriodSeconds / 60) min"
         )
     }
 }

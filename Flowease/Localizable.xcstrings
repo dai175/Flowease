@@ -1024,19 +1024,19 @@
         }
       }
     },
-    "Threshold: %lld, Period: %lld min" : {
-      "comment" : "Alert settings summary when enabled",
+    "Score < %lld for %lld min" : {
+      "comment" : "Alert settings summary - natural language format",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Threshold: %1$lld, Period: %2$lld min"
+            "value" : "Score < %1$lld for %2$lld min"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "閾値: %1$lld, 期間: %2$lld分"
+            "value" : "スコア%1$lld以下が%2$lld分続くと通知"
           }
         }
       }
