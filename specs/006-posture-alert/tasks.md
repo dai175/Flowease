@@ -113,34 +113,34 @@
 
 ### Tests for User Story 2 & 3
 
-- [ ] T017 [P] [US2] Add settings persistence tests to FloweaseTests/AlertSettingsTests.swift
+- [X] T017 [P] [US2] Add settings persistence tests to FloweaseTests/AlertSettingsTests.swift
   - Test: 設定値が保存・読み込みされる
   - Test: 範囲外の値がバリデーションされる
 
 ### Implementation for User Story 2 & 3
 
-- [ ] T018 [US2] Create AlertSettingsView in Flowease/Views/AlertSettingsView.swift
+- [X] T018 [US2] Create AlertSettingsView in Flowease/Views/AlertSettingsView.swift
   - Toggle for enabling/disabling alerts (US3)
   - Slider for threshold (20-80)
   - Picker for evaluation period (1-10 minutes)
   - Picker for minimum interval (5-60 minutes)
 
-- [ ] T019 [US2] Add alert settings strings to Flowease/Localizable.xcstrings (en/ja)
+- [X] T019 [US2] Add alert settings strings to Flowease/Localizable.xcstrings (en/ja)
   - "Alert Settings" / "通知設定"
   - "Enable Alerts" / "通知を有効化"
   - "Score Threshold" / "閾値スコア"
   - "Evaluation Period" / "評価期間"
   - "Minimum Interval" / "最短通知間隔"
 
-- [ ] T020 [US2] Integrate AlertSettingsView into StatusMenuView
+- [X] T020 [US2] Integrate AlertSettingsView into StatusMenuView
   - Add navigation or section to existing menu
   - Connect to AlertSettingsStorage
 
-- [ ] T021 [US2] Connect settings changes to PostureAlertService
+- [X] T021 [US2] Connect settings changes to PostureAlertService
   - Settings changes should immediately affect evaluation logic
   - Enable/disable should start/stop notification checks
 
-- [ ] T022 [US2] Verify tests pass and settings UI works correctly
+- [X] T022 [US2] Verify tests pass and settings UI works correctly
 
 **Checkpoint**: User Stories 2 & 3 complete - users can customize all alert settings
 

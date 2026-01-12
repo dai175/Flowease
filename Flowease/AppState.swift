@@ -34,6 +34,11 @@ final class AppState {
     /// 姿勢アラートサービス
     let alertService: PostureAlertService
 
+    // MARK: - Alert Settings
+
+    /// 現在のアラート設定（ストアドプロパティとしてSwiftUIが変更を追跡可能）
+    var alertSettings: AlertSettings
+
     // MARK: - Computed Properties
 
     /// メニューバーアイコン（スコアに応じた色）
@@ -42,6 +47,17 @@ final class AppState {
             for: postureViewModel.monitoringState,
             score: postureViewModel.smoothedScore
         )
+    }
+
+    // MARK: - Alert Settings Methods
+
+    /// アラート設定を更新する
+    ///
+    /// - Parameter settings: 新しい設定値
+    func updateAlertSettings(_ settings: AlertSettings) {
+        alertSettings = settings // ストアドプロパティを更新（SwiftUI再レンダリングをトリガー）
+        alertSettingsStorage.save(settings)
+        alertService.updateSettings(settings)
     }
 
     // MARK: - Initialization
@@ -59,11 +75,12 @@ final class AppState {
         let alertScoreHistory = ScoreHistory()
         self.alertScoreHistory = alertScoreHistory
 
-        let alertSettings = alertSettingsStorage.load()
+        let loadedAlertSettings = alertSettingsStorage.load()
+        alertSettings = loadedAlertSettings // ストアドプロパティを初期化
         let notificationManager = NotificationManager()
         let alertService = PostureAlertService(
             scoreHistory: alertScoreHistory,
-            settings: alertSettings,
+            settings: loadedAlertSettings,
             notificationManager: notificationManager
         )
         self.alertService = alertService

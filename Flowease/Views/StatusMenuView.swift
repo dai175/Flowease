@@ -23,6 +23,9 @@ struct StatusMenuView: View {
     /// キャリブレーション ViewModel
     let calibrationViewModel: CalibrationViewModel
 
+    /// アプリケーション状態（プレビュー時はnil）
+    var appState: AppState?
+
     /// ウィンドウを開くための Environment
     @Environment(\.openWindow) private var openWindow
 
@@ -43,6 +46,19 @@ struct StatusMenuView: View {
                     openWindow(id: "calibration")
                 }
             )
+
+            // 通知設定カード（appStateがある場合のみ表示）
+            if let appState {
+                AlertSettingsCard(
+                    settings: Binding(
+                        get: { appState.alertSettings },
+                        set: { appState.alertSettings = $0 }
+                    ),
+                    onSettingsChanged: { newSettings in
+                        appState.updateAlertSettings(newSettings)
+                    }
+                )
+            }
 
             // カメラ選択（authorized 時のみ表示）
             if viewModel.cameraAuthorizationStatus == .authorized {

@@ -27,7 +27,8 @@ final class PostureAlertService {
 
     // MARK: - State
 
-    private var settings: AlertSettings
+    /// 現在の通知設定（読み取り専用）
+    private(set) var settings: AlertSettings
     private var state: AlertState = .initial
 
     /// データ充足率の最小要件（50%）
