@@ -72,7 +72,7 @@ final class CalibrationService: CalibrationServiceProtocol {
     private let storage: CalibrationStorageProtocol
 
     /// ロガー
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "CalibrationService")
+    private let logger = Logger.calibrationService
 
     // MARK: - Calibration Data Collection
 

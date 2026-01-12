@@ -14,7 +14,7 @@ final class ScoreHistory: @unchecked Sendable {
     private let maxRetentionSeconds: Int = 660 // 11分
 
     private let lock = NSLock()
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "ScoreHistory")
+    private let logger = Logger.scoreHistory
 
     init() {
         logger.debug("ScoreHistory initialized")

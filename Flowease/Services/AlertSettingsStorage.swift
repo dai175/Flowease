@@ -34,7 +34,7 @@ protocol AlertSettingsStorageProtocol: Sendable {
 /// CalibrationStorageパターンを踏襲し、スレッドセーフな実装を提供。
 final class AlertSettingsStorage: AlertSettingsStorageProtocol, @unchecked Sendable {
     private let userDefaults: UserDefaults
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "AlertSettingsStorage")
+    private let logger = Logger.alertSettingsStorage
     private let lock = NSLock()
 
     init(userDefaults: UserDefaults = .standard) {
@@ -50,50 +50,39 @@ final class AlertSettingsStorage: AlertSettingsStorageProtocol, @unchecked Senda
         lock.lock()
         defer { lock.unlock() }
 
-        // isEnabledの読み込み（存在しない場合はデフォルト）
-        let isEnabled: Bool = if userDefaults.object(forKey: AlertSettingsKeys.isEnabled) != nil {
-            userDefaults.bool(forKey: AlertSettingsKeys.isEnabled)
-        } else {
-            AlertSettings.default.isEnabled
-        }
-
-        // thresholdの読み込み（存在しない場合はデフォルト、範囲外はクランプ）
-        let threshold: Int
-        if userDefaults.object(forKey: AlertSettingsKeys.threshold) != nil {
-            let rawValue = userDefaults.integer(forKey: AlertSettingsKeys.threshold)
-            threshold = Self.clamp(rawValue, to: AlertSettings.thresholdRange)
-        } else {
-            threshold = AlertSettings.default.threshold
-        }
-
-        // evaluationPeriodの読み込み（存在しない場合はデフォルト、範囲外はクランプ）
-        let evaluationPeriod: Int
-        if userDefaults.object(forKey: AlertSettingsKeys.evaluationPeriod) != nil {
-            let rawValue = userDefaults.integer(forKey: AlertSettingsKeys.evaluationPeriod)
-            evaluationPeriod = Self.clamp(rawValue, to: AlertSettings.evaluationPeriodSecondsRange)
-        } else {
-            evaluationPeriod = AlertSettings.default.evaluationPeriodSeconds
-        }
-
-        // minimumIntervalの読み込み（存在しない場合はデフォルト、範囲外はクランプ）
-        let minimumInterval: Int
-        if userDefaults.object(forKey: AlertSettingsKeys.minimumInterval) != nil {
-            let rawValue = userDefaults.integer(forKey: AlertSettingsKeys.minimumInterval)
-            minimumInterval = Self.clamp(rawValue, to: AlertSettings.minimumIntervalSecondsRange)
-        } else {
-            minimumInterval = AlertSettings.default.minimumIntervalSeconds
-        }
-
         let settings = AlertSettings(
-            isEnabled: isEnabled,
-            threshold: threshold,
-            evaluationPeriodSeconds: evaluationPeriod,
-            minimumIntervalSeconds: minimumInterval
+            isEnabled: loadBool(forKey: AlertSettingsKeys.isEnabled, default: AlertSettings.default.isEnabled),
+            threshold: loadInt(
+                forKey: AlertSettingsKeys.threshold,
+                default: AlertSettings.default.threshold,
+                range: AlertSettings.thresholdRange
+            ),
+            evaluationPeriodSeconds: loadInt(
+                forKey: AlertSettingsKeys.evaluationPeriod,
+                default: AlertSettings.default.evaluationPeriodSeconds,
+                range: AlertSettings.evaluationPeriodSecondsRange
+            ),
+            minimumIntervalSeconds: loadInt(
+                forKey: AlertSettingsKeys.minimumInterval,
+                default: AlertSettings.default.minimumIntervalSeconds,
+                range: AlertSettings.minimumIntervalSecondsRange
+            )
         )
 
         logger.debug("Alert settings loaded")
-
         return settings
+    }
+
+    /// Bool値を読み込む（存在しない場合はデフォルト値を返す）
+    private func loadBool(forKey key: String, default defaultValue: Bool) -> Bool {
+        guard userDefaults.object(forKey: key) != nil else { return defaultValue }
+        return userDefaults.bool(forKey: key)
+    }
+
+    /// Int値を読み込む（存在しない場合はデフォルト値、範囲外はクランプ）
+    private func loadInt(forKey key: String, default defaultValue: Int, range: ClosedRange<Int>) -> Int {
+        guard userDefaults.object(forKey: key) != nil else { return defaultValue }
+        return Self.clamp(userDefaults.integer(forKey: key), to: range)
     }
 
     /// 設定を保存する

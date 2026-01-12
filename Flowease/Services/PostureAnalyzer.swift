@@ -57,7 +57,7 @@ protocol PostureAnalyzing: Sendable {
 final class PostureAnalyzer: PostureAnalyzing {
     // MARK: - Properties
 
-    private let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "PostureAnalyzer")
+    private let logger = Logger.postureAnalyzer
 
     /// 顔検出サービス
     private let faceDetector: FaceDetectorProtocol

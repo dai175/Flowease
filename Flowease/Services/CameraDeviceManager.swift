@@ -26,10 +26,7 @@ final class CameraDeviceManager {
     var onSelectedCameraReconnected: (() -> Void)?
 
     /// ロガー
-    private let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "cc.focuswave.Flowease",
-        category: "CameraDeviceManager"
-    )
+    private let logger = Logger.cameraDeviceManager
 
     // MARK: - Private Properties
 
