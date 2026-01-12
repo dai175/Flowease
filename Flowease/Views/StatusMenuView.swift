@@ -93,7 +93,11 @@ struct StatusMenuView: View {
         case .active:
             ScoreHeroSection(score: viewModel.smoothedScore, color: viewModel.iconColor)
         case let .paused(reason):
-            PausedStateView(reason: reason)
+            ScoreHeroSection(
+                score: nil,
+                color: .secondary,
+                pauseReason: reason.description
+            )
         case let .disabled(reason):
             CameraPermissionView(reason: reason)
                 .frame(height: 80)
@@ -116,30 +120,47 @@ struct StatusMenuView: View {
 
 /// スコアを大きく表示するヒーローセクション
 private struct ScoreHeroSection: View {
-    let score: Int
+    let score: Int?
     let color: Color
+    var pauseReason: String?
+
+    private var isPaused: Bool { pauseReason != nil }
 
     var body: some View {
         VStack(spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text("\(score)")
+                Text(scoreDisplay)
                     .font(.system(size: 48, weight: .bold, design: .rounded))
                     .foregroundStyle(color)
                     .contentTransition(.numericText())
 
-                Text(ScoreStatus(score: score).label)
+                Text(statusLabel)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(color.opacity(0.8))
             }
 
             HStack(spacing: 4) {
-                PulsingDot(color: color)
-                Text("Monitoring")
+                PulsingDot(color: color, isPaused: isPaused)
+                Text(pauseReason ?? String(localized: "Monitoring"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .frame(width: 140, alignment: .leading)
             }
         }
         .frame(height: 80)
+    }
+
+    private var scoreDisplay: String {
+        score.map { "\($0)" } ?? "--"
+    }
+
+    private var statusLabel: String {
+        if let score {
+            ScoreStatus(score: score).label
+        } else {
+            String(localized: "Paused")
+        }
     }
 }
 
@@ -173,6 +194,7 @@ private enum ScoreStatus {
 /// パルスアニメーション付きのドット（外側に広がるリング効果）
 private struct PulsingDot: View {
     let color: Color
+    var isPaused: Bool = false
 
     private static let dotSize: CGFloat = 6
     private static let pulseAnimation = Animation.easeOut(duration: 1.2).repeatForever(autoreverses: false)
@@ -181,10 +203,16 @@ private struct PulsingDot: View {
 
     var body: some View {
         ZStack {
-            pulseRing
+            if !isPaused {
+                pulseRing
+            }
             centerDot
         }
-        .onAppear { isPulsing = true }
+        .frame(width: Self.dotSize * 2.5, height: Self.dotSize * 2.5)
+        .onAppear { isPulsing = !isPaused }
+        .onChange(of: isPaused) { _, newValue in
+            isPulsing = !newValue
+        }
     }
 
     private var pulseRing: some View {
@@ -200,27 +228,6 @@ private struct PulsingDot: View {
         Circle()
             .fill(color)
             .frame(width: Self.dotSize, height: Self.dotSize)
-    }
-}
-
-// MARK: - PausedStateView
-
-/// 一時停止状態を表示するビュー
-private struct PausedStateView: View {
-    let reason: PauseReason
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: reason.iconName)
-                .font(.system(size: 28))
-                .foregroundStyle(reason.isWarning ? .orange : .secondary)
-
-            Text(reason.description)
-                .font(.subheadline)
-                .foregroundStyle(.primary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(height: 80)
     }
 }
 
