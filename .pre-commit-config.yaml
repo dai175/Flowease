@@ -33,6 +33,7 @@ repos:
       # 大きなファイルの追加を防止
       - id: check-added-large-files
         args: ['--maxkb=500']
+        exclude: '\.xcassets/'
       # マージコンフリクトマーカーのチェック
       - id: check-merge-conflict
       # YAMLの構文チェック
