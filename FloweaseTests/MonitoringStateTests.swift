@@ -407,4 +407,36 @@ final class MonitoringStateTests: XCTestCase {
         let reason = PauseReason.lowDetectionQuality
         XCTAssertFalse(reason.description.isEmpty)
     }
+
+    // MARK: - PauseReason.processingError Tests
+
+    /// PauseReason.processingError の description を確認
+    func testPauseReason_processingError_description() {
+        let reason = PauseReason.processingError
+        XCTAssertFalse(reason.description.isEmpty)
+    }
+
+    /// PauseReason.processingError の iconName を確認
+    func testPauseReason_processingError_iconName() {
+        let reason = PauseReason.processingError
+        XCTAssertEqual(reason.iconName, "exclamationmark.triangle")
+    }
+
+    /// PauseReason.processingError の isWarning を確認
+    func testPauseReason_processingError_isWarning() {
+        let reason = PauseReason.processingError
+        XCTAssertTrue(reason.isWarning, "processingError should be a warning")
+    }
+
+    /// MonitoringState.paused(.processingError) の Equatable を確認
+    func testMonitoringState_paused_processingError_equatable() {
+        // Given
+        let state1 = MonitoringState.paused(.processingError)
+        let state2 = MonitoringState.paused(.processingError)
+        let state3 = MonitoringState.paused(.cameraInitializing)
+
+        // Then
+        XCTAssertEqual(state1, state2, "Same states should be equal")
+        XCTAssertNotEqual(state1, state3, "Different states should not be equal")
+    }
 }

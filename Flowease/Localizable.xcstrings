@@ -1058,6 +1058,22 @@
         }
       }
     },
+    "Processing error occurred" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processing error occurred"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "処理エラーが発生しました"
+          }
+        }
+      }
+    },
     "Start" : {
       "localizations" : {
         "en" : {
