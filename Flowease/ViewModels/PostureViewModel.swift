@@ -458,14 +458,22 @@ final class PostureViewModel {
     ///
     /// 減衰スコアはUI表示用のみに追加し、アラート履歴には追加しない。
     /// ユーザー不在時に誤って通知が送られることを防ぐ。
+    /// breakdown は減衰比率に応じて比例スケーリングする。
     private func handleNoFaceDetected() {
         if let lastScore = scoreHistory.last {
             let decayedValue = lastScore.value - scoreDecayPerFrame
             if decayedValue > 0 {
+                // breakdown を比例スケーリング
+                let ratio = Double(decayedValue) / Double(lastScore.value)
+                let scaledBreakdown = ScoreBreakdown(
+                    verticalPosition: Int(Double(lastScore.breakdown.verticalPosition) * ratio),
+                    sizeChange: Int(Double(lastScore.breakdown.sizeChange) * ratio),
+                    tilt: Int(Double(lastScore.breakdown.tilt) * ratio)
+                )
                 let decayedScore = PostureScore(
                     value: decayedValue,
                     timestamp: Date(),
-                    breakdown: lastScore.breakdown,
+                    breakdown: scaledBreakdown,
                     confidence: 0.0
                 )
                 // UI表示用のみに追加（アラート履歴には追加しない）
@@ -502,7 +510,7 @@ final class PostureViewModel {
     private func handleVisionError() {
         consecutiveFailureCount += 1
         if consecutiveFailureCount >= failureThreshold {
-            pauseIfActive(reason: .cameraInitializing, logMessage: "Paused due to Vision framework error")
+            pauseIfActive(reason: .processingError, logMessage: "Paused due to Vision framework error")
         }
     }
 

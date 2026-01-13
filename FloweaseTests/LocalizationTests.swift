@@ -260,6 +260,9 @@ final class LocalizationTests: XCTestCase {
 
         let detectionQualityLow = String(localized: "Detection quality is low")
         XCTAssertEqual(detectionQualityLow, "Detection quality is low", "English string should match")
+
+        let processingError = String(localized: "Processing error occurred")
+        XCTAssertEqual(processingError, "Processing error occurred", "English string should match")
     }
 
     // MARK: - US3: CameraPermissionView Localization Tests

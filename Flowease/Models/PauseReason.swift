@@ -34,6 +34,11 @@ enum PauseReason: Sendable, Equatable {
     /// ユーザーが選択したカメラが物理的に切断された場合。
     /// 再接続されるか、別のカメラを選択するまで一時停止。
     case selectedCameraDisconnected
+
+    /// 処理エラーが発生
+    ///
+    /// Vision フレームワークなど、内部処理でエラーが発生した場合。
+    case processingError
 }
 
 // MARK: CustomStringConvertible
@@ -52,6 +57,8 @@ extension PauseReason: CustomStringConvertible {
             String(localized: "Detection quality is low")
         case .selectedCameraDisconnected:
             String(localized: "Selected camera disconnected")
+        case .processingError:
+            String(localized: "Processing error occurred")
         }
     }
 }
@@ -72,13 +79,15 @@ extension PauseReason {
             "exclamationmark.circle"
         case .selectedCameraDisconnected:
             "video.slash.fill"
+        case .processingError:
+            "exclamationmark.triangle"
         }
     }
 
     /// 警告を強調すべき状態かどうか
     var isWarning: Bool {
         switch self {
-        case .selectedCameraDisconnected, .lowDetectionQuality:
+        case .selectedCameraDisconnected, .lowDetectionQuality, .processingError:
             true
         default:
             false
