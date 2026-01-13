@@ -107,24 +107,51 @@ struct StatusMenuView: View {
 
     @ViewBuilder
     private var heroSection: some View {
+        if case let .disabled(reason) = viewModel.monitoringState {
+            CameraPermissionView(reason: reason)
+                .frame(height: 80)
+        } else {
+            let data = heroData
+            ScoreHeroSection(
+                averageScore: data.averageScore,
+                realtimeScore: data.realtimeScore,
+                fallbackColor: data.fallbackColor,
+                status: data.status,
+                pauseReason: data.pauseReason
+            )
+        }
+    }
+
+    // MARK: - Hero Section Data
+
+    private struct HeroData {
+        let averageScore: Int?
+        let realtimeScore: Int?
+        let fallbackColor: Color
+        let status: ScoreStatus?
+        let pauseReason: String?
+    }
+
+    private var heroData: HeroData {
         switch viewModel.monitoringState {
         case .active:
-            ScoreHeroSection(
+            return HeroData(
                 averageScore: viewModel.evaluationPeriodAverageScore.map { Int($0) },
                 realtimeScore: viewModel.smoothedScore,
                 fallbackColor: viewModel.iconColor,
-                status: viewModel.stabilizedScoreStatus
+                status: viewModel.stabilizedScoreStatus,
+                pauseReason: nil
             )
         case let .paused(reason):
-            ScoreHeroSection(
+            return HeroData(
                 averageScore: nil,
                 realtimeScore: nil,
                 fallbackColor: .secondary,
+                status: nil,
                 pauseReason: reason.description
             )
-        case let .disabled(reason):
-            CameraPermissionView(reason: reason)
-                .frame(height: 80)
+        case .disabled:
+            fatalError("disabled case should be handled in heroSection")
         }
     }
 
@@ -145,6 +172,7 @@ struct StatusMenuView: View {
 /// スコアを大きく表示するヒーローセクション
 ///
 /// 評価期間平均をメインに表示し、リアルタイムスコアをアークゲージで補助表示する。
+/// active/paused 状態間でインスタンスを維持し、スムーズなアニメーション遷移を実現する。
 private struct ScoreHeroSection: View {
     /// 評価期間平均スコア（メイン表示）
     let averageScore: Int?
@@ -156,7 +184,15 @@ private struct ScoreHeroSection: View {
     var status: ScoreStatus?
     var pauseReason: String?
 
+    /// 最後に表示したリアルタイムスコア（アニメーション継続用）
+    @State private var lastRealtimeScore: Int = 0
+
     private var isPaused: Bool { pauseReason != nil }
+
+    /// ゲージに渡すスコア（nilの場合は最後のスコアを使用してアニメーション継続）
+    private var gaugeScore: Int {
+        realtimeScore ?? lastRealtimeScore
+    }
 
     /// スコアに基づくグラデーション色
     private var scoreColor: Color {
@@ -172,21 +208,17 @@ private struct ScoreHeroSection: View {
     var body: some View {
         VStack(spacing: 4) {
             ZStack {
-                // リアルタイムスコアのアークゲージ（外側）
-                if let realtime = realtimeScore {
-                    RealtimeScoreGauge(score: realtime)
-                } else {
-                    // 一時停止時は空のゲージを表示
-                    RealtimeScoreGauge(score: 0)
-                        .opacity(0.3)
-                }
+                // リアルタイムスコアのアークゲージ（常に同一インスタンスでアニメーション継続）
+                RealtimeScoreGauge(score: gaugeScore)
+                    .opacity(realtimeScore != nil ? 1.0 : 0.3)
+                    .animation(.easeInOut(duration: 0.3), value: realtimeScore != nil)
 
                 // 評価期間平均スコア（中央）
                 VStack(spacing: 0) {
                     Text(scoreDisplay)
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundStyle(scoreColor)
-                        .contentTransition(.numericText())
+                        .frame(minWidth: 60) // 幅を固定してずれを防止
 
                     Text(statusLabel)
                         .font(.system(size: 12, weight: .medium))
@@ -203,17 +235,27 @@ private struct ScoreHeroSection: View {
             }
         }
         .frame(height: 100)
+        .onAppear {
+            // 初期表示時に lastRealtimeScore を設定（onChange は初回は呼ばれないため）
+            if let score = realtimeScore {
+                lastRealtimeScore = score
+            }
+        }
+        .onChange(of: realtimeScore) { oldValue, newValue in
+            if let score = newValue {
+                // 新しいスコアが来たら保持
+                lastRealtimeScore = score
+            } else if oldValue != nil {
+                // nil になった場合、lastRealtimeScore から 0 へアニメーション
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    lastRealtimeScore = 0
+                }
+            }
+        }
     }
 
     private var scoreDisplay: String {
-        // 評価期間平均があれば表示、なければリアルタイムスコアにフォールバック
-        if let avg = averageScore {
-            return "\(avg)"
-        }
-        if let realtime = realtimeScore {
-            return "\(realtime)"
-        }
-        return "--"
+        (averageScore ?? realtimeScore).map { "\($0)" } ?? "--"
     }
 
     private var statusLabel: String {
