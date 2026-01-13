@@ -10,7 +10,7 @@ Flowease is a macOS menu bar application built with SwiftUI. Target: macOS 14.6+
 
 ```bash
 make build          # Build the project
-make test           # Run all tests
+make test           # Run all tests (uses xcbeautify for readable output)
 make lint           # Run SwiftLint
 make format         # Run SwiftFormat
 make fix            # Format + lint

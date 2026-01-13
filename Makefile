@@ -28,7 +28,7 @@ build:
 	xcodebuild -scheme Flowease -destination 'platform=macOS' build
 
 test:
-	xcodebuild -scheme Flowease -destination 'platform=macOS' test
+	xcodebuild -scheme Flowease -destination 'platform=macOS' test 2>&1 | xcbeautify
 
 lint:
 	@swiftlint lint --strict
