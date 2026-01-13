@@ -218,7 +218,6 @@ private struct ScoreHeroSection: View {
                     Text(scoreDisplay)
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .foregroundStyle(scoreColor)
-                        .frame(minWidth: 60) // 幅を固定してずれを防止
 
                     Text(statusLabel)
                         .font(.system(size: 12, weight: .medium))
