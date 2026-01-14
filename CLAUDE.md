@@ -30,7 +30,7 @@ make setup          # Install pre-commit hooks
 SwiftUI App with MVVM architecture for macOS menu bar:
 - `Models/` - Data models (PostureScore, FacePosition, FaceReferencePosture, MonitoringState, AlertSettings, AlertState, ScoreRecord, etc.)
 - `ViewModels/` - View models for state management
-- `Views/` - SwiftUI views (StatusMenuView, CameraPermissionView, CalibrationView, AlertSettingsView)
+- `Views/` - SwiftUI views (StatusMenuView, CameraPermissionView, CalibrationView, AlertSettingsView, ScoreHeroSection, PulsingDot, StatusBadge)
 - `Services/` - Business logic (CameraService, PostureAnalyzer, FaceDetector, FaceScoreCalculator, CalibrationService, PostureAlertService, NotificationManager, ScoreHistory, AlertSettingsStorage)
 - `Utilities/` - Helper functions (ColorGradient)
 
@@ -57,6 +57,7 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - **色グラデーション**: スコアに応じてアイコンの色が変化（緑=良好、赤=要改善）
 - **エッジケース対応**: カメラ利用不可、顔未検出時はグレーアイコンで表示
 - **カメラ選択**: 複数カメラから使用するカメラを選択、切断・再接続を自動処理
+- **アクセシビリティ**: VoiceOver対応（日英両言語）
 
 ## Localization
 
