@@ -181,6 +181,7 @@
     },
     "alert.threshold.description" : {
       "comment" : "Description for score threshold setting",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -994,7 +995,6 @@
     },
     "Reconfigure calibration" : {
       "comment" : "Tooltip for reconfigure button in compact calibration card",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

@@ -155,47 +155,55 @@ struct AlertSettingsCard: View {
                 step: 1
             )
             .controlSize(.small)
-
-            Text("alert.threshold.description")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
         }
     }
 
-    // MARK: - Evaluation Period Picker
+    // MARK: - Settings Picker Row
+
+    /// 設定用ピッカー行を生成
+    private func settingsPickerRow(
+        label: LocalizedStringKey,
+        selection keyPath: WritableKeyPath<AlertSettings, Int>,
+        options: [(label: LocalizedStringKey, value: Int)]
+    ) -> some View {
+        HStack {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Picker("", selection: bindingWithCallback(keyPath)) {
+                ForEach(options, id: \.value) { option in
+                    Text(option.label).tag(option.value)
+                }
+            }
+            .pickerStyle(.menu)
+        }
+    }
 
     private var evaluationPeriodPicker: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Check Duration")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Picker("", selection: bindingWithCallback(\.evaluationPeriodSeconds)) {
-                Text("1 min").tag(60)
-                Text("3 min").tag(180)
-                Text("5 min").tag(300)
-                Text("10 min").tag(600)
-            }
-            .pickerStyle(.menu)
-        }
+        settingsPickerRow(
+            label: "Check Duration",
+            selection: \.evaluationPeriodSeconds,
+            options: [
+                ("1 min", 60),
+                ("3 min", 180),
+                ("5 min", 300),
+                ("10 min", 600)
+            ]
+        )
     }
 
-    // MARK: - Minimum Interval Picker
-
     private var minimumIntervalPicker: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Notification Cooldown")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Picker("", selection: bindingWithCallback(\.minimumIntervalSeconds)) {
-                Text("5 min").tag(300)
-                Text("15 min").tag(900)
-                Text("30 min").tag(1800)
-                Text("60 min").tag(3600)
-            }
-            .pickerStyle(.menu)
-        }
+        settingsPickerRow(
+            label: "Notification Cooldown",
+            selection: \.minimumIntervalSeconds,
+            options: [
+                ("5 min", 300),
+                ("15 min", 900),
+                ("30 min", 1800),
+                ("60 min", 3600)
+            ]
+        )
     }
 
     // MARK: - Binding Helper
