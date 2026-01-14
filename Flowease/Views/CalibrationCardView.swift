@@ -52,6 +52,7 @@ struct CalibrationCard: View {
                     Button("Configure", action: onConfigure)
                         .buttonStyle(.borderedProminent)
                         .controlSize(.small)
+                        .accessibilityLabel(String(localized: "Configure calibration"))
                 }
             }
 

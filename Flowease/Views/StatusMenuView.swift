@@ -97,6 +97,7 @@ struct StatusMenuView: View {
             }
             .buttonStyle(.plain)
             .keyboardShortcut("q")
+            .accessibilityLabel(String(localized: "Quit Flowease"))
         }
         .padding(12)
     }
