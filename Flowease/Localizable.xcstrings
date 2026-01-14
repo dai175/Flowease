@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "%@ (%@)" : {
       "localizations" : {
         "en" : {
@@ -22,6 +19,23 @@
     },
     "%lld" : {
       "comment" : "Numeric score display - no translation needed"
+    },
+    "%lld out of 100" : {
+      "comment" : "Accessibility value for posture score",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld out of 100"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100点中%lld点"
+          }
+        }
+      }
     },
     "⌘Q" : {
       "comment" : "Keyboard shortcut - no translation needed"
@@ -179,24 +193,6 @@
         }
       }
     },
-    "alert.threshold.description" : {
-      "comment" : "Description for score threshold setting",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notify when average score falls below this"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平均スコアがこの値以下で通知"
-          }
-        }
-      }
-    },
     "alert.title" : {
       "comment" : "Posture alert notification title",
       "localizations" : {
@@ -306,23 +302,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "キャリブレーション未設定"
-          }
-        }
-      }
-    },
-    "Calibration: %@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Calibration: %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "キャリブレーション: %@"
           }
         }
       }
@@ -501,6 +480,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設定"
+          }
+        }
+      }
+    },
+    "Configure calibration" : {
+      "comment" : "Accessibility label for configure calibration button",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure calibration"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーションを設定"
           }
         }
       }
@@ -929,6 +925,23 @@
         }
       }
     },
+    "Posture score" : {
+      "comment" : "Accessibility label for posture score gauge",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture score"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "姿勢スコア"
+          }
+        }
+      }
+    },
     "Processing error occurred" : {
       "localizations" : {
         "en" : {
@@ -957,6 +970,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "終了"
+          }
+        }
+      }
+    },
+    "Quit Flowease" : {
+      "comment" : "Accessibility label for quit button",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit Flowease"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Floweaseを終了"
           }
         }
       }
