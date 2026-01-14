@@ -30,8 +30,8 @@ enum AnalysisResult: Sendable, Equatable {
     /// Vision フレームワークエラー
     ///
     /// 顔検出処理自体が失敗した場合。
-    /// エラーの詳細は FaceDetector のログに記録される。
-    case visionError
+    /// - Parameter description: エラーの詳細説明
+    case visionError(String)
 }
 
 // MARK: - PostureAnalyzing
@@ -98,8 +98,8 @@ final class PostureAnalyzer: PostureAnalyzing {
             switch error {
             case .noFaceDetected:
                 return .noFaceDetected
-            case .visionRequestFailed:
-                return .visionError
+            case let .visionRequestFailed(description):
+                return .visionError(description)
             }
         }
     }
