@@ -1,11 +1,48 @@
 import Foundation
 import OSLog
 
+// MARK: - ScoreHistoryProtocol
+
+/// スコア履歴管理プロトコル
+///
+/// 姿勢スコアの時系列データを管理し、評価期間内の平均スコアと
+/// データ充足率を計算するためのインターフェース。
+/// テスト時のモック化を可能にする。
+protocol ScoreHistoryProtocol: Sendable {
+    /// 現在のレコード数
+    var recordCount: Int { get }
+
+    /// スコアを追加する
+    /// - Parameter record: 追加するスコアレコード
+    func add(_ record: ScoreRecord)
+
+    /// PostureScoreからスコアを追加する
+    /// - Parameter score: 追加するPostureScore
+    func add(_ score: PostureScore)
+
+    /// 指定期間内の平均スコアを計算
+    /// - Parameter seconds: 現在時刻からの秒数
+    /// - Returns: 平均スコア、またはデータがない場合はnil
+    func averageScore(within seconds: Int) -> Double?
+
+    /// 指定期間内のデータ充足率を計算
+    /// - Parameters:
+    ///   - seconds: 評価期間（秒）
+    ///   - expectedInterval: 期待されるデータ間隔（秒）
+    /// - Returns: 充足率（0.0〜1.0）
+    func dataCompleteness(within seconds: Int, expectedInterval: TimeInterval) -> Double
+
+    /// 履歴をクリアする
+    func clear()
+}
+
+// MARK: - ScoreHistory
+
 /// スコア履歴管理
 ///
 /// 姿勢スコアの時系列データを管理し、評価期間内の平均スコアと
 /// データ充足率を計算する。メモリ内で保持し、永続化はしない。
-final class ScoreHistory: @unchecked Sendable {
+final class ScoreHistory: ScoreHistoryProtocol, @unchecked Sendable {
     /// 履歴データ（新しい順）
     private var records: [ScoreRecord] = []
 

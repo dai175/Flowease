@@ -47,7 +47,7 @@ final class PostureViewModel {
     // MARK: - Alert Dependencies
 
     /// アラート用スコア履歴（通知判定用、UI表示用scoreHistoryとは別管理）
-    private let alertScoreHistory: ScoreHistory?
+    private let alertScoreHistory: (any ScoreHistoryProtocol)?
 
     /// 姿勢アラートサービス
     private let alertService: PostureAlertService?
@@ -202,7 +202,7 @@ final class PostureViewModel {
         postureAnalyzer: PostureAnalyzing,
         faceScoreCalculator: FaceScoreCalculator,
         calibrationService: CalibrationService,
-        alertScoreHistory: ScoreHistory? = nil,
+        alertScoreHistory: (any ScoreHistoryProtocol)? = nil,
         alertService: PostureAlertService? = nil
     ) {
         self.cameraService = cameraService

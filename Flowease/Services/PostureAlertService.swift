@@ -22,7 +22,7 @@ final class PostureAlertService {
 
     // MARK: - Dependencies
 
-    private let scoreHistory: ScoreHistory
+    private let scoreHistory: any ScoreHistoryProtocol
     private let notificationManager: NotificationManagerProtocol
 
     // MARK: - State
@@ -43,7 +43,7 @@ final class PostureAlertService {
     ///   - settings: 通知設定
     ///   - notificationManager: 通知送信マネージャー
     init(
-        scoreHistory: ScoreHistory,
+        scoreHistory: some ScoreHistoryProtocol,
         settings: AlertSettings,
         notificationManager: NotificationManagerProtocol
     ) {
