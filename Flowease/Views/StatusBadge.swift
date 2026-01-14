@@ -29,6 +29,7 @@ struct StatusBadge: View {
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(color)
         }
+        .accessibilityHidden(true) // 装飾要素として扱う（親要素でラベルを設定）
     }
 }
 

@@ -101,6 +101,9 @@ struct RealtimeScoreGauge: View {
                 .animation(.easeInOut(duration: 0.3), value: score)
         }
         .frame(width: gaugeSize, height: gaugeSize)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(String(localized: "Posture score", comment: "Accessibility label for posture score gauge"))
+        .accessibilityValue(String(localized: "\(score) out of 100", comment: "Accessibility value for posture score"))
     }
 }
 
