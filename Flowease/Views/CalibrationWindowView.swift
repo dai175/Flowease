@@ -53,7 +53,8 @@ struct CalibrationWindowView: View {
             // timerTickを使って再描画をトリガー
             CalibrationInProgressView(
                 progress: viewModel.progress,
-                remainingSeconds: viewModel.remainingSeconds
+                remainingSeconds: viewModel.remainingSeconds,
+                warningMessage: viewModel.qualityWarningMessage
             )
             .id(timerTick)
 
