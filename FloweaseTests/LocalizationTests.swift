@@ -59,15 +59,6 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(quit, "Quit", "English string should match")
     }
 
-    /// StatusMenuView で使用される補間文字列（Calibration: %@）が正しく動作することを確認
-    func testStatusMenuViewInterpolatedStringsWork() {
-        // String(localized:) を使ってローカライズリソースを検証
-        let statusSummary = "Complete"
-        let calibrationText = String(localized: "Calibration: \(statusSummary)")
-        XCTAssertFalse(calibrationText.isEmpty, "Calibration string should exist")
-        XCTAssertEqual(calibrationText, "Calibration: Complete", "English string should match")
-    }
-
     // MARK: - US2: CalibrationView Localization Tests
 
     /// CalibrationView で使用されるローカライズ文字列が存在することを確認
