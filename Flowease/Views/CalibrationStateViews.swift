@@ -21,8 +21,8 @@ struct CalibrationStatusView: View {
 
         var iconName: String {
             switch self {
-            case .notCalibrated: "person.crop.circle"
-            case .completed: "checkmark.circle.fill"
+            case .notCalibrated: "person.fill"
+            case .completed: "checkmark"
             case .failed: "exclamationmark.triangle.fill"
             }
         }
@@ -66,9 +66,15 @@ struct CalibrationStatusView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            Image(systemName: status.iconName)
-                .font(.system(size: 40))
-                .foregroundStyle(status.iconColor)
+            // StatusBadge スタイルの大きいバージョン
+            ZStack {
+                Circle()
+                    .fill(status.iconColor.opacity(0.15))
+                    .frame(width: 48, height: 48)
+                Image(systemName: status.iconName)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(status.iconColor)
+            }
 
             Text(status.title)
                 .font(.subheadline)

@@ -21,18 +21,26 @@ struct CalibrationProgressView: View {
     let remainingSeconds: Double
 
     /// プログレスバーの太さ
-    private let lineWidth: CGFloat = 8
+    private let lineWidth: CGFloat = 4
 
     /// プログレスサークルのサイズ
-    private let circleSize: CGFloat = 80
+    private let circleSize: CGFloat = 64
+
+    /// 内側の塗りつぶし円のサイズ
+    private let innerCircleSize: CGFloat = 48
 
     var body: some View {
         ZStack {
-            // 背景の円
+            // 塗りつぶし背景（StatusBadge スタイル）
+            Circle()
+                .fill(Color.accentColor.opacity(0.15))
+                .frame(width: innerCircleSize, height: innerCircleSize)
+
+            // 背景の円（トラック）
             Circle()
                 .stroke(
                     Color.secondary.opacity(0.2),
-                    lineWidth: lineWidth
+                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                 )
                 .frame(width: circleSize, height: circleSize)
 
@@ -48,11 +56,11 @@ struct CalibrationProgressView: View {
                 )
                 .frame(width: circleSize, height: circleSize)
                 .rotationEffect(.degrees(-90))
-                .animation(.linear(duration: 0.1), value: progress)
+                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: progress)
 
             // 残り秒数
             Text("\(Int(ceil(remainingSeconds)))")
-                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(.primary)
         }
     }
