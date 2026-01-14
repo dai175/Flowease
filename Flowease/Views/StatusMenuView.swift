@@ -47,16 +47,37 @@ struct StatusMenuView: View {
 
             // カメラ選択（authorized 時のみ表示）
             if viewModel.cameraAuthorizationStatus == .authorized {
-                HStack {
-                    Image(systemName: "camera")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.secondary)
+                let selectedCameraName = viewModel.availableCameras
+                    .first { $0.id == viewModel.selectedCameraID }?.name
+                    ?? String(localized: "System Default")
+
+                HStack(spacing: 8) {
+                    StatusBadge(systemName: "camera", color: .secondary)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Camera")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Text(selectedCameraName)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+
+                    Spacer()
+
                     CameraSelectionView(
                         availableCameras: viewModel.availableCameras,
                         selectedCameraID: viewModel.selectedCameraID,
                         onSelect: { viewModel.selectCamera($0) }
                     )
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(.controlBackgroundColor).opacity(0.5))
+                )
             }
 
             Divider()
@@ -465,30 +486,9 @@ private func makePreviewCalibrationViewModel(isCalibrated: Bool = false) -> Cali
     )
 }
 
-#Preview("スコア良好 (85)") {
-    StatusMenuView(
-        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 85),
-        calibrationViewModel: makePreviewCalibrationViewModel()
-    )
-}
-
 #Preview("スコア良好 + キャリブレーション済み") {
     StatusMenuView(
-        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 85),
+        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 85, isCalibrated: true),
         calibrationViewModel: makePreviewCalibrationViewModel(isCalibrated: true)
-    )
-}
-
-#Preview("スコア中程度 (50)") {
-    StatusMenuView(
-        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 50),
-        calibrationViewModel: makePreviewCalibrationViewModel()
-    )
-}
-
-#Preview("スコア低下 (25)") {
-    StatusMenuView(
-        viewModel: makePreviewViewModel(cameraStatus: .authorized, score: 25),
-        calibrationViewModel: makePreviewCalibrationViewModel()
     )
 }

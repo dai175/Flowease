@@ -36,6 +36,7 @@ struct CameraSelectionView: View {
                     .tag(camera.id as String?)
             }
         }
+        .labelsHidden()
     }
 
     // MARK: - Private Views

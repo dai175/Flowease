@@ -20,15 +20,10 @@ struct CalibrationCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                // ステータスアイコン（円形バッジ）
-                ZStack {
-                    Circle()
-                        .fill(statusColor.opacity(0.15))
-                        .frame(width: 28, height: 28)
-                    Image(systemName: isCalibrated ? "checkmark" : "person.crop.circle.badge.plus")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(statusColor)
-                }
+                StatusBadge(
+                    systemName: isCalibrated ? "checkmark" : "person.crop.circle.badge.plus",
+                    color: statusColor
+                )
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Calibration")
@@ -92,27 +87,28 @@ struct CompactCalibrationCard: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            // 完了アイコン
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 14))
-                .foregroundStyle(.green)
+            StatusBadge(systemName: "checkmark", color: .green)
 
-            Text("Calibration: \(statusSummary)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Calibration")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text(statusSummary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
 
             Spacer()
 
-            // 再設定メニュー
-            Menu {
-                Button("Reconfigure", action: onReconfigure)
-            } label: {
-                Image(systemName: "ellipsis.circle")
-                    .font(.system(size: 14))
+            // 再設定ボタン
+            Button(action: onReconfigure) {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.secondary)
             }
-            .menuStyle(.borderlessButton)
-            .help(String(localized: "Reconfigure calibration"))
+            .buttonStyle(.plain)
+            .accessibilityLabel(String(localized: "Reconfigure calibration"))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)

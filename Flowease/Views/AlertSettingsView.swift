@@ -56,15 +56,10 @@ struct AlertSettingsCard: View {
 
     private var headerRow: some View {
         HStack(spacing: 8) {
-            // ステータスアイコン（円形バッジ）
-            ZStack {
-                Circle()
-                    .fill(statusColor.opacity(0.15))
-                    .frame(width: 28, height: 28)
-                Image(systemName: settings.isEnabled ? "bell.fill" : "bell.slash")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(statusColor)
-            }
+            StatusBadge(
+                systemName: settings.isEnabled ? "bell.fill" : "bell.slash",
+                color: statusColor
+            )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Alert Settings")

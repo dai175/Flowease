@@ -85,7 +85,7 @@ final class CalibrationViewModel {
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
-        formatter.timeStyle = .short
+        formatter.timeStyle = .none // 時刻を省略してコンパクトに表示
         return formatter
     }()
 
