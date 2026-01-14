@@ -17,8 +17,8 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
     /// Note: extension からアクセスするため internal
     let logger = Logger(subsystem: "cc.focuswave.Flowease", category: "CameraService")
 
-    /// カメラデバイスマネージャー（内部実装）
-    private let deviceManager = CameraDeviceManager()
+    /// カメラデバイスマネージャー（プロトコル経由で依存注入可能）
+    private let deviceManager: any CameraDeviceManaging
 
     /// UserDefaults に保存されるカメラ選択のキー
     /// Note: extension からアクセスするため internal
@@ -84,23 +84,27 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
 
     // MARK: - Initialization
 
-    override init() {
+    /// イニシャライザ
+    ///
+    /// - Parameter deviceManager: カメラデバイスマネージャー（依存注入によりテスト可能）
+    init(deviceManager: any CameraDeviceManaging = CameraDeviceManager()) {
+        self.deviceManager = deviceManager
         // UserDefaults から選択カメラIDを復元
         selectedCameraID = UserDefaults.standard.string(forKey: Self.selectedCameraKey)
         super.init()
 
         // 保存された選択カメラIDを deviceManager に設定
-        deviceManager.selectedCameraID = selectedCameraID
+        self.deviceManager.selectedCameraID = selectedCameraID
 
         // 切断/再接続コールバックを設定
-        deviceManager.onSelectedCameraDisconnected = { [weak self] in
+        self.deviceManager.onSelectedCameraDisconnected = { [weak self] in
             self?.handleSelectedCameraDisconnected()
         }
-        deviceManager.onSelectedCameraReconnected = { [weak self] in
+        self.deviceManager.onSelectedCameraReconnected = { [weak self] in
             self?.handleSelectedCameraReconnected()
         }
 
-        deviceManager.setupDiscoverySession()
+        self.deviceManager.setupDiscoverySession()
         logger.debug("CameraService initialized")
     }
 
