@@ -1,13 +1,48 @@
 import AVFoundation
 import OSLog
 
+// MARK: - CameraDeviceManaging
+
+/// カメラデバイス管理プロトコル
+///
+/// カメラデバイスの列挙と監視のインターフェースを定義する。
+/// テスト時のモック化を可能にする。
+@MainActor
+protocol CameraDeviceManaging: AnyObject {
+    /// 利用可能なカメラデバイス一覧
+    var availableCameras: [CameraDevice] { get }
+
+    /// 現在選択されているカメラのID
+    var selectedCameraID: String? { get set }
+
+    /// デバイスリスト変更時のコールバック
+    var onDevicesChanged: (([CameraDevice]) -> Void)? { get set }
+
+    /// 選択されたカメラが切断された時のコールバック
+    var onSelectedCameraDisconnected: (() -> Void)? { get set }
+
+    /// 選択されたカメラが再接続された時のコールバック
+    var onSelectedCameraReconnected: (() -> Void)? { get set }
+
+    /// DiscoverySession を初期化
+    func setupDiscoverySession()
+
+    /// 利用可能なカメラデバイスを列挙
+    func enumerateCameras()
+
+    /// 選択カメラの切断状態をリセット
+    func resetDisconnectionState()
+}
+
+// MARK: - CameraDeviceManager
+
 /// カメラデバイスの列挙と監視を担当する内部サービス
 ///
 /// CameraService の内部実装として機能し、AVCaptureDevice.DiscoverySession を使用して
 /// ビデオデバイスを列挙・監視します。
 /// View からは直接参照せず、CameraServiceProtocol 経由でアクセスします。
 @MainActor
-final class CameraDeviceManager {
+final class CameraDeviceManager: CameraDeviceManaging {
     // MARK: - Properties
 
     /// 利用可能なカメラデバイス一覧
