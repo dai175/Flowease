@@ -427,8 +427,8 @@ final class PostureViewModel {
             handleNoFaceDetected()
         case .lowDetectionQuality:
             break // 一時的な品質低下は無視
-        case .visionError:
-            handleVisionError()
+        case let .visionError(description):
+            handleVisionError(description)
         }
     }
 
@@ -507,10 +507,12 @@ final class PostureViewModel {
     }
 
     /// Vision エラー時の処理
-    private func handleVisionError() {
+    /// - Parameter description: エラーの詳細説明
+    private func handleVisionError(_ description: String) {
+        logger.warning("Vision error: \(description)")
         consecutiveFailureCount += 1
         if consecutiveFailureCount >= failureThreshold {
-            pauseIfActive(reason: .processingError, logMessage: "Paused due to Vision framework error")
+            pauseIfActive(reason: .processingError, logMessage: "Paused due to Vision framework error: \(description)")
         }
     }
 
