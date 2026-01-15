@@ -125,6 +125,16 @@ final class CalibrationViewModel {
         logger.info("Calibration cancelled")
     }
 
+    /// 再キャリブレーション用にUI状態をリセット
+    ///
+    /// ウィンドウを開く際に呼び出し、開始画面を表示する。
+    /// 既存のキャリブレーションデータは保持される。
+    func prepareForRecalibration() {
+        calibrationService.prepareForRecalibration()
+        errorMessage = nil
+        logger.debug("Prepared for recalibration")
+    }
+
     /// キャリブレーションをリセット（基準姿勢を削除）
     ///
     /// 保存された基準姿勢を削除し、固定しきい値モードに戻る。

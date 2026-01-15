@@ -127,6 +127,11 @@ struct StatusMenuView: View {
 
     /// キャリブレーションウィンドウを開く、または既に開いている場合は最前面に持ってくる
     private func activateOrOpenCalibrationWindow() {
+        // 進行中でない場合のみUI状態をリセット（進行中の場合は進捗を維持）
+        if !calibrationViewModel.isInProgress {
+            calibrationViewModel.prepareForRecalibration()
+        }
+
         if let window = NSApplication.shared.windows.first(where: { $0.identifier?.rawValue == "calibration" }) {
             window.makeKeyAndOrderFront(nil)
             NSApplication.shared.activate(ignoringOtherApps: true)

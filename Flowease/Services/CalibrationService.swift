@@ -52,6 +52,10 @@ protocol CalibrationServiceProtocol: AnyObject {
 
     /// 現在の顔ベース基準姿勢（完了時のみ有効）
     var faceReferencePosture: FaceReferencePosture? { get }
+
+    /// UI状態を開始前状態にリセット（データは保持）
+    /// キャリブレーションウィンドウを開く際に呼び出す
+    func prepareForRecalibration()
 }
 
 // MARK: - CalibrationService
@@ -144,20 +148,30 @@ final class CalibrationService: CalibrationServiceProtocol {
         logger.info("Calibration cancelled")
     }
 
+    /// UI状態を開始前状態にリセット（データは保持）
+    ///
+    /// キャリブレーションウィンドウを開く際に呼び出し、
+    /// 「良い姿勢を保持してください」の開始画面を表示可能にする。
+    /// ストレージのデータは削除しないため、`isCalibrated`は維持される。
+    func prepareForRecalibration() {
+        clearInProgressState()
+        state = .notCalibrated
+        logger.debug("Prepared for recalibration: state reset to notCalibrated")
+    }
+
     func resetCalibration() {
-        // 実行中ならキャンセル
-        if state.isInProgress {
-            currentProgress = nil
-            accumulatedFacePositions = nil
-            hasReceivedFirstFrame = false
-        }
-
-        // ストレージから削除
+        clearInProgressState()
         storage.deleteFaceReferencePosture()
-
-        // 状態を未キャリブレーションに
         state = .notCalibrated
         logger.info("Calibration reset")
+    }
+
+    /// 実行中の状態をクリア（共通処理）
+    private func clearInProgressState() {
+        guard state.isInProgress else { return }
+        currentProgress = nil
+        accumulatedFacePositions = nil
+        hasReceivedFirstFrame = false
     }
 
     // MARK: - Face Calibration
