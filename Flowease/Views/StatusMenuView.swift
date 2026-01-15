@@ -112,16 +112,26 @@ struct StatusMenuView: View {
         if calibrationViewModel.isCalibrated {
             CompactCalibrationCard(
                 statusSummary: calibrationViewModel.statusSummary,
-                onReconfigure: { openWindow(id: "calibration") }
+                onReconfigure: { activateOrOpenCalibrationWindow() }
             )
         } else {
             CalibrationCard(
-                isCalibrated: calibrationViewModel.isCalibrated,
+                isCalibrated: false,
                 statusSummary: calibrationViewModel.statusSummary,
                 recommendationMessage: calibrationViewModel.recommendationMessage,
                 onReset: { calibrationViewModel.resetCalibration() },
-                onConfigure: { openWindow(id: "calibration") }
+                onConfigure: { activateOrOpenCalibrationWindow() }
             )
+        }
+    }
+
+    /// キャリブレーションウィンドウを開く、または既に開いている場合は最前面に持ってくる
+    private func activateOrOpenCalibrationWindow() {
+        if let window = NSApplication.shared.windows.first(where: { $0.identifier?.rawValue == "calibration" }) {
+            window.makeKeyAndOrderFront(nil)
+            NSApplication.shared.activate(ignoringOtherApps: true)
+        } else {
+            openWindow(id: "calibration")
         }
     }
 
