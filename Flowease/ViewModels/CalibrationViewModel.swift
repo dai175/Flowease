@@ -49,8 +49,9 @@ final class CalibrationViewModel {
     }
 
     /// キャリブレーション済みかどうか
+    /// ストレージにデータがあるかで判定（状態に関係なく）
     var isCalibrated: Bool {
-        state.isCompleted
+        faceReferencePosture != nil
     }
 
     /// キャリブレーション実行中かどうか
