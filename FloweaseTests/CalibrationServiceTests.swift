@@ -179,10 +179,14 @@ final class CalibrationServiceTests: XCTestCase {
     }
 
     func testStartCalibration_afterFailed_canRestartCalibration() async throws {
-        // Given: failed 状態（キャンセルで失敗させる）
+        // Given: failed 状態（顔未検出で失敗させる）
         try await sut.startCalibration()
-        sut.cancelCalibration()
-        XCTAssertTrue(sut.state.isFailed)
+        let invalidFace = makeInvalidFacePosition()
+        // 顔未検出を連続で送信して失敗させる（しきい値を超える）
+        for _ in 0..<CalibrationProgress.failureThreshold {
+            sut.processFaceFrame(invalidFace)
+        }
+        XCTAssertTrue(sut.state.isFailed, "顔未検出で失敗状態になるべき")
 
         // When: キャリブレーション開始
         try await sut.startCalibration()
@@ -193,16 +197,15 @@ final class CalibrationServiceTests: XCTestCase {
 
     // MARK: - cancelCalibration Tests
 
-    func testCancelCalibration_changesStateToFailed() async throws {
+    func testCancelCalibration_changesStateToNotCalibrated() async throws {
         // Given: inProgress 状態
         try await sut.startCalibration()
 
         // When: キャンセル
         sut.cancelCalibration()
 
-        // Then: failed(.cancelled) 状態になる
-        XCTAssertTrue(sut.state.isFailed, "キャンセル後は failed であるべき")
-        XCTAssertEqual(sut.state.failure, .cancelled, "失敗理由は cancelled であるべき")
+        // Then: notCalibrated 状態になる（キャンセルは失敗ではない）
+        XCTAssertTrue(sut.state.isNotCalibrated, "キャンセル後は notCalibrated であるべき")
     }
 
     func testCancelCalibration_whenNotInProgress_doesNothing() {
