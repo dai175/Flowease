@@ -460,6 +460,12 @@ final class PostureViewModel {
     /// ユーザー不在時に誤って通知が送られることを防ぐ。
     /// breakdown は減衰比率に応じて比例スケーリングする。
     private func handleNoFaceDetected() {
+        // キャリブレーション中の場合
+        if calibrationService.state.isInProgress {
+            calibrationService.processNoFaceFrame()
+            return
+        }
+
         if let lastScore = scoreHistory.last {
             let decayedValue = lastScore.value - scoreDecayPerFrame
             if decayedValue > 0 {

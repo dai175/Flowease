@@ -129,6 +129,7 @@ private final class MockCalibrationServiceForPreview: CalibrationServiceProtocol
     }
 
     func processFaceFrame(_: FacePosition) {}
+    func processNoFaceFrame() {}
     var faceReferencePosture: FaceReferencePosture? { nil }
     func prepareForRecalibration() {
         state = .notCalibrated
