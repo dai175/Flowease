@@ -87,8 +87,9 @@ struct CalibrationStatusView: View {
                     .foregroundStyle(status == .notCalibrated ? .tertiary : .secondary)
                     .multilineTextAlignment(.center)
             }
+            Spacer(minLength: 0)
         }
-        .padding(.vertical, 8)
+        .frame(minHeight: 144)
     }
 }
 
@@ -107,35 +108,6 @@ extension CalibrationStatusView.Status: Equatable {
     }
 }
 
-// MARK: - CalibrationNotCalibratedView
-
-/// キャリブレーション未設定時の表示
-struct CalibrationNotCalibratedView: View {
-    var body: some View {
-        CalibrationStatusView(status: .notCalibrated)
-    }
-}
-
-// MARK: - CalibrationCompletedView
-
-/// キャリブレーション完了時の表示
-struct CalibrationCompletedView: View {
-    var body: some View {
-        CalibrationStatusView(status: .completed)
-    }
-}
-
-// MARK: - CalibrationFailedView
-
-/// キャリブレーション失敗時の表示
-struct CalibrationFailedView: View {
-    let failure: CalibrationFailure
-
-    var body: some View {
-        CalibrationStatusView(status: .failed(failure))
-    }
-}
-
 // MARK: - CalibrationInProgressView
 
 /// キャリブレーション実行中の表示
@@ -151,7 +123,7 @@ struct CalibrationInProgressView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             CalibrationProgressView(
                 progress: progress,
                 remainingSeconds: remainingSeconds
@@ -161,38 +133,38 @@ struct CalibrationInProgressView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            if let warningMessage {
-                HStack(spacing: 6) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.orange)
-                    Text(warningMessage)
-                        .font(.caption)
-                        .foregroundStyle(.orange)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(.orange.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+            HStack(spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                Text(warningMessage ?? " ")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
             }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(.orange.opacity(warningMessage != nil ? 0.1 : 0))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .opacity(warningMessage != nil ? 1 : 0)
+            Spacer(minLength: 0)
         }
-        .padding(.vertical, 8)
+        .frame(minHeight: 144)
     }
 }
 
 // MARK: - Preview
 
 #Preview("Not Calibrated") {
-    CalibrationNotCalibratedView()
+    CalibrationStatusView(status: .notCalibrated)
         .padding()
 }
 
 #Preview("Completed") {
-    CalibrationCompletedView()
+    CalibrationStatusView(status: .completed)
         .padding()
 }
 
 #Preview("Failed - No Face") {
-    CalibrationFailedView(failure: .noFaceDetected)
+    CalibrationStatusView(status: .failed(.noFaceDetected))
         .padding()
 }
 

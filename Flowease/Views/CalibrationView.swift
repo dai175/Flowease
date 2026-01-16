@@ -46,7 +46,7 @@ struct CalibrationView: View {
     private var contentView: some View {
         switch viewModel.state {
         case .notCalibrated:
-            CalibrationNotCalibratedView()
+            CalibrationStatusView(status: .notCalibrated)
 
         case .inProgress:
             CalibrationInProgressView(
@@ -56,10 +56,10 @@ struct CalibrationView: View {
             )
 
         case .completed:
-            CalibrationCompletedView()
+            CalibrationStatusView(status: .completed)
 
         case let .failed(failure):
-            CalibrationFailedView(failure: failure)
+            CalibrationStatusView(status: .failed(failure))
         }
     }
 
@@ -67,9 +67,9 @@ struct CalibrationView: View {
 
     @ViewBuilder
     private var actionButtons: some View {
-        switch viewModel.state {
-        case .notCalibrated, .failed:
-            HStack(spacing: 12) {
+        HStack(spacing: 12) {
+            switch viewModel.state {
+            case .notCalibrated, .failed:
                 Button("Cancel") {
                     dismiss()
                 }
@@ -81,19 +81,19 @@ struct CalibrationView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
-            }
 
-        case .inProgress:
-            Button("Cancel") {
-                viewModel.cancelCalibration()
-            }
-            .buttonStyle(.bordered)
+            case .inProgress:
+                Button("Cancel") {
+                    viewModel.cancelCalibration()
+                }
+                .buttonStyle(.bordered)
 
-        case .completed:
-            Button("Close") {
-                dismiss()
+            case .completed:
+                Button("Close") {
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
         }
     }
 }
