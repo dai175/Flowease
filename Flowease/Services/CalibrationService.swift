@@ -140,8 +140,8 @@ final class CalibrationService: CalibrationServiceProtocol {
             return
         }
 
-        // キャンセル状態に移行
-        state = .failed(.cancelled)
+        // 初期状態に戻す（キャンセルは失敗ではない）
+        state = .notCalibrated
         currentProgress = nil
         accumulatedFacePositions = nil
         hasReceivedFirstFrame = false
