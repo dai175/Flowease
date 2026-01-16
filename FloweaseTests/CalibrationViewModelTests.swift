@@ -140,7 +140,7 @@ final class CalibrationViewModelTests: XCTestCase {
 
     // MARK: - cancelCalibration Tests
 
-    func testCancelCalibration_setsStateToFailed() async {
+    func testCancelCalibration_setsStateToNotCalibrated() async {
         // Given: 実行中
         await sut.startCalibration()
         XCTAssertTrue(sut.isInProgress)
@@ -149,8 +149,7 @@ final class CalibrationViewModelTests: XCTestCase {
         sut.cancelCalibration()
 
         // Then
-        XCTAssertTrue(sut.state.isFailed, "キャンセル後は失敗状態")
-        XCTAssertEqual(sut.state.failure, .cancelled, "失敗理由は cancelled")
+        XCTAssertTrue(sut.state.isNotCalibrated, "キャンセル後は notCalibrated 状態")
     }
 
     // MARK: - clearError Tests
