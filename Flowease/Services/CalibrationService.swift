@@ -50,6 +50,10 @@ protocol CalibrationServiceProtocol: AnyObject {
     /// - Parameter face: 検出された顔位置データ
     func processFaceFrame(_ face: FacePosition)
 
+    /// 顔未検出フレームを処理
+    /// キャリブレーション中に顔が検出されなかった場合に呼び出す
+    func processNoFaceFrame()
+
     /// 現在の顔ベース基準姿勢（完了時のみ有効）
     var faceReferencePosture: FaceReferencePosture? { get }
 
@@ -224,6 +228,40 @@ final class CalibrationService: CalibrationServiceProtocol {
         // 状態を更新
         currentProgress = progress
         accumulatedFacePositions = accumulated
+        state = .inProgress(progress)
+    }
+
+    /// 顔未検出フレームを処理
+    func processNoFaceFrame() {
+        // 実行中でなければ無視
+        guard state.isInProgress else {
+            return
+        }
+
+        // 最初のフレーム受信時にタイマーを開始（顔未検出でも開始）
+        if !hasReceivedFirstFrame {
+            hasReceivedFirstFrame = true
+            currentProgress = CalibrationProgress()
+            logger.debug("Calibration: Starting frame collection (no face detected)")
+        }
+
+        guard var progress = currentProgress else {
+            return
+        }
+
+        // 顔未検出としてフレームを追加
+        progress.addFrame(quality: .noFaceDetected)
+
+        // 失敗判定
+        if let failure = progress.failureReason {
+            state = .failed(failure)
+            clearCalibrationData()
+            logger.warning("Calibration failed: \(failure.logDescription)")
+            return
+        }
+
+        // 状態を更新
+        currentProgress = progress
         state = .inProgress(progress)
     }
 

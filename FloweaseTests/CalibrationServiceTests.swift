@@ -351,6 +351,54 @@ final class CalibrationServiceTests: XCTestCase {
         XCTAssertEqual(sut.state.failure, .noFaceDetected, "失敗理由は noFaceDetected であるべき")
     }
 
+    // MARK: - processNoFaceFrame Tests
+
+    func testProcessNoFaceFrame_incrementsNoFaceStreak() async throws {
+        // Given: inProgress 状態で最初のフレームを受信済み
+        try await sut.startCalibration()
+        sut.processFaceFrame(makeValidFacePosition()) // 最初のフレームでタイマー開始
+
+        // When: 顔未検出フレームを処理
+        sut.processNoFaceFrame()
+
+        // Then: noFaceStreak が増加
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.noFaceStreak, 1, "processNoFaceFrame で noFaceStreak が増加するべき")
+    }
+
+    func testProcessNoFaceFrame_exceedsThreshold_failsWithNoFaceDetected() async throws {
+        // Given: inProgress 状態で最初のフレームを受信済み
+        try await sut.startCalibration()
+        sut.processFaceFrame(makeValidFacePosition()) // 最初のフレームでタイマー開始
+
+        // When: 顔未検出を連続で処理（しきい値を超える）
+        for _ in 0 ..< CalibrationProgress.failureThreshold {
+            sut.processNoFaceFrame()
+        }
+
+        // Then: failed(.noFaceDetected) 状態になる
+        XCTAssertTrue(sut.state.isFailed, "顔未検出が連続すると failed になるべき")
+        XCTAssertEqual(sut.state.failure, .noFaceDetected, "失敗理由は noFaceDetected であるべき")
+    }
+
+    func testProcessNoFaceFrame_startsTimerEvenWithoutFace() async throws {
+        // Given: inProgress 状態だが最初のフレーム未受信
+        try await sut.startCalibration()
+
+        // When: 顔未検出フレームを処理
+        sut.processNoFaceFrame()
+
+        // Then: タイマーが開始され、noFaceStreak がカウントされる
+        guard let progress = sut.state.progress else {
+            XCTFail("inProgress 状態には progress が必要")
+            return
+        }
+        XCTAssertEqual(progress.noFaceStreak, 1, "顔未検出でもタイマーが開始されるべき")
+    }
+
     func testProcessFaceFrame_mixedHighAndLowQuality_resetsStreak() async throws {
         // Given: inProgress 状態
         try await sut.startCalibration()
