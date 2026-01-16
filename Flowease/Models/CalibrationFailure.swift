@@ -14,9 +14,6 @@ enum CalibrationFailure: Sendable, Equatable {
     /// 十分なフレームが収集できなかった
     case insufficientFrames
 
-    /// ユーザーがキャンセルした
-    case cancelled
-
     /// ユーザー向けのエラーメッセージ
     var userMessage: String {
         switch self {
@@ -26,8 +23,6 @@ enum CalibrationFailure: Sendable, Equatable {
             return String(localized: "Please adjust the lighting")
         case .insufficientFrames:
             return String(localized: "Please try again")
-        case .cancelled:
-            return ""
         }
     }
 
@@ -40,8 +35,6 @@ enum CalibrationFailure: Sendable, Equatable {
             return "Low confidence streak exceeded threshold"
         case .insufficientFrames:
             return "Insufficient frames collected for calibration"
-        case .cancelled:
-            return "Calibration cancelled by user"
         }
     }
 }

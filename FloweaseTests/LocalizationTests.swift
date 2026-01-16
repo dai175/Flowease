@@ -193,12 +193,6 @@ final class LocalizationTests: XCTestCase {
             "Please try again",
             "insufficientFrames userMessage should be in English"
         )
-
-        // cancelled は空文字列のまま
-        XCTAssertTrue(
-            CalibrationFailure.cancelled.userMessage.isEmpty,
-            "cancelled userMessage should be empty"
-        )
     }
 
     // MARK: - US3: DisableReason Localization Tests
