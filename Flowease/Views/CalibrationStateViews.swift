@@ -133,6 +133,8 @@ struct CalibrationInProgressView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
+            // 警告メッセージがない場合でもスペースを表示してレイアウトの高さを確保
+            // これにより、警告の表示/非表示でビューの高さが変わらず、ちらつきを防止
             HStack(spacing: 6) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.orange)
