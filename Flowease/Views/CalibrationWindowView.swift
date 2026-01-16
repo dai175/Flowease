@@ -47,7 +47,7 @@ struct CalibrationWindowView: View {
     private var contentView: some View {
         switch viewModel.state {
         case .notCalibrated:
-            CalibrationNotCalibratedView()
+            CalibrationStatusView(status: .notCalibrated)
 
         case .inProgress:
             // timerTickを使って再描画をトリガー
@@ -59,10 +59,10 @@ struct CalibrationWindowView: View {
             .id(timerTick)
 
         case .completed:
-            CalibrationCompletedView()
+            CalibrationStatusView(status: .completed)
 
         case let .failed(failure):
-            CalibrationFailedView(failure: failure)
+            CalibrationStatusView(status: .failed(failure))
         }
     }
 
