@@ -190,11 +190,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         }
 
         // 最初のフレーム受信時にタイマーを開始
-        if !hasReceivedFirstFrame {
-            hasReceivedFirstFrame = true
-            currentProgress = CalibrationProgress()
-            logger.debug("Calibration: Starting frame collection")
-        }
+        startTimerOnFirstFrame(logMessage: "Calibration: Starting frame collection")
 
         guard var progress = currentProgress else {
             return
@@ -212,10 +208,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         }
 
         // 失敗判定
-        if let failure = progress.failureReason {
-            state = .failed(failure)
-            clearCalibrationData()
-            logger.warning("Calibration failed: \(failure.logDescription)")
+        if handleFailureIfNeeded(progress: progress) {
             return
         }
 
@@ -239,11 +232,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         }
 
         // 最初のフレーム受信時にタイマーを開始（顔未検出でも開始）
-        if !hasReceivedFirstFrame {
-            hasReceivedFirstFrame = true
-            currentProgress = CalibrationProgress()
-            logger.debug("Calibration: Starting frame collection (no face detected)")
-        }
+        startTimerOnFirstFrame(logMessage: "Calibration: Starting frame collection (no face detected)")
 
         guard var progress = currentProgress else {
             return
@@ -253,10 +242,7 @@ final class CalibrationService: CalibrationServiceProtocol {
         progress.addFrame(quality: .noFaceDetected)
 
         // 失敗判定
-        if let failure = progress.failureReason {
-            state = .failed(failure)
-            clearCalibrationData()
-            logger.warning("Calibration failed: \(failure.logDescription)")
+        if handleFailureIfNeeded(progress: progress) {
             return
         }
 
@@ -266,6 +252,30 @@ final class CalibrationService: CalibrationServiceProtocol {
     }
 
     // MARK: - Private Methods
+
+    /// 最初のフレーム受信時にタイマーを開始
+    ///
+    /// - Parameter logMessage: ログに出力するメッセージ
+    private func startTimerOnFirstFrame(logMessage: String) {
+        guard !hasReceivedFirstFrame else { return }
+        hasReceivedFirstFrame = true
+        currentProgress = CalibrationProgress()
+        logger.debug("\(logMessage)")
+    }
+
+    /// 失敗判定を行い、失敗時は状態を更新
+    ///
+    /// - Parameter progress: 現在の進捗
+    /// - Returns: 失敗した場合は true
+    private func handleFailureIfNeeded(progress: CalibrationProgress) -> Bool {
+        guard let failure = progress.failureReason else {
+            return false
+        }
+        state = .failed(failure)
+        clearCalibrationData()
+        logger.warning("Calibration failed: \(failure.logDescription)")
+        return true
+    }
 
     /// キャリブレーションデータをクリア
     ///
