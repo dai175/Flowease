@@ -184,7 +184,15 @@ struct StatusMenuView: View {
                 pauseReason: reason.description
             )
         case .disabled:
-            fatalError("disabled case should be handled in heroSection")
+            // このケースはheroSectionで事前にフィルタされるため到達しない
+            // switch文の網羅性のためにデフォルト値を返す
+            return HeroData(
+                averageScore: nil,
+                realtimeScore: nil,
+                fallbackColor: .secondary,
+                status: nil,
+                pauseReason: nil
+            )
         }
     }
 
