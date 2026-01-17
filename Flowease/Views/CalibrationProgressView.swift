@@ -29,6 +29,11 @@ struct CalibrationProgressView: View {
     /// 内側の塗りつぶし円のサイズ
     private let innerCircleSize: CGFloat = 48
 
+    // MARK: - Dynamic Type Support
+
+    /// カウントダウン数字のフォントサイズ（Dynamic Type対応）
+    @ScaledMetric(relativeTo: .title2) private var countdownFontSize: CGFloat = 20
+
     var body: some View {
         ZStack {
             // 塗りつぶし背景（StatusBadge スタイル）
@@ -60,8 +65,9 @@ struct CalibrationProgressView: View {
 
             // 残り秒数
             Text("\(Int(ceil(remainingSeconds)))")
-                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .font(.system(size: countdownFontSize, weight: .bold, design: .rounded))
                 .foregroundStyle(.primary)
+                .minimumScaleFactor(0.5)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(

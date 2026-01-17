@@ -27,6 +27,13 @@ struct ScoreHeroSection: View {
     /// 最後に表示したリアルタイムスコア（アニメーション継続用）
     @State private var lastRealtimeScore: Int = 0
 
+    // MARK: - Dynamic Type Support
+
+    /// スコア表示のフォントサイズ（Dynamic Type対応）
+    @ScaledMetric(relativeTo: .largeTitle) private var scoreFontSize: CGFloat = 36
+    /// ステータスラベルのフォントサイズ（Dynamic Type対応）
+    @ScaledMetric(relativeTo: .caption) private var statusFontSize: CGFloat = 12
+
     private var isPaused: Bool { pauseReason != nil }
 
     /// ゲージに渡すスコア（nilの場合は最後のスコアを使用してアニメーション継続）
@@ -56,12 +63,14 @@ struct ScoreHeroSection: View {
                 // 評価期間平均スコア（中央）
                 VStack(spacing: 0) {
                     Text(scoreDisplay)
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .font(.system(size: scoreFontSize, weight: .bold, design: .rounded))
                         .foregroundStyle(scoreColor)
+                        .minimumScaleFactor(0.5)
 
                     Text(statusLabel)
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: statusFontSize, weight: .medium))
                         .foregroundStyle(scoreColor.opacity(0.8))
+                        .minimumScaleFactor(0.8)
                 }
             }
 

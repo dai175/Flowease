@@ -13,6 +13,11 @@ import SwiftUI
 ///
 /// 未設定、完了、失敗の3状態を単一のデータ駆動型ビューで表示
 struct CalibrationStatusView: View {
+    // MARK: - Dynamic Type Support
+
+    /// アイコンのフォントサイズ（Dynamic Type対応）
+    @ScaledMetric(relativeTo: .title2) private var iconFontSize: CGFloat = 20
+
     /// 表示する状態
     enum Status {
         case notCalibrated
@@ -72,7 +77,7 @@ struct CalibrationStatusView: View {
                     .fill(status.iconColor.opacity(0.15))
                     .frame(width: 48, height: 48)
                 Image(systemName: status.iconName)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: iconFontSize, weight: .semibold))
                     .foregroundStyle(status.iconColor)
             }
 

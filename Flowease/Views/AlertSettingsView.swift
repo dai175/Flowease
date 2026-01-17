@@ -23,6 +23,11 @@ struct AlertSettingsCard: View {
     /// 展開/折りたたみ状態
     @State private var isExpanded: Bool
 
+    // MARK: - Dynamic Type Support
+
+    /// 展開ボタンのアイコンサイズ（Dynamic Type対応）
+    @ScaledMetric(relativeTo: .caption) private var chevronSize: CGFloat = 12
+
     // MARK: - Initialization
 
     init(
@@ -79,7 +84,7 @@ struct AlertSettingsCard: View {
                 }
             } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: chevronSize, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
             }
