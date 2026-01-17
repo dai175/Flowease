@@ -30,6 +30,15 @@ jobs:
       - name: Install fastlane
         run: bundle install
 
+      - name: Setup SSH for match
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.MATCH_DEPLOY_KEY }}" > ~/.ssh/match_deploy_key
+          chmod 600 ~/.ssh/match_deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "Host github.com" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/match_deploy_key" >> ~/.ssh/config
+
       - name: Decode App Store Connect API Key
         run: |
           printf '%s' "${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}" | base64 -D > /tmp/AuthKey.p8
