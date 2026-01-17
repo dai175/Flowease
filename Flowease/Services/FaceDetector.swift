@@ -67,13 +67,10 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
     /// - Returns: 検出結果（成功時は FacePosition、失敗時はエラー）
     nonisolated func detect(from sampleBuffer: sending CMSampleBuffer) async
         -> Result<FacePosition, FaceDetectionError> {
-        // Vision処理はCPU負荷が高いためバックグラウンドスレッドで実行
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async { [self] in
-                let result = performDetection(sampleBuffer: sampleBuffer)
-                continuation.resume(returning: result)
-            }
-        }
+        // Vision処理はCPU負荷が高いためバックグラウンドタスクで実行
+        await Task.detached(priority: .userInitiated) {
+            self.performDetection(sampleBuffer: sampleBuffer)
+        }.value
     }
 
     // MARK: - Private Methods

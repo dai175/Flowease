@@ -61,13 +61,8 @@ final class PostureViewModel {
     /// nil = 処理中でない、非nil = 処理中
     private var processingTask: Task<Void, Never>?
 
-    /// キャリブレーションリセット通知の購読
-    ///
-    /// Note: @MainActor クラスの deinit は nonisolated であるため、
-    /// deinit からこのプロパティにアクセスするには nonisolated(unsafe) が必要。
-    /// このプロパティは init で設定され、deinit でのみ読み取られる。
-    /// Xcode の警告「has no effect」は Swift の @Observable マクロとの相互作用による
-    /// 誤検知であり、実際には deinit でのアクセスに必要。
+    /// キャリブレーションリセット通知の購読（deinit で解除）
+    @ObservationIgnored
     private nonisolated(unsafe) var calibrationResetObserver: NSObjectProtocol?
 
     /// CameraService の selectedCameraID 変更を購読
@@ -414,7 +409,7 @@ final class PostureViewModel {
     // MARK: - Private Methods
 
     /// フレームから顔を分析してスコアを更新
-    private func processFrame(_ sampleBuffer: CMSampleBuffer) async {
+    private func processFrame(_ sampleBuffer: sending CMSampleBuffer) async {
         defer { processingTask = nil }
         guard cameraService.isCapturing else { return }
 

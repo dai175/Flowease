@@ -93,7 +93,7 @@ final class CameraDeviceManager: CameraDeviceManaging {
     /// 初期化後、カメラデバイスを列挙します。
     func setupDiscoverySession() {
         discoverySession = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [.builtInWideAngleCamera, .externalUnknown],
+            deviceTypes: [.builtInWideAngleCamera, .external],
             mediaType: .video,
             position: .unspecified
         )
