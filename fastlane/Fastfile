@@ -9,34 +9,34 @@ platform :mac do
   lane :release do
     setup_ci
 
-    # App Store Connect API キー設定
+    # Configure App Store Connect API key from environment variables
     app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
       issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
       key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"]
     )
 
-    # 証明書取得
+    # Fetch signing certificates via match
     match(type: "appstore", readonly: true)
 
-    # バージョン取得（タグから）
+    # Get version from git tag
     tag = last_git_tag
     UI.user_error!("No git tag found. Please create a version tag (e.g., v1.0.0)") if tag.nil? || tag.empty?
     version = tag.sub(/^v/, "")
 
-    # マーケティングバージョンを更新
+    # Update marketing version
     increment_version_number(
       version_number: version,
       xcodeproj: "Flowease.xcodeproj"
     )
 
-    # ビルド番号をインクリメント（GitHub Actions run number）
+    # Increment build number using GitHub Actions run number
     increment_build_number(
       build_number: ENV["GITHUB_RUN_NUMBER"],
       xcodeproj: "Flowease.xcodeproj"
     )
 
-    # ビルド
+    # Build the app
     build_mac_app(
       scheme: "Flowease",
       export_method: "app-store",
@@ -44,14 +44,14 @@ platform :mac do
       output_name: "Flowease"
     )
 
-    # App Store Connect にアップロード
+    # Upload to App Store Connect
     upload_to_app_store(
       skip_metadata: true,
       skip_screenshots: true,
       precheck_include_in_app_purchases: false
     )
 
-    # GitHub Releases 用に zip 作成（.pkg を優先）
+    # Create artifact for GitHub Releases (prefer .pkg over .app)
     pkg_path = "build/Flowease.pkg"
     app_path = "build/Flowease.app"
 
