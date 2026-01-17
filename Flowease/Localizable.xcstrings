@@ -213,6 +213,23 @@
         }
       }
     },
+    "Adjust to set the minimum score that triggers an alert" : {
+      "comment" : "Accessibility hint for threshold slider",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjust to set the minimum score that triggers an alert"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知を発生させる最低スコアを調整します"
+          }
+        }
+      }
+    },
     "Alert Settings" : {
       "comment" : "Alert settings section title",
       "localizations" : {
@@ -260,23 +277,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Flowease"
-          }
-        }
-      }
-    },
-    "Adjust to set the minimum score that triggers an alert" : {
-      "comment" : "Accessibility hint for threshold slider",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adjust to set the minimum score that triggers an alert"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知を発生させる最低スコアを調整します"
           }
         }
       }
@@ -329,23 +329,6 @@
         }
       }
     },
-    "Calibration Progress" : {
-      "comment" : "Accessibility label for calibration progress",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Calibration Progress"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "キャリブレーション進捗"
-          }
-        }
-      }
-    },
     "Calibration Complete" : {
       "localizations" : {
         "en" : {
@@ -394,6 +377,23 @@
         }
       }
     },
+    "Calibration Progress" : {
+      "comment" : "Accessibility label for calibration progress",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibration Progress"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーション進捗"
+          }
+        }
+      }
+    },
     "Camera" : {
       "comment" : "Camera selection picker label",
       "localizations" : {
@@ -407,23 +407,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "カメラ"
-          }
-        }
-      }
-    },
-    "Camera Selection" : {
-      "comment" : "Accessibility label for camera picker",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Camera Selection"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "カメラ選択"
           }
         }
       }
@@ -488,6 +471,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "カメラが見つかりません"
+          }
+        }
+      }
+    },
+    "Camera Selection" : {
+      "comment" : "Accessibility label for camera picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera Selection"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラ選択"
           }
         }
       }
@@ -723,7 +723,7 @@
       }
     },
     "Enable Alerts" : {
-      "comment" : "Toggle label for enabling/disabling alerts",
+      "comment" : "Accessibility label for alert toggle",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1298,7 +1298,7 @@
       }
     },
     "Score Threshold" : {
-      "comment" : "Label for score threshold setting",
+      "comment" : "Accessibility label for threshold slider",
       "localizations" : {
         "en" : {
           "stringUnit" : {
