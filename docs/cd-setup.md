@@ -70,7 +70,21 @@ base64 -i AuthKey_XXXXXXXXXX.p8 | tr -d '\n'
 
 出力された文字列全体を `APP_STORE_CONNECT_API_KEY_CONTENT` に設定します。
 
-### 4. fastlane match の初期化
+### 4. Ruby 環境の準備（初回のみ）
+
+macOSのシステムRubyでは権限エラーが発生するため、rbenvを使用してRubyをインストールします。
+
+```bash
+brew install rbenv
+echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+source ~/.zshrc
+
+# 最新の安定版をインストール（バージョンは `rbenv install -l` で確認）
+rbenv install 3.4.8
+rbenv global 3.4.8
+```
+
+### 5. fastlane match の初期化
 
 ローカル環境で証明書を作成し、リポジトリにプッシュします。
 
@@ -102,7 +116,7 @@ bundle exec fastlane match appstore
 bundle exec fastlane match import
 ```
 
-### 5. 動作確認
+### 6. 動作確認
 
 テストタグをプッシュして、ワークフローが正常に動作するか確認します。
 
