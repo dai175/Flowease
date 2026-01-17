@@ -118,14 +118,11 @@ bundle exec fastlane match import
 
 ### 6. 動作確認
 
-テストタグをプッシュして、ワークフローが正常に動作するか確認します。
+タグをプッシュして、ワークフローが正常に動作するか確認します。
 
 ```bash
-# テストタグを作成
-git tag v0.0.1-test
-
-# プッシュ
-git push origin v0.0.1-test
+git tag v0.0.1
+git push origin v0.0.1
 ```
 
 GitHub の **Actions** タブでワークフローの実行状況を確認してください。
@@ -133,12 +130,6 @@ GitHub の **Actions** タブでワークフローの実行状況を確認して
 **成功した場合:**
 - App Store Connect の TestFlight にビルドが表示される
 - GitHub Releases にリリースが作成される
-
-**テストタグの削除:**
-```bash
-git tag -d v0.0.1-test
-git push origin --delete v0.0.1-test
-```
 
 ## トラブルシューティング
 
