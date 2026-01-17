@@ -40,6 +40,57 @@
         }
       }
     },
+    "%lld out of 100, %@" : {
+      "comment" : "Accessibility value for score with status",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld out of 100, %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100点中%1$lld点、%2$@"
+          }
+        }
+      }
+    },
+    "%lld out of 100, %@. Monitoring paused: %@" : {
+      "comment" : "Accessibility value for paused state",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld out of 100, %2$@. Monitoring paused: %3$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "100点中%1$lld点、%2$@。モニタリング一時停止中: %3$@"
+          }
+        }
+      }
+    },
+    "%lld percent complete, %lld seconds remaining" : {
+      "comment" : "Accessibility value for calibration progress",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld percent complete, %2$lld seconds remaining"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lldパーセント完了、残り%2$lld秒"
+          }
+        }
+      }
+    },
     "⌘Q" : {
       "comment" : "Keyboard shortcut - no translation needed"
     },
@@ -213,6 +264,23 @@
         }
       }
     },
+    "Adjust to set the minimum score that triggers an alert" : {
+      "comment" : "Accessibility hint for threshold slider",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjust to set the minimum score that triggers an alert"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知を発生させる最低スコアを調整します"
+          }
+        }
+      }
+    },
     "An unexpected error occurred" : {
       "localizations" : {
         "en" : {
@@ -257,6 +325,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "キャリブレーション"
+          }
+        }
+      }
+    },
+    "Calibration Progress" : {
+      "comment" : "Accessibility label for calibration progress",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibration Progress"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャリブレーション進捗"
           }
         }
       }
@@ -322,6 +407,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "カメラ"
+          }
+        }
+      }
+    },
+    "Camera Selection" : {
+      "comment" : "Accessibility label for camera picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera Selection"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラ選択"
           }
         }
       }
@@ -435,6 +537,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "閉じる"
+          }
+        }
+      }
+    },
+    "Collapse settings" : {
+      "comment" : "Accessibility label when settings expanded",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collapse settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を折りたたむ"
           }
         }
       }
@@ -586,6 +705,23 @@
         }
       }
     },
+    "Double-tap to toggle posture alert notifications" : {
+      "comment" : "Accessibility hint for alert toggle",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-tap to toggle posture alert notifications"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップで姿勢通知のオン/オフを切り替えます"
+          }
+        }
+      }
+    },
     "Enable Alerts" : {
       "comment" : "Toggle label for enabling/disabling alerts",
       "localizations" : {
@@ -599,6 +735,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "通知を有効化"
+          }
+        }
+      }
+    },
+    "Expand settings" : {
+      "comment" : "Accessibility label when settings collapsed",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expand settings"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を展開"
           }
         }
       }
@@ -729,6 +882,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "モニタリング中"
+          }
+        }
+      }
+    },
+    "Monitoring active" : {
+      "comment" : "Accessibility label when monitoring is active",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoring active"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モニタリング中"
+          }
+        }
+      }
+    },
+    "Monitoring paused" : {
+      "comment" : "Accessibility label when monitoring is paused",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoring paused"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モニタリング一時停止中"
+          }
+        }
+      }
+    },
+    "No score available. %@" : {
+      "comment" : "Accessibility value when no score",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No score available. %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スコアなし。%@"
           }
         }
       }
@@ -945,6 +1149,23 @@
         }
       }
     },
+    "Posture Score" : {
+      "comment" : "Accessibility label for score display",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posture Score"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "姿勢スコア"
+          }
+        }
+      }
+    },
     "Processing error occurred" : {
       "localizations" : {
         "en" : {
@@ -1089,6 +1310,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "閾値スコア"
+          }
+        }
+      }
+    },
+    "Select how long posture must be poor before alerting" : {
+      "comment" : "Accessibility hint for check duration picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select how long posture must be poor before alerting"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知を発生させるまでの姿勢不良の継続時間を選択"
+          }
+        }
+      }
+    },
+    "Select minimum time between consecutive alerts" : {
+      "comment" : "Accessibility hint for cooldown picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select minimum time between consecutive alerts"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連続する通知の最小間隔を選択"
+          }
+        }
+      }
+    },
+    "Select which camera to use for posture monitoring" : {
+      "comment" : "Accessibility hint for camera picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select which camera to use for posture monitoring"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "姿勢モニタリングに使用するカメラを選択"
           }
         }
       }

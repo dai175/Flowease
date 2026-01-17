@@ -74,6 +74,9 @@ struct ScoreHeroSection: View {
             }
         }
         .frame(height: 100)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityLabelText)
+        .accessibilityValue(accessibilityValueText)
         .onAppear {
             // 初期表示時に lastRealtimeScore を設定（onChange は初回は呼ばれないため）
             if let score = realtimeScore {
@@ -103,6 +106,32 @@ struct ScoreHeroSection: View {
         if let averageScore { return ScoreStatus(score: averageScore).label }
         if let realtimeScore { return ScoreStatus(score: realtimeScore).label }
         return String(localized: "Paused")
+    }
+
+    // MARK: - Accessibility
+
+    private var accessibilityLabelText: String {
+        String(localized: "Posture Score", comment: "Accessibility label for score display")
+    }
+
+    private var accessibilityValueText: String {
+        if let score = averageScore ?? realtimeScore {
+            let statusText = statusLabel
+            if isPaused {
+                return String(
+                    localized: "\(score) out of 100, \(statusText). Monitoring paused: \(pauseReason ?? "")",
+                    comment: "Accessibility value for paused state"
+                )
+            }
+            return String(
+                localized: "\(score) out of 100, \(statusText)",
+                comment: "Accessibility value for score with status"
+            )
+        }
+        return String(
+            localized: "No score available. \(pauseReason ?? "")",
+            comment: "Accessibility value when no score"
+        )
     }
 }
 

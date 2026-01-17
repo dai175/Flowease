@@ -37,6 +37,15 @@ struct CameraSelectionView: View {
             }
         }
         .labelsHidden()
+        .accessibilityLabel(
+            String(localized: "Camera Selection", comment: "Accessibility label for camera picker")
+        )
+        .accessibilityHint(
+            String(
+                localized: "Select which camera to use for posture monitoring",
+                comment: "Accessibility hint for camera picker"
+            )
+        )
     }
 
     // MARK: - Private Views

@@ -34,6 +34,12 @@ struct PulsingDot: View {
         .onChange(of: isPaused) { _, newValue in
             isPulsing = !newValue
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            isPaused
+                ? String(localized: "Monitoring paused", comment: "Accessibility label when monitoring is paused")
+                : String(localized: "Monitoring active", comment: "Accessibility label when monitoring is active")
+        )
     }
 
     private var pulseRing: some View {
