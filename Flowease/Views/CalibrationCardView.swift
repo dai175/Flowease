@@ -65,10 +65,6 @@ struct CalibrationCard: View {
             }
         }
         .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(.controlBackgroundColor))
-        )
     }
 
     private var statusColor: Color {
@@ -113,10 +109,6 @@ struct CompactCalibrationCard: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(.controlBackgroundColor).opacity(0.5))
-        )
     }
 }
 

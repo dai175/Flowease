@@ -51,10 +51,6 @@ struct AlertSettingsCard: View {
             }
         }
         .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(.controlBackgroundColor))
-        )
     }
 
     // MARK: - Header Row

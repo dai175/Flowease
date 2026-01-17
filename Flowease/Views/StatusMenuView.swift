@@ -74,10 +74,6 @@ struct StatusMenuView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(.controlBackgroundColor).opacity(0.5))
-                )
             }
 
             Divider()
