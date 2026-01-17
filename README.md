@@ -176,3 +176,51 @@ Flowease/
 - **Swift 6.0 + SwiftUI**: UI フレームワーク
 - **AVFoundation**: カメラキャプチャ
 - **Vision**: 顔検出（VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest）
+
+## リリース
+
+### 自動リリース（CD）
+
+タグをプッシュすると、GitHub Actions が自動的に以下を実行します：
+
+1. App Store Connect (TestFlight) へのアップロード
+2. GitHub Releases の作成
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+### 事前準備
+
+初回セットアップ時に以下の準備が必要です：
+
+1. **fastlane match 用のプライベートリポジトリを作成**
+   - 例: `github.com/<username>/flowease-certs`
+
+2. **App Store Connect API キーを作成**
+   - App Store Connect → ユーザーとアクセス → 統合 → キー
+   - Admin 権限のキーを作成し、キー ID、Issuer ID、.p8 ファイルを取得
+
+3. **GitHub Secrets を設定**
+
+   | Secret 名 | 説明 |
+   |-----------|------|
+   | `MATCH_GIT_URL` | 証明書リポジトリの URL（SSH 形式） |
+   | `MATCH_PASSWORD` | match の暗号化パスワード |
+   | `APP_STORE_CONNECT_API_KEY_ID` | API キー ID |
+   | `APP_STORE_CONNECT_API_KEY_ISSUER_ID` | Issuer ID |
+   | `APP_STORE_CONNECT_API_KEY_CONTENT` | .p8 ファイルを base64 エンコードした内容 |
+
+   ```bash
+   # .p8 ファイルを base64 エンコード（改行なし）
+   base64 -i AuthKey_XXXX.p8 | tr -d '\n'
+   ```
+
+4. **fastlane match を初期化**（ローカルで実行）
+
+   ```bash
+   bundle install
+   bundle exec fastlane match init
+   bundle exec fastlane match appstore
+   ```

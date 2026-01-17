@@ -1,0 +1,4 @@
+# frozen_string_literal: true
+
+app_identifier("cc.focuswave.Flowease")
+team_id("P785AMQPKJ")
