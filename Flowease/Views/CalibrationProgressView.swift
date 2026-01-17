@@ -63,6 +63,16 @@ struct CalibrationProgressView: View {
                 .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(.primary)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            String(localized: "Calibration Progress", comment: "Accessibility label for calibration progress")
+        )
+        .accessibilityValue(
+            String(
+                localized: "\(Int(progress * 100)) percent complete, \(Int(ceil(remainingSeconds))) seconds remaining",
+                comment: "Accessibility value for calibration progress"
+            )
+        )
     }
 }
 

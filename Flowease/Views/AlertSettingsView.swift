@@ -84,6 +84,11 @@ struct AlertSettingsCard: View {
                     .rotationEffect(.degrees(isExpanded ? 90 : 0))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(
+                isExpanded
+                    ? String(localized: "Collapse settings", comment: "Accessibility label when settings expanded")
+                    : String(localized: "Expand settings", comment: "Accessibility label when settings collapsed")
+            )
         }
     }
 
@@ -125,6 +130,15 @@ struct AlertSettingsCard: View {
         }
         .toggleStyle(.switch)
         .controlSize(.small)
+        .accessibilityLabel(
+            String(localized: "Enable Alerts", comment: "Accessibility label for alert toggle")
+        )
+        .accessibilityHint(
+            String(
+                localized: "Double-tap to toggle posture alert notifications",
+                comment: "Accessibility hint for alert toggle"
+            )
+        )
     }
 
     // MARK: - Threshold Slider
@@ -155,6 +169,16 @@ struct AlertSettingsCard: View {
                 step: 1
             )
             .controlSize(.small)
+            .accessibilityLabel(
+                String(localized: "Score Threshold", comment: "Accessibility label for threshold slider")
+            )
+            .accessibilityValue("\(settings.threshold)")
+            .accessibilityHint(
+                String(
+                    localized: "Adjust to set the minimum score that triggers an alert",
+                    comment: "Accessibility hint for threshold slider"
+                )
+            )
         }
     }
 
@@ -164,7 +188,8 @@ struct AlertSettingsCard: View {
     private func settingsPickerRow(
         label: LocalizedStringKey,
         selection keyPath: WritableKeyPath<AlertSettings, Int>,
-        options: [(label: LocalizedStringKey, value: Int)]
+        options: [(label: LocalizedStringKey, value: Int)],
+        accessibilityHintText: String
     ) -> some View {
         HStack {
             Text(label)
@@ -177,6 +202,8 @@ struct AlertSettingsCard: View {
                 }
             }
             .pickerStyle(.menu)
+            .accessibilityLabel(Text(label))
+            .accessibilityHint(accessibilityHintText)
         }
     }
 
@@ -189,7 +216,11 @@ struct AlertSettingsCard: View {
                 ("3 min", 180),
                 ("5 min", 300),
                 ("10 min", 600)
-            ]
+            ],
+            accessibilityHintText: String(
+                localized: "Select how long posture must be poor before alerting",
+                comment: "Accessibility hint for check duration picker"
+            )
         )
     }
 
@@ -202,7 +233,11 @@ struct AlertSettingsCard: View {
                 ("15 min", 900),
                 ("30 min", 1800),
                 ("60 min", 3600)
-            ]
+            ],
+            accessibilityHintText: String(
+                localized: "Select minimum time between consecutive alerts",
+                comment: "Accessibility hint for cooldown picker"
+            )
         )
     }
 
