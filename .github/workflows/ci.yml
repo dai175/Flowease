@@ -27,7 +27,7 @@ jobs:
         with:
           xcode-version: '16'
       - name: Build
-        run: xcodebuild -scheme Flowease -destination 'platform=macOS' build
+        run: xcodebuild -scheme Flowease -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO build
 
   test:
     name: Test
@@ -40,4 +40,4 @@ jobs:
         with:
           xcode-version: '16'
       - name: Run Tests
-        run: xcodebuild -scheme Flowease -destination 'platform=macOS' test
+        run: xcodebuild -scheme Flowease -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO test
