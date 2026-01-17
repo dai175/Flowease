@@ -137,8 +137,14 @@ struct ScoreHeroSection: View {
                 comment: "Accessibility value for score with status"
             )
         }
+        if let reason = pauseReason {
+            return String(
+                localized: "No score available. \(reason)",
+                comment: "Accessibility value when no score with reason"
+            )
+        }
         return String(
-            localized: "No score available. \(pauseReason ?? "")",
+            localized: "No score available",
             comment: "Accessibility value when no score"
         )
     }

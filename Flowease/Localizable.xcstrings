@@ -920,8 +920,25 @@
         }
       }
     },
-    "No score available. %@" : {
+    "No score available" : {
       "comment" : "Accessibility value when no score",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No score available"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スコアなし"
+          }
+        }
+      }
+    },
+    "No score available. %@" : {
+      "comment" : "Accessibility value when no score with reason",
       "localizations" : {
         "en" : {
           "stringUnit" : {
