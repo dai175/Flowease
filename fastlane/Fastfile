@@ -51,17 +51,25 @@ platform :mac do
       precheck_include_in_app_purchases: false
     )
 
-    # GitHub Releases 用に zip 作成
-    app_path = Dir["build/Flowease.{app,pkg}"].first
-    UI.user_error!("Build artifact not found in build/") unless app_path
+    # GitHub Releases 用に zip 作成（.pkg を優先）
+    pkg_path = "build/Flowease.pkg"
+    app_path = "build/Flowease.app"
 
-    if app_path.end_with?(".app")
+    artifact_path = if File.exist?(pkg_path)
+                      pkg_path
+                    elsif File.exist?(app_path)
+                      app_path
+                    else
+                      UI.user_error!("Build artifact not found in build/")
+                    end
+
+    if artifact_path.end_with?(".app")
       zip(
-        path: app_path,
+        path: artifact_path,
         output_path: "build/Flowease-#{version}.zip"
       )
     else
-      FileUtils.cp(app_path, "build/Flowease-#{version}.pkg")
+      FileUtils.cp(artifact_path, "build/Flowease-#{version}.pkg")
     end
   end
 end
