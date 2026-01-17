@@ -33,6 +33,7 @@ jobs:
       - name: Decode App Store Connect API Key
         run: |
           printf '%s' "${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}" | base64 -D > /tmp/AuthKey.p8
+          chmod 600 /tmp/AuthKey.p8
 
       - name: Build and Upload
         env:
