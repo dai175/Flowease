@@ -1,0 +1,75 @@
+# frozen_string_literal: true
+
+require "fileutils"
+
+default_platform(:mac)
+
+platform :mac do
+  desc "Build and release to App Store Connect"
+  lane :release do
+    setup_ci
+
+    # Configure App Store Connect API key from environment variables
+    app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+    )
+
+    # Fetch signing certificates via match
+    match(type: "appstore", readonly: true)
+
+    # Get version from git tag
+    tag = last_git_tag
+    UI.user_error!("No git tag found. Please create a version tag (e.g., v1.0.0)") if tag.nil? || tag.empty?
+    version = tag.sub(/^v/, "")
+
+    # Update marketing version
+    increment_version_number(
+      version_number: version,
+      xcodeproj: "Flowease.xcodeproj"
+    )
+
+    # Increment build number using GitHub Actions run number
+    increment_build_number(
+      build_number: ENV["GITHUB_RUN_NUMBER"],
+      xcodeproj: "Flowease.xcodeproj"
+    )
+
+    # Build the app
+    build_mac_app(
+      scheme: "Flowease",
+      export_method: "app-store",
+      output_directory: "build",
+      output_name: "Flowease"
+    )
+
+    # Upload to App Store Connect
+    upload_to_app_store(
+      skip_metadata: true,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false
+    )
+
+    # Create artifact for GitHub Releases (prefer .pkg over .app)
+    pkg_path = "build/Flowease.pkg"
+    app_path = "build/Flowease.app"
+
+    artifact_path = if File.exist?(pkg_path)
+                      pkg_path
+                    elsif File.exist?(app_path)
+                      app_path
+                    else
+                      UI.user_error!("Build artifact not found in build/")
+                    end
+
+    if artifact_path.end_with?(".app")
+      zip(
+        path: artifact_path,
+        output_path: "build/Flowease-#{version}.zip"
+      )
+    else
+      FileUtils.cp(artifact_path, "build/Flowease-#{version}.pkg")
+    end
+  end
+end

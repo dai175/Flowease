@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+git_url(ENV["MATCH_GIT_URL"])
+storage_mode("git")
+type("appstore")
+app_identifier(["cc.focuswave.Flowease"])
+team_id("P785AMQPKJ")
+platform("macos")

@@ -176,3 +176,14 @@ Flowease/
 - **Swift 6.0 + SwiftUI**: UI フレームワーク
 - **AVFoundation**: カメラキャプチャ
 - **Vision**: 顔検出（VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest）
+
+## リリース
+
+タグをプッシュすると、GitHub Actions が自動的にビルド・リリースを実行します。
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+初回セットアップが必要です。詳細は [CD セットアップガイド](docs/cd-setup.md) を参照してください。

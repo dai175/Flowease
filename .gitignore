@@ -58,6 +58,18 @@ Carthage/Checkouts/
 *.key
 Secrets/
 
+# Ruby / Bundler
+vendor/bundle/
+.bundle/
+Gemfile.lock
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+fastlane/README.md
+
 # Misc
 *.log
 *.tmp
