@@ -51,56 +51,67 @@ struct ArcShape: Shape {
 /// - 100点: 緑色で270度（フル）
 /// - 0点: 赤色で0度（空）
 struct RealtimeScoreGauge: View {
+    // MARK: - Constants
+
+    /// ゲージのサイズ
+    private static let gaugeSize: CGFloat = 88
+    /// 線の太さ
+    private static let lineWidth: CGFloat = 4
+    /// 開始角度（左下、135度）
+    private static let startAngle: Double = 135
+    /// アークの角度範囲（270度）
+    private static let arcRange: Double = 270
+
+    // MARK: - Properties
+
     /// リアルタイムスコア (0-100)
     let score: Int
 
-    /// ゲージのサイズ
-    private let gaugeSize: CGFloat = 88
-    /// 線の太さ
-    private let lineWidth: CGFloat = 4
-    /// 開始角度（左下、135度）
-    private let startAngle: Double = 135
-    /// 終了角度（右下、405度 = 135 + 270）
-    private let endAngle: Double = 405
-    /// アークの角度範囲
-    private var arcRange: Double { endAngle - startAngle }
+    /// 現在のカラースキーム（ライト/ダークモード判定）
+    @Environment(\.colorScheme) private var colorScheme
+
+    // MARK: - Computed Properties
 
     /// スコアに基づく進捗率 (0.0 - 1.0)
     private var progress: Double {
-        let clampedScore = max(0, min(score, 100))
-        return Double(clampedScore) / 100.0
+        Double(min(max(score, 0), 100)) / 100.0
     }
 
-    /// スコアに基づくゲージの色
+    /// スコアに基づくゲージの色（カラースキーム対応）
     private var gaugeColor: Color {
-        ColorGradient.color(fromScore: score)
+        ColorGradient.color(fromScore: score, colorScheme: colorScheme)
     }
 
     /// 進捗に応じた終了角度
     private var progressEndAngle: Double {
-        startAngle + arcRange * progress
+        Self.startAngle + Self.arcRange * progress
+    }
+
+    /// 終了角度（右下、405度 = 135 + 270）
+    private var endAngle: Double {
+        Self.startAngle + Self.arcRange
     }
 
     var body: some View {
         ZStack {
             // 背景アーク（トラック）
-            ArcShape(startAngle: startAngle, endAngle: endAngle)
+            ArcShape(startAngle: Self.startAngle, endAngle: endAngle)
                 .stroke(
                     Color.secondary.opacity(0.2),
-                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                    style: StrokeStyle(lineWidth: Self.lineWidth, lineCap: .round)
                 )
-                .frame(width: gaugeSize, height: gaugeSize)
+                .frame(width: Self.gaugeSize, height: Self.gaugeSize)
 
             // 進捗アーク
-            ArcShape(startAngle: startAngle, endAngle: progressEndAngle)
+            ArcShape(startAngle: Self.startAngle, endAngle: progressEndAngle)
                 .stroke(
                     gaugeColor,
-                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                    style: StrokeStyle(lineWidth: Self.lineWidth, lineCap: .round)
                 )
-                .frame(width: gaugeSize, height: gaugeSize)
+                .frame(width: Self.gaugeSize, height: Self.gaugeSize)
                 .animation(.easeInOut(duration: 0.3), value: score)
         }
-        .frame(width: gaugeSize, height: gaugeSize)
+        .frame(width: Self.gaugeSize, height: Self.gaugeSize)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(String(localized: "Posture score", comment: "Accessibility label for posture score gauge"))
         .accessibilityValue(String(localized: "\(score) out of 100", comment: "Accessibility value for posture score"))

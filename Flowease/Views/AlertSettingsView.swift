@@ -73,23 +73,27 @@ struct AlertSettingsCard: View {
 
             Spacer()
 
-            // 展開/折りたたみボタン
-            Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isExpanded.toggle()
-                }
-            } label: {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: chevronSize, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
+            // 展開/折りたたみアイコン
+            Image(systemName: "chevron.right")
+                .font(.system(size: chevronSize, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .rotationEffect(.degrees(isExpanded ? 90 : 0))
+        }
+        .padding(.horizontal, 4)
+        .padding(.vertical, 2)
+        .hoverableRow(
+            accessibilityLabel: Text(String(
+                localized: "Alert Settings",
+                comment: "Accessibility label for alert settings card"
+            )),
+            accessibilityValue: statusSummary,
+            accessibilityHint: isExpanded
+                ? String(localized: "Collapse settings", comment: "Accessibility label when settings expanded")
+                : String(localized: "Expand settings", comment: "Accessibility label when settings collapsed")
+        ) {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isExpanded.toggle()
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(
-                isExpanded
-                    ? String(localized: "Collapse settings", comment: "Accessibility label when settings expanded")
-                    : String(localized: "Expand settings", comment: "Accessibility label when settings collapsed")
-            )
         }
     }
 

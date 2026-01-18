@@ -79,21 +79,22 @@ struct StatusMenuView: View {
             Divider()
 
             // 終了ボタン
-            Button {
-                NSApplication.shared.terminate(nil)
-            } label: {
-                HStack {
-                    Text("Quit")
-                        .font(.subheadline)
-                    Spacer()
-                    Text("⌘Q")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
+            HStack {
+                Text("Quit")
+                    .font(.subheadline)
+                Spacer()
+                Text("⌘Q")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
             }
-            .buttonStyle(.plain)
+            .padding(.horizontal, 4)
+            .padding(.vertical, 4)
+            .hoverableRow(
+                accessibilityLabel: Text(String(localized: "Quit Flowease"))
+            ) {
+                NSApplication.shared.terminate(nil)
+            }
             .keyboardShortcut("q")
-            .accessibilityLabel(String(localized: "Quit Flowease"))
         }
         .padding(12)
     }

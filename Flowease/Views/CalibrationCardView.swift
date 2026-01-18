@@ -98,17 +98,19 @@ struct CompactCalibrationCard: View {
 
             Spacer()
 
-            // 再設定ボタン
-            Button(action: onReconfigure) {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(String(localized: "Reconfigure calibration"))
+            // 再設定アイコン
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
+        .hoverableRow(
+            accessibilityLabel: Text(String(localized: "Calibration")),
+            accessibilityValue: statusSummary,
+            accessibilityHint: String(localized: "Reconfigure calibration"),
+            action: onReconfigure
+        )
     }
 }
 
