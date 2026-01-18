@@ -73,25 +73,12 @@ platform :mac do
       skip_waiting_for_build_processing: true
     )
 
-    # Create artifact for GitHub Releases (prefer .pkg over .app)
-    pkg_path = "build/Flowease.pkg"
-    app_path = "build/Flowease.app"
-
-    artifact_path = if File.exist?(pkg_path)
-                      pkg_path
-                    elsif File.exist?(app_path)
-                      app_path
-                    else
-                      UI.user_error!("Build artifact not found in build/")
-                    end
-
-    if artifact_path.end_with?(".app")
-      zip(
-        path: artifact_path,
-        output_path: "build/Flowease-#{version}.zip"
-      )
+    # Create artifact for GitHub Releases
+    pkg_path = lane_context[:PKG_OUTPUT_PATH] || "build/Flowease.pkg"
+    if File.exist?(pkg_path)
+      FileUtils.cp(pkg_path, "build/Flowease-#{version}.pkg")
     else
-      FileUtils.cp(artifact_path, "build/Flowease-#{version}.pkg")
+      UI.important("PKG not found, skipping GitHub Release artifact creation")
     end
   end
 end
