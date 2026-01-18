@@ -14,10 +14,27 @@
 ## 前提条件
 
 - Apple Developer Program に登録済み
-- App Store Connect でアプリが作成済み (Bundle ID: `cc.focuswave.Flowease`)
 - GitHub リポジトリの管理者権限
 
 ## セットアップ手順
+
+### 0. App Store Connect でアプリを作成
+
+TestFlight へのアップロードには、事前に App Store Connect でアプリを作成しておく必要があります。
+
+1. [App Store Connect](https://appstoreconnect.apple.com/) にアクセス
+
+2. **アプリ** → **+** → **新規アプリ**
+
+3. 以下の情報を入力:
+   - **プラットフォーム**: macOS
+   - **名前**: アプリの表示名（例: `Flowease - Posture Monitor`）
+   - **プライマリ言語**: 日本語 または English
+   - **バンドル ID**: `cc.focuswave.Flowease`
+   - **SKU**: 任意の識別子（例: `flowease-macos`）
+   - **ユーザーアクセス**: フルアクセス
+
+4. **作成** をクリック
 
 ### 1. 証明書リポジトリの作成
 
@@ -207,6 +224,20 @@ bundle exec fastlane match appstore --additional_cert_types mac_installer_distri
 - API キーの権限が Admin になっているか
 - Bundle ID が正しいか
 - バージョン番号が既存のビルドと重複していないか
+
+### アプリカテゴリが設定されていない
+
+**症状:** `The key CFBundleIdentifier in the Info.plist may not contain...` または App Store Connect でカテゴリ関連のエラー
+
+**解決策:**
+`Info.plist` に `LSApplicationCategoryType` キーを追加します。Flowease では以下のように設定されています：
+
+```xml
+<key>LSApplicationCategoryType</key>
+<string>public.app-category.healthcare-fitness</string>
+```
+
+利用可能なカテゴリは [Apple ドキュメント](https://developer.apple.com/documentation/bundleresources/information_property_list/lsapplicationcategorytype) を参照してください。
 
 ## 参考リンク
 
