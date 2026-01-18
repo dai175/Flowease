@@ -29,9 +29,6 @@ struct StatusMenuView: View {
     /// ウィンドウを開くための Environment
     @Environment(\.openWindow) private var openWindow
 
-    /// Quitボタンのホバー状態
-    @State private var isQuitHovered: Bool = false
-
     var body: some View {
         VStack(spacing: 12) {
             // === Primary: スコア + 状態 + モニタリング ===
@@ -92,20 +89,12 @@ struct StatusMenuView: View {
             }
             .padding(.horizontal, 4)
             .padding(.vertical, 4)
-            .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(isQuitHovered ? Color.primary.opacity(0.05) : Color.clear)
-            )
-            .contentShape(Rectangle())
-            .onTapGesture {
+            .hoverableRow(
+                accessibilityLabel: Text(String(localized: "Quit Flowease"))
+            ) {
                 NSApplication.shared.terminate(nil)
             }
-            .onHover { hovering in
-                isQuitHovered = hovering
-            }
             .keyboardShortcut("q")
-            .accessibilityLabel(String(localized: "Quit Flowease"))
-            .accessibilityAddTraits(.isButton)
         }
         .padding(12)
     }
