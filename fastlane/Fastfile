@@ -26,14 +26,16 @@ platform :mac do
     )
 
     # Update code signing settings to use manual signing
-    # Get profile name from match result (environment variable set by match)
+    # Get profile name and certificate name from match result
     profile_name = ENV["sigh_cc.focuswave.Flowease_appstore_macos_profile-name"]
+    certificate_name = ENV["sigh_cc.focuswave.Flowease_appstore_macos_certificate-name"]
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "Flowease.xcodeproj",
       team_id: "P785AMQPKJ",
       bundle_identifier: "cc.focuswave.Flowease",
-      profile_name: profile_name
+      profile_name: profile_name,
+      code_sign_identity: certificate_name
     )
 
     # Get version from git tag
