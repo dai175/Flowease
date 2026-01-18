@@ -74,7 +74,7 @@ ssh-keygen -t ed25519 -C "flowease-cd" -f ~/.ssh/flowease_deploy_key -N ""
 | Secret 名 | 値 |
 |-----------|-----|
 | `MATCH_GIT_URL` | 証明書リポジトリの SSH URL<br>例: `git@github.com:<username>/flowease-certs.git` |
-| `MATCH_PASSWORD` | match の暗号化パスワード（任意の強力なパスワード）<br>⚠️ このパスワードは後で必要になるので記録してください |
+| `MATCH_PASSWORD` | match の暗号化パスワード（**英数字のみ**の強力なパスワード）<br>⚠️ `$` などの特殊文字はCI環境で問題を起こすため避けてください<br>⚠️ このパスワードは後で必要になるので記録してください |
 | `MATCH_DEPLOY_KEY` | 秘密鍵の内容（`~/.ssh/flowease_deploy_key`） |
 | `APP_STORE_CONNECT_API_KEY_ID` | API キー ID |
 | `APP_STORE_CONNECT_API_KEY_ISSUER_ID` | Issuer ID |
@@ -115,6 +115,10 @@ rbenv global 3.4.8
 
 ローカル環境で証明書を作成し、リポジトリにプッシュします。
 
+macOS App Store 配布には2種類の証明書が必要です：
+- **Mac App Distribution** - アプリ本体の署名用
+- **Mac Installer Distribution** - pkg インストーラーの署名用
+
 ```bash
 # プロジェクトルートで実行
 cd /path/to/Flowease
@@ -129,8 +133,8 @@ bundle install
 export MATCH_GIT_URL="git@github.com:<username>/flowease-certs.git"
 export MATCH_PASSWORD="<GitHub Secrets に設定したパスワード>"
 
-# App Store 用の証明書を作成
-bundle exec fastlane match appstore
+# App Store 用の証明書を作成（両方の証明書タイプを含む）
+bundle exec fastlane match appstore --additional_cert_types mac_installer_distribution
 ```
 
 **初回実行時の動作:**
@@ -141,6 +145,12 @@ bundle exec fastlane match appstore
 ```bash
 # 既存の証明書をインポートする場合
 bundle exec fastlane match import
+```
+
+**証明書を再作成する場合:**
+```bash
+# 強制的に再作成（既存の証明書を上書き）
+bundle exec fastlane match appstore --additional_cert_types mac_installer_distribution --force
 ```
 
 ### 7. 動作確認
@@ -176,7 +186,17 @@ GitHub の **Actions** タブでワークフローの実行状況を確認して
 **解決策:**
 ```bash
 # 証明書を再作成
-bundle exec fastlane match appstore --force
+bundle exec fastlane match appstore --additional_cert_types mac_installer_distribution --force
+```
+
+### Mac Installer Distribution 証明書がない
+
+**症状:** `No signing certificate "Mac Installer Distribution" found`
+
+**解決策:**
+pkg ファイルの署名に必要なインストーラー証明書がありません：
+```bash
+bundle exec fastlane match appstore --additional_cert_types mac_installer_distribution
 ```
 
 ### App Store Connect へのアップロード失敗
