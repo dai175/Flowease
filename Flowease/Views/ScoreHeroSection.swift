@@ -48,13 +48,10 @@ struct ScoreHeroSection: View {
 
     /// スコアに基づくグラデーション色（カラースキーム対応）
     private var scoreColor: Color {
-        if let avg = averageScore {
-            return ColorGradient.color(fromScore: avg, colorScheme: colorScheme)
+        guard let score = averageScore ?? realtimeScore else {
+            return fallbackColor
         }
-        if let realtime = realtimeScore {
-            return ColorGradient.color(fromScore: realtime, colorScheme: colorScheme)
-        }
-        return fallbackColor
+        return ColorGradient.color(fromScore: score, colorScheme: colorScheme)
     }
 
     var body: some View {

@@ -5,17 +5,23 @@ import SwiftUI
 ///
 /// 姿勢スコアから SwiftUI の Color または AppKit の NSColor を生成するユーティリティ。
 enum ColorGradient {
-    // MARK: - Constants
+    // MARK: - Color Parameters
 
-    /// 彩度（ダークモード）
-    private static let saturation: CGFloat = 0.8
-    /// 明度（ダークモード）
-    private static let brightness: CGFloat = 0.9
+    /// カラースキームに応じた彩度・明度のパラメータ
+    private struct ColorParams {
+        let saturation: CGFloat
+        let brightness: CGFloat
 
-    /// 彩度（ライトモード）- コントラスト向上のため高め
-    private static let saturationLight: CGFloat = 0.85
-    /// 明度（ライトモード）- 白背景での視認性向上のため低め
-    private static let brightnessLight: CGFloat = 0.55
+        /// ダークモード用（高明度で鮮やかに）
+        static let dark = ColorParams(saturation: 0.8, brightness: 0.9)
+        /// ライトモード用（低明度・高彩度で白背景での視認性を向上）
+        static let light = ColorParams(saturation: 0.85, brightness: 0.55)
+
+        /// カラースキームに応じたパラメータを取得
+        static func forScheme(_ scheme: ColorScheme) -> ColorParams {
+            scheme == .light ? .light : .dark
+        }
+    }
 
     // MARK: - Hue Calculation
 
@@ -30,6 +36,18 @@ enum ColorGradient {
         return CGFloat(clampedScore) / 300.0
     }
 
+    /// ステータスから Hue 値を取得
+    ///
+    /// - Parameter status: スコアステータス
+    /// - Returns: 固定の Hue 値
+    private static func hue(for status: ScoreStatus) -> CGFloat {
+        switch status {
+        case .good: 0.333 // 緑
+        case .fair: 0.166 // 黄
+        case .poor: 0.05 // 橙
+        }
+    }
+
     // MARK: - SwiftUI Color
 
     /// スコアから SwiftUI Color を生成
@@ -37,10 +55,11 @@ enum ColorGradient {
     /// - Parameter score: 0〜100の範囲のスコア（範囲外の値は自動的にクランプされる）
     /// - Returns: スコアに対応した色
     static func color(fromScore score: Int) -> Color {
-        Color(
+        let params = ColorParams.dark
+        return Color(
             hue: hue(fromScore: score),
-            saturation: saturation,
-            brightness: brightness
+            saturation: params.saturation,
+            brightness: params.brightness
         )
     }
 
@@ -53,13 +72,11 @@ enum ColorGradient {
     ///   - colorScheme: 現在のカラースキーム
     /// - Returns: スコアに対応した色
     static func color(fromScore score: Int, colorScheme: ColorScheme) -> Color {
-        let (sat, bri) = colorScheme == .light
-            ? (saturationLight, brightnessLight)
-            : (saturation, brightness)
+        let params = ColorParams.forScheme(colorScheme)
         return Color(
             hue: hue(fromScore: score),
-            saturation: sat,
-            brightness: bri
+            saturation: params.saturation,
+            brightness: params.brightness
         )
     }
 
@@ -77,10 +94,11 @@ enum ColorGradient {
     /// - Parameter score: 0〜100の範囲のスコア（範囲外の値は自動的にクランプされる）
     /// - Returns: スコアに対応した NSColor
     static func nsColor(fromScore score: Int) -> NSColor {
-        NSColor(
+        let params = ColorParams.dark
+        return NSColor(
             hue: hue(fromScore: score),
-            saturation: saturation,
-            brightness: brightness,
+            saturation: params.saturation,
+            brightness: params.brightness,
             alpha: 1.0
         )
     }
@@ -100,10 +118,11 @@ enum ColorGradient {
     /// - Parameter status: スコアステータス
     /// - Returns: ステータスに対応した固定色
     static func color(for status: ScoreStatus) -> Color {
-        Color(
+        let params = ColorParams.dark
+        return Color(
             hue: hue(for: status),
-            saturation: saturation,
-            brightness: brightness
+            saturation: params.saturation,
+            brightness: params.brightness
         )
     }
 
@@ -116,13 +135,11 @@ enum ColorGradient {
     ///   - colorScheme: 現在のカラースキーム
     /// - Returns: ステータスに対応した固定色
     static func color(for status: ScoreStatus, colorScheme: ColorScheme) -> Color {
-        let (sat, bri) = colorScheme == .light
-            ? (saturationLight, brightnessLight)
-            : (saturation, brightness)
+        let params = ColorParams.forScheme(colorScheme)
         return Color(
             hue: hue(for: status),
-            saturation: sat,
-            brightness: bri
+            saturation: params.saturation,
+            brightness: params.brightness
         )
     }
 
@@ -133,23 +150,12 @@ enum ColorGradient {
     /// - Parameter status: スコアステータス
     /// - Returns: ステータスに対応した NSColor
     static func nsColor(for status: ScoreStatus) -> NSColor {
-        NSColor(
+        let params = ColorParams.dark
+        return NSColor(
             hue: hue(for: status),
-            saturation: saturation,
-            brightness: brightness,
+            saturation: params.saturation,
+            brightness: params.brightness,
             alpha: 1.0
         )
-    }
-
-    /// ステータスから Hue 値を取得
-    ///
-    /// - Parameter status: スコアステータス
-    /// - Returns: 固定の Hue 値
-    private static func hue(for status: ScoreStatus) -> CGFloat {
-        switch status {
-        case .good: 0.333 // 緑
-        case .fair: 0.166 // 黄
-        case .poor: 0.05 // 橙
-        }
     }
 }
