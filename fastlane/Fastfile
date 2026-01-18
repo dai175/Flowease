@@ -68,6 +68,8 @@ platform :mac do
     # Upload to App Store Connect
     upload_to_app_store(
       api_key: api_key,
+      app_identifier: "cc.focuswave.Flowease",
+      pkg: "build/Flowease.pkg",
       skip_metadata: true,
       skip_screenshots: true,
       precheck_include_in_app_purchases: false
