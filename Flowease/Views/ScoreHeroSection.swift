@@ -27,6 +27,11 @@ struct ScoreHeroSection: View {
     /// 最後に表示したリアルタイムスコア（アニメーション継続用）
     @State private var lastRealtimeScore: Int = 0
 
+    // MARK: - Environment
+
+    /// 現在のカラースキーム（ライト/ダークモード判定）
+    @Environment(\.colorScheme) private var colorScheme
+
     // MARK: - Dynamic Type Support
 
     /// スコア表示のフォントサイズ（Dynamic Type対応）
@@ -41,13 +46,13 @@ struct ScoreHeroSection: View {
         realtimeScore ?? lastRealtimeScore
     }
 
-    /// スコアに基づくグラデーション色
+    /// スコアに基づくグラデーション色（カラースキーム対応）
     private var scoreColor: Color {
         if let avg = averageScore {
-            return ColorGradient.color(fromScore: avg)
+            return ColorGradient.color(fromScore: avg, colorScheme: colorScheme)
         }
         if let realtime = realtimeScore {
-            return ColorGradient.color(fromScore: realtime)
+            return ColorGradient.color(fromScore: realtime, colorScheme: colorScheme)
         }
         return fallbackColor
     }
@@ -69,7 +74,7 @@ struct ScoreHeroSection: View {
 
                     Text(statusLabel)
                         .font(.system(size: statusFontSize, weight: .medium))
-                        .foregroundStyle(scoreColor.opacity(0.8))
+                        .foregroundStyle(scoreColor)
                         .minimumScaleFactor(0.8)
                 }
             }

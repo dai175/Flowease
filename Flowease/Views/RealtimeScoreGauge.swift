@@ -54,6 +54,9 @@ struct RealtimeScoreGauge: View {
     /// リアルタイムスコア (0-100)
     let score: Int
 
+    /// 現在のカラースキーム（ライト/ダークモード判定）
+    @Environment(\.colorScheme) private var colorScheme
+
     /// ゲージのサイズ
     private let gaugeSize: CGFloat = 88
     /// 線の太さ
@@ -71,9 +74,9 @@ struct RealtimeScoreGauge: View {
         return Double(clampedScore) / 100.0
     }
 
-    /// スコアに基づくゲージの色
+    /// スコアに基づくゲージの色（カラースキーム対応）
     private var gaugeColor: Color {
-        ColorGradient.color(fromScore: score)
+        ColorGradient.color(fromScore: score, colorScheme: colorScheme)
     }
 
     /// 進捗に応じた終了角度

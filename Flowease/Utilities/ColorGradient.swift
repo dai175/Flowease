@@ -7,10 +7,15 @@ import SwiftUI
 enum ColorGradient {
     // MARK: - Constants
 
-    /// 彩度
+    /// 彩度（ダークモード）
     private static let saturation: CGFloat = 0.8
-    /// 明度
+    /// 明度（ダークモード）
     private static let brightness: CGFloat = 0.9
+
+    /// 彩度（ライトモード）- コントラスト向上のため高め
+    private static let saturationLight: CGFloat = 0.85
+    /// 明度（ライトモード）- 白背景での視認性向上のため低め
+    private static let brightnessLight: CGFloat = 0.55
 
     // MARK: - Hue Calculation
 
@@ -36,6 +41,25 @@ enum ColorGradient {
             hue: hue(fromScore: score),
             saturation: saturation,
             brightness: brightness
+        )
+    }
+
+    /// スコアから SwiftUI Color を生成（カラースキーム対応）
+    ///
+    /// ライトモードでは明度を下げ、彩度を上げることで白背景での視認性を向上。
+    ///
+    /// - Parameters:
+    ///   - score: 0〜100の範囲のスコア（範囲外の値は自動的にクランプされる）
+    ///   - colorScheme: 現在のカラースキーム
+    /// - Returns: スコアに対応した色
+    static func color(fromScore score: Int, colorScheme: ColorScheme) -> Color {
+        let (sat, bri) = colorScheme == .light
+            ? (saturationLight, brightnessLight)
+            : (saturation, brightness)
+        return Color(
+            hue: hue(fromScore: score),
+            saturation: sat,
+            brightness: bri
         )
     }
 
@@ -80,6 +104,25 @@ enum ColorGradient {
             hue: hue(for: status),
             saturation: saturation,
             brightness: brightness
+        )
+    }
+
+    /// ステータスに対応する固定色（SwiftUI、カラースキーム対応）
+    ///
+    /// ライトモードでは明度を下げ、彩度を上げることで白背景での視認性を向上。
+    ///
+    /// - Parameters:
+    ///   - status: スコアステータス
+    ///   - colorScheme: 現在のカラースキーム
+    /// - Returns: ステータスに対応した固定色
+    static func color(for status: ScoreStatus, colorScheme: ColorScheme) -> Color {
+        let (sat, bri) = colorScheme == .light
+            ? (saturationLight, brightnessLight)
+            : (saturation, brightness)
+        return Color(
+            hue: hue(for: status),
+            saturation: sat,
+            brightness: bri
         )
     }
 
