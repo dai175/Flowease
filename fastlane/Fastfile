@@ -21,7 +21,8 @@ platform :mac do
       type: "appstore",
       readonly: true,
       keychain_name: "fastlane_tmp_keychain",
-      keychain_password: ""
+      keychain_password: "",
+      verbose: true
     )
 
     # Update code signing settings to use manual signing
