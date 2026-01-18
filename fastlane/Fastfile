@@ -65,16 +65,12 @@ platform :mac do
       xcargs: "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual"
     )
 
-    # Upload to App Store Connect
-    upload_to_app_store(
+    # Upload to TestFlight (App Store Connect)
+    upload_to_testflight(
       api_key: api_key,
       app_identifier: "cc.focuswave.Flowease",
-      team_id: "P785AMQPKJ",
       pkg: "build/Flowease.pkg",
-      skip_metadata: true,
-      skip_screenshots: true,
-      precheck_include_in_app_purchases: false,
-      force: true
+      skip_waiting_for_build_processing: true
     )
 
     # Create artifact for GitHub Releases (prefer .pkg over .app)
