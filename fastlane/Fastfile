@@ -17,15 +17,22 @@ platform :mac do
     )
 
     # Fetch signing certificates via match
-    match(type: "appstore", readonly: true)
+    match(
+      type: "appstore",
+      readonly: true,
+      keychain_name: "fastlane_tmp_keychain",
+      keychain_password: ""
+    )
 
     # Update code signing settings to use manual signing
+    # Get profile name from match result (environment variable set by match)
+    profile_name = ENV["sigh_cc.focuswave.Flowease_appstore_macos_profile-name"]
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "Flowease.xcodeproj",
       team_id: "P785AMQPKJ",
       bundle_identifier: "cc.focuswave.Flowease",
-      profile_name: "match AppStore cc.focuswave.Flowease macos"
+      profile_name: profile_name
     )
 
     # Get version from git tag
