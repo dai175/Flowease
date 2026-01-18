@@ -73,12 +73,6 @@ platform :mac do
       skip_waiting_for_build_processing: true
     )
 
-    # Create artifact for GitHub Releases
-    pkg_path = lane_context[:PKG_OUTPUT_PATH] || "build/Flowease.pkg"
-    if File.exist?(pkg_path)
-      FileUtils.cp(pkg_path, "build/Flowease-#{version}.pkg")
-    else
-      UI.important("PKG not found, skipping GitHub Release artifact creation")
-    end
+    # Note: pkg is already at build/Flowease.pkg for GitHub Release artifact
   end
 end
