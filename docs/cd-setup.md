@@ -59,7 +59,7 @@ ssh-keygen -t ed25519 -C "flowease-cd" -f ~/.ssh/flowease_deploy_key -N ""
 
 2. **公開鍵**を証明書リポジトリに追加:
    - `flowease-certs` リポジトリ → **Settings** → **Deploy keys** → **Add deploy key**
-   - Title: `Flowease CD`
+   - Title: `GitHub Actions`
    - Key: `~/.ssh/flowease_deploy_key.pub` の内容をコピー
    - **Allow write access** はチェック不要（読み取りのみ）
 

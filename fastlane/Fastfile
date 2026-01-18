@@ -41,7 +41,8 @@ platform :mac do
       scheme: "Flowease",
       export_method: "app-store",
       output_directory: "build",
-      output_name: "Flowease"
+      output_name: "Flowease",
+      xcargs: "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual"
     )
 
     # Upload to App Store Connect
