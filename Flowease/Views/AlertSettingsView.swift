@@ -82,7 +82,10 @@ struct AlertSettingsCard: View {
         .padding(.horizontal, 4)
         .padding(.vertical, 2)
         .hoverableRow(
-            accessibilityLabel: Text("Alert Settings"),
+            accessibilityLabel: Text(String(
+                localized: "Alert Settings",
+                comment: "Accessibility label for alert settings card"
+            )),
             accessibilityValue: statusSummary,
             accessibilityHint: isExpanded
                 ? String(localized: "Collapse settings", comment: "Accessibility label when settings expanded")

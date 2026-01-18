@@ -106,7 +106,7 @@ struct CompactCalibrationCard: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .hoverableRow(
-            accessibilityLabel: Text("Calibration"),
+            accessibilityLabel: Text(String(localized: "Calibration")),
             accessibilityValue: statusSummary,
             accessibilityHint: String(localized: "Reconfigure calibration"),
             action: onReconfigure
