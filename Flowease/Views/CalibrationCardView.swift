@@ -82,6 +82,9 @@ struct CompactCalibrationCard: View {
     let statusSummary: String
     let onReconfigure: () -> Void
 
+    /// ホバー状態
+    @State private var isHovered: Bool = false
+
     var body: some View {
         HStack(spacing: 8) {
             StatusBadge(systemName: "checkmark", color: .green)
@@ -98,17 +101,29 @@ struct CompactCalibrationCard: View {
 
             Spacer()
 
-            // 再設定ボタン
-            Button(action: onReconfigure) {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(String(localized: "Reconfigure calibration"))
+            // 再設定アイコン
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isHovered ? Color.primary.opacity(0.05) : Color.clear)
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onReconfigure()
+        }
+        .onHover { hovering in
+            isHovered = hovering
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text("Calibration"))
+        .accessibilityValue(statusSummary)
+        .accessibilityHint(String(localized: "Reconfigure calibration"))
+        .accessibilityAddTraits(.isButton)
     }
 }
 

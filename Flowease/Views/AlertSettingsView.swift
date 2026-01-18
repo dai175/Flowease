@@ -23,6 +23,9 @@ struct AlertSettingsCard: View {
     /// 展開/折りたたみ状態
     @State private var isExpanded: Bool
 
+    /// ヘッダー行のホバー状態
+    @State private var isHeaderHovered: Bool = false
+
     // MARK: - Dynamic Type Support
 
     /// 展開ボタンのアイコンサイズ（Dynamic Type対応）
@@ -73,24 +76,36 @@ struct AlertSettingsCard: View {
 
             Spacer()
 
-            // 展開/折りたたみボタン
-            Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isExpanded.toggle()
-                }
-            } label: {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: chevronSize, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(
-                isExpanded
-                    ? String(localized: "Collapse settings", comment: "Accessibility label when settings expanded")
-                    : String(localized: "Expand settings", comment: "Accessibility label when settings collapsed")
-            )
+            // 展開/折りたたみアイコン
+            Image(systemName: "chevron.right")
+                .font(.system(size: chevronSize, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .rotationEffect(.degrees(isExpanded ? 90 : 0))
         }
+        .padding(.horizontal, 4)
+        .padding(.vertical, 2)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isHeaderHovered ? Color.primary.opacity(0.05) : Color.clear)
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isExpanded.toggle()
+            }
+        }
+        .onHover { hovering in
+            isHeaderHovered = hovering
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text("Alert Settings"))
+        .accessibilityValue(statusSummary)
+        .accessibilityHint(
+            isExpanded
+                ? String(localized: "Collapse settings", comment: "Accessibility label when settings expanded")
+                : String(localized: "Expand settings", comment: "Accessibility label when settings collapsed")
+        )
+        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - Settings Content
