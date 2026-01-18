@@ -231,7 +231,7 @@
       }
     },
     "Alert Settings" : {
-      "comment" : "Alert settings section title",
+      "comment" : "Accessibility label for alert settings card",
       "localizations" : {
         "en" : {
           "stringUnit" : {
