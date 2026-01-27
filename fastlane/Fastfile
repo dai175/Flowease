@@ -7,7 +7,7 @@ default_platform(:mac)
 platform :mac do
   desc "Build and release to App Store Connect"
   lane :release do
-    setup_ci
+    setup_ci(force: true)
 
     # Configure App Store Connect API key from environment variables
     api_key = app_store_connect_api_key(
@@ -17,11 +17,10 @@ platform :mac do
     )
 
     # Fetch signing certificates via match
+    # keychain is automatically managed by setup_ci
     match(
       type: "appstore",
       readonly: true,
-      keychain_name: "fastlane_tmp_keychain",
-      keychain_password: "",
       additional_cert_types: ["mac_installer_distribution"],
       verbose: true
     )
