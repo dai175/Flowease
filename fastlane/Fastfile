@@ -44,10 +44,11 @@ platform :mac do
     version = tag.sub(/^v/, "")
 
     # Update marketing version using agvtool (Apple's official versioning tool)
-    sh("xcrun agvtool new-marketing-version #{version}")
-
-    # Update build number using agvtool
-    sh("xcrun agvtool new-version -all #{ENV['GITHUB_RUN_NUMBER']}")
+    # Run from project root directory
+    Dir.chdir("..") do
+      sh("xcrun agvtool new-marketing-version #{version}")
+      sh("xcrun agvtool new-version -all #{ENV['GITHUB_RUN_NUMBER']}")
+    end
 
     # Build the app
     build_mac_app(
