@@ -55,7 +55,7 @@ platform :mac do
     # Build the app
     build_mac_app(
       scheme: "Flowease",
-      export_method: "app-store-connect",
+      export_method: "app-store",
       output_directory: "build",
       output_name: "Flowease",
       xcargs: "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual"
