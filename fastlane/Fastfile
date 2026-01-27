@@ -43,12 +43,17 @@ platform :mac do
     UI.user_error!("No git tag found. Please create a version tag (e.g., v1.0.0)") if tag.nil? || tag.empty?
     version = tag.sub(/^v/, "")
 
-    # Update marketing version using agvtool (Apple's official versioning tool)
-    # Run from project root directory
-    Dir.chdir("..") do
-      sh("xcrun agvtool new-marketing-version #{version}")
-      sh("xcrun agvtool new-version -all #{ENV['GITHUB_RUN_NUMBER']}")
-    end
+    # Update marketing version
+    increment_version_number(
+      version_number: version,
+      xcodeproj: "../Flowease.xcodeproj"
+    )
+
+    # Increment build number using GitHub Actions run number
+    increment_build_number(
+      build_number: ENV["GITHUB_RUN_NUMBER"],
+      xcodeproj: "../Flowease.xcodeproj"
+    )
 
     # Build the app
     build_mac_app(
