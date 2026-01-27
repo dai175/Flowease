@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "fileutils"
-
 default_platform(:mac)
 
 platform :mac do
@@ -21,8 +19,7 @@ platform :mac do
     match(
       type: "appstore",
       readonly: true,
-      additional_cert_types: ["mac_installer_distribution"],
-      verbose: true
+      additional_cert_types: ["mac_installer_distribution"]
     )
 
     # Update code signing settings to use manual signing
@@ -58,7 +55,7 @@ platform :mac do
     # Build the app
     build_mac_app(
       scheme: "Flowease",
-      export_method: "app-store",
+      export_method: "app-store-connect",
       output_directory: "build",
       output_name: "Flowease",
       xcargs: "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual"
