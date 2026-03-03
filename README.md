@@ -96,79 +96,19 @@ Flowease/
 ├── Flowease/                      # メインアプリケーション
 │   ├── FloweaseApp.swift          # アプリエントリーポイント
 │   ├── AppState.swift             # アプリ状態管理
-│   ├── Info.plist                 # アプリ設定
 │   ├── Models/                    # データモデル
-│   │   ├── AlertSettings.swift        # アラート設定
-│   │   ├── AlertState.swift           # アラート状態
-│   │   ├── CalibrationFailure.swift   # キャリブレーション失敗理由
-│   │   ├── CalibrationProgress.swift  # キャリブレーション進捗
-│   │   ├── CalibrationState.swift     # キャリブレーション状態
-│   │   ├── CameraDevice.swift         # カメラデバイスモデル
-│   │   ├── DisableReason.swift        # 無効化理由
-│   │   ├── FaceBaselineMetrics.swift  # 顔ベース基準値
-│   │   ├── FacePosition.swift         # 顔位置データ
-│   │   ├── FaceReferencePosture.swift # 顔ベースキャリブレーションデータ
-│   │   ├── MonitoringState.swift      # 監視状態
-│   │   ├── PauseReason.swift          # 一時停止理由
-│   │   ├── PostureScore.swift         # 姿勢スコア
-│   │   ├── ScoreBreakdown.swift       # スコア内訳
-│   │   ├── ScoreRecord.swift          # スコア記録
-│   │   └── ScoreStatus.swift          # スコアステータス
-│   ├── ViewModels/
-│   │   ├── CalibrationViewModel.swift # キャリブレーションビューモデル
-│   │   └── PostureViewModel.swift     # 姿勢監視ビューモデル
-│   ├── Views/
-│   │   ├── AlertSettingsView.swift      # アラート設定UI
-│   │   ├── CalibrationCardView.swift    # キャリブレーションカード
-│   │   ├── CalibrationProgressView.swift # キャリブレーション進捗表示
-│   │   ├── CalibrationStateViews.swift  # キャリブレーション状態別ビュー
-│   │   ├── CalibrationView.swift        # キャリブレーション画面
-│   │   ├── CalibrationWindowView.swift  # キャリブレーションウィンドウ
-│   │   ├── CameraPermissionView.swift   # カメラ許可リクエストUI
-│   │   ├── CameraSelectionView.swift    # カメラ選択UI
-│   │   ├── PulsingDot.swift             # パルスアニメーションドット
-│   │   ├── RealtimeScoreGauge.swift     # リアルタイムスコアゲージ
-│   │   ├── ScoreHeroSection.swift       # スコアヒーローセクション
-│   │   ├── StatusBadge.swift            # ステータスバッジ
-│   │   └── StatusMenuView.swift         # メニューバードロップダウン
-│   ├── Services/
-│   │   ├── AccumulatedFacePositions.swift  # 顔位置累積
-│   │   ├── AlertSettingsStorage.swift      # アラート設定永続化
-│   │   ├── CalibrationService.swift        # キャリブレーション制御
-│   │   ├── CalibrationStorage.swift        # キャリブレーションデータ永続化
-│   │   ├── CameraDeviceManager.swift       # カメラデバイス監視
-│   │   ├── CameraService.swift             # カメラキャプチャ
-│   │   ├── CameraService+Capture.swift     # カメラキャプチャ拡張
-│   │   ├── CameraService+ErrorHandling.swift # カメラエラー処理
-│   │   ├── CameraServiceProtocol.swift     # カメラサービスプロトコル
-│   │   ├── FaceDetector.swift              # 顔検出サービス
-│   │   ├── FaceScoreCalculator.swift       # 顔ベーススコア計算
-│   │   ├── NotificationManager.swift       # 通知管理
-│   │   ├── PostureAlertService.swift       # 姿勢アラートサービス
-│   │   ├── PostureAnalyzer.swift           # 姿勢分析（Vision）
-│   │   └── ScoreHistory.swift              # スコア履歴管理
-│   ├── Utilities/
-│   │   ├── ColorGradient.swift         # 色グラデーション
-│   │   ├── Logger+Flowease.swift       # ロガー拡張
-│   │   ├── MenuBarIcon.swift           # メニューバーアイコン
-│   │   └── NSLock+Extensions.swift     # NSLock拡張
+│   ├── ViewModels/                # ビューモデル（MVVM）
+│   ├── Views/                     # SwiftUI ビュー
+│   ├── Services/                  # ビジネスロジック・外部連携
+│   ├── Utilities/                 # ヘルパー・拡張
 │   └── Assets.xcassets/           # アセット
 ├── FloweaseTests/                 # ユニットテスト
 ├── FloweaseUITests/               # UI テスト
-├── specs/                         # 仕様書
-│   ├── 001-posture-score/         # 姿勢スコア機能仕様
-│   ├── 002-posture-calibration/   # 姿勢キャリブレーション機能仕様
-│   ├── 003-face-detection/        # 顔検出ベース姿勢検知仕様
-│   ├── 004-english-support/       # 英語対応仕様
-│   ├── 005-camera-selection/      # カメラ選択機能仕様
-│   └── 006-posture-alert/         # 姿勢アラート通知機能仕様
-├── .swiftlint.yml                 # SwiftLint 設定
-├── .swiftformat                   # SwiftFormat 設定
-├── .pre-commit-config.yaml        # pre-commit 設定
-├── .gitignore                     # Git 除外設定
+├── docs/                          # ドキュメント
+├── fastlane/                      # リリース自動化
+├── specs/                         # 機能仕様書
 ├── Makefile                       # 開発コマンド
-├── CLAUDE.md                      # Claude Code 設定
-└── README.md                      # このファイル
+└── README.md
 ```
 
 ## 使用技術
