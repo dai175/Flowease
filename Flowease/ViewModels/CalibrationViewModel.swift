@@ -125,6 +125,8 @@ final class CalibrationViewModel {
     func cancelCalibration() {
         calibrationService.cancelCalibration()
         stopDisplayTimer()
+        displayProgress = 0
+        displayRemainingSeconds = 0
         logger.info("Calibration cancelled")
     }
 
