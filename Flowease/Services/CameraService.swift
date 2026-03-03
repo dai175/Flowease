@@ -38,7 +38,9 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
     weak var frameDelegate: CameraFrameDelegate?
 
     /// 利用可能なカメラデバイス一覧
-    var availableCameras: [CameraDevice] { deviceManager.availableCameras }
+    var availableCameras: [CameraDevice] {
+        deviceManager.availableCameras
+    }
 
     /// 現在選択されているカメラのID
     ///

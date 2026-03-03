@@ -140,10 +140,4 @@ struct CalibrationProgress: Sendable, Equatable {
             lowConfidenceStreak = 0
         }
     }
-
-    /// フレームを追加（後方互換性のため）
-    /// - Parameter isHighConfidence: 信頼度が0.5以上かどうか
-    mutating func addFrame(isHighConfidence: Bool) {
-        addFrame(quality: isHighConfidence ? .highConfidence : .lowConfidence)
-    }
 }

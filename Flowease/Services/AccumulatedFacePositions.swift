@@ -30,7 +30,7 @@ struct AccumulatedFacePositions {
     private var totalRoll: Double = 0
     private var totalQuality: Double = 0
 
-    // roll角が利用可能なフレーム数
+    /// roll角が利用可能なフレーム数
     private var rollCount: Int = 0
 
     /// フレーム数

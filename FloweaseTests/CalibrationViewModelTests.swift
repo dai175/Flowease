@@ -60,7 +60,7 @@ final class CalibrationViewModelTests: XCTestCase {
     }
 
     func testInitialState_progressIsZero() {
-        XCTAssertEqual(sut.progress, 0, "初期状態の進捗は0")
+        XCTAssertEqual(sut.displayProgress, 0, "初期状態の進捗は0")
     }
 
     func testInitialState_errorMessageIsNil() {

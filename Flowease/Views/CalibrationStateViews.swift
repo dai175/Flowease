@@ -138,20 +138,21 @@ struct CalibrationInProgressView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            // 警告メッセージがない場合でもスペースを表示してレイアウトの高さを確保
-            // これにより、警告の表示/非表示でビューの高さが変わらず、ちらつきを防止
+            // 警告メッセージ（固定高さでレイアウトのちらつきを防止）
             HStack(spacing: 6) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
-                Text(warningMessage ?? " ")
-                    .font(.caption)
-                    .foregroundStyle(.orange)
+                if let warningMessage {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                    Text(warningMessage)
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(.orange.opacity(warningMessage != nil ? 0.1 : 0))
+            .frame(minHeight: 24)
+            .background(warningMessage != nil ? .orange.opacity(0.1) : .clear)
             .clipShape(RoundedRectangle(cornerRadius: 6))
-            .opacity(warningMessage != nil ? 1 : 0)
             Spacer(minLength: 0)
         }
         .frame(minHeight: 144)

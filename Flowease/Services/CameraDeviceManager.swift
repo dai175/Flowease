@@ -126,23 +126,22 @@ final class CameraDeviceManager: CameraDeviceManaging {
         let devices = session.devices
         let defaultDevice = AVCaptureDevice.default(for: .video)
 
-        // 同名カメラの処理: 名前の出現回数をカウント
+        // 同名カメラの処理: 第1パスで名前の出現回数をカウント
         var nameCountMap: [String: Int] = [:]
-        var nameOccurrenceMap: [String: Int] = [:]
-
-        // 最初のパスで名前の出現回数をカウント
         for device in devices {
             nameCountMap[device.localizedName, default: 0] += 1
         }
 
+        // 第2パスでデバイスリストを構築（同名カメラには番号サフィックスを付与）
+        var nameOccurrence: [String: Int] = [:]
         availableCameras = devices.map { device in
             let originalName = device.localizedName
             var displayName = originalName
 
             // 同名のカメラが複数ある場合のみサフィックスを付与
             if let count = nameCountMap[originalName], count > 1 {
-                let occurrence = nameOccurrenceMap[originalName, default: 0] + 1
-                nameOccurrenceMap[originalName] = occurrence
+                let occurrence = nameOccurrence[originalName, default: 0] + 1
+                nameOccurrence[originalName] = occurrence
 
                 // 2台目以降に番号を付与（例: "Logitech C920 (2)"）
                 if occurrence > 1 {

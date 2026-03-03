@@ -39,7 +39,14 @@ struct ScoreHeroSection: View {
     /// ステータスラベルのフォントサイズ（Dynamic Type対応）
     @ScaledMetric(relativeTo: .caption) private var statusFontSize: CGFloat = 12
 
-    private var isPaused: Bool { pauseReason != nil }
+    private var isPaused: Bool {
+        pauseReason != nil
+    }
+
+    /// 表示用スコア（平均を優先し、なければリアルタイム）
+    private var displayScore: Int? {
+        averageScore ?? realtimeScore
+    }
 
     /// ゲージに渡すスコア（nilの場合は最後のスコアを使用してアニメーション継続）
     private var gaugeScore: Int {
@@ -48,7 +55,7 @@ struct ScoreHeroSection: View {
 
     /// スコアに基づくグラデーション色（カラースキーム対応）
     private var scoreColor: Color {
-        guard let score = averageScore ?? realtimeScore else {
+        guard let score = displayScore else {
             return fallbackColor
         }
         return ColorGradient.color(fromScore: score, colorScheme: colorScheme)
@@ -108,7 +115,7 @@ struct ScoreHeroSection: View {
     }
 
     private var scoreDisplay: String {
-        (averageScore ?? realtimeScore).map { "\($0)" } ?? "--"
+        displayScore.map { "\($0)" } ?? "--"
     }
 
     private var statusLabel: String {
@@ -126,7 +133,7 @@ struct ScoreHeroSection: View {
     }
 
     private var accessibilityValueText: String {
-        if let score = averageScore ?? realtimeScore {
+        if let score = displayScore {
             let statusText = statusLabel
             if isPaused {
                 return String(

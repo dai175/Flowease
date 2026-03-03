@@ -7,6 +7,26 @@
 
 import SwiftUI
 
+// MARK: - AlertSettings + Picker Options
+
+extension AlertSettings {
+    /// 評価期間の選択肢（ラベル, 秒数）
+    static let evaluationPeriodOptions: [(label: LocalizedStringKey, value: Int)] = [
+        ("1 min", 60),
+        ("3 min", 180),
+        ("5 min", 300),
+        ("10 min", 600)
+    ]
+
+    /// 最短通知間隔の選択肢（ラベル, 秒数）
+    static let minimumIntervalOptions: [(label: LocalizedStringKey, value: Int)] = [
+        ("5 min", 300),
+        ("15 min", 900),
+        ("30 min", 1800),
+        ("60 min", 3600)
+    ]
+}
+
 // MARK: - AlertSettingsCard
 
 /// 通知設定カード
@@ -216,12 +236,7 @@ struct AlertSettingsCard: View {
         settingsPickerRow(
             label: "Check Duration",
             selection: \.evaluationPeriodSeconds,
-            options: [
-                ("1 min", 60),
-                ("3 min", 180),
-                ("5 min", 300),
-                ("10 min", 600)
-            ],
+            options: AlertSettings.evaluationPeriodOptions,
             accessibilityHintText: String(
                 localized: "Select how long posture must be poor before alerting",
                 comment: "Accessibility hint for check duration picker"
@@ -233,12 +248,7 @@ struct AlertSettingsCard: View {
         settingsPickerRow(
             label: "Notification Cooldown",
             selection: \.minimumIntervalSeconds,
-            options: [
-                ("5 min", 300),
-                ("15 min", 900),
-                ("30 min", 1800),
-                ("60 min", 3600)
-            ],
+            options: AlertSettings.minimumIntervalOptions,
             accessibilityHintText: String(
                 localized: "Select minimum time between consecutive alerts",
                 comment: "Accessibility hint for cooldown picker"
