@@ -129,11 +129,11 @@ struct StatusMenuView: View {
             calibrationViewModel.prepareForRecalibration()
         }
 
-        if let window = NSApplication.shared.windows.first(where: { $0.identifier?.rawValue == "calibration" }) {
+        if let window = NSApplication.shared.windows.first(where: { $0.identifier?.rawValue == WindowID.calibration }) {
             window.makeKeyAndOrderFront(nil)
             NSApplication.shared.activate(ignoringOtherApps: true)
         } else {
-            openWindow(id: "calibration")
+            openWindow(id: WindowID.calibration)
         }
     }
 
@@ -291,13 +291,27 @@ private struct MockPostureAnalyzer: PostureAnalyzing {
 private struct MockCalibrationStorage: CalibrationStorageProtocol {
     var savedFacePosture: FaceReferencePosture?
 
-    var isCalibrated: Bool { savedFacePosture != nil }
-    var lastCalibratedAt: Date? { savedFacePosture?.calibratedAt }
+    var isCalibrated: Bool {
+        savedFacePosture != nil
+    }
 
-    func loadFaceReferencePosture() -> FaceReferencePosture? { savedFacePosture }
-    func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? { savedFacePosture }
+    var lastCalibratedAt: Date? {
+        savedFacePosture?.calibratedAt
+    }
+
+    func loadFaceReferencePosture() -> FaceReferencePosture? {
+        savedFacePosture
+    }
+
+    func loadFaceReferencePostureWithAutoClean() -> FaceReferencePosture? {
+        savedFacePosture
+    }
+
     @discardableResult
-    func saveFaceReferencePosture(_: FaceReferencePosture) -> Bool { true }
+    func saveFaceReferencePosture(_: FaceReferencePosture) -> Bool {
+        true
+    }
+
     func deleteFaceReferencePosture() {}
 }
 

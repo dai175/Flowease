@@ -159,13 +159,19 @@ final class PostureViewModel {
     /// カメラサービスへのアクセス（read-only）
     ///
     /// StatusMenuView からカメラ選択機能にアクセスするために使用します。
-    var cameraServiceAccess: CameraServiceProtocol { cameraService }
+    var cameraServiceAccess: CameraServiceProtocol {
+        cameraService
+    }
 
     /// 利用可能なカメラ一覧
-    var availableCameras: [CameraDevice] { cameraService.availableCameras }
+    var availableCameras: [CameraDevice] {
+        cameraService.availableCameras
+    }
 
     /// カメラ権限状態
-    var cameraAuthorizationStatus: CameraAuthorizationStatus { cameraService.authorizationStatus }
+    var cameraAuthorizationStatus: CameraAuthorizationStatus {
+        cameraService.authorizationStatus
+    }
 
     // MARK: - Camera Selection
 

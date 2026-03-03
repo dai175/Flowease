@@ -188,5 +188,7 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
 
 extension CGRect {
     /// 矩形の面積
-    nonisolated var area: CGFloat { width * height }
+    nonisolated var area: CGFloat {
+        width * height
+    }
 }

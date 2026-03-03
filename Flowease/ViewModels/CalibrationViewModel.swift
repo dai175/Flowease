@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import OSLog
 
@@ -15,17 +16,13 @@ final class CalibrationViewModel {
         calibrationService.state
     }
 
-    /// キャリブレーション進捗（0.0〜1.0）
+    /// キャリブレーション進捗（0.0〜1.0）- タイマーで定期更新
     /// 実行中でない場合は0を返す
-    var progress: Double {
-        state.progress?.progress ?? 0
-    }
+    private(set) var displayProgress: Double = 0
 
-    /// 残り秒数
+    /// 残り秒数 - タイマーで定期更新
     /// 実行中でない場合は0を返す
-    var remainingSeconds: Double {
-        state.progress?.remainingSeconds ?? 0
-    }
+    private(set) var displayRemainingSeconds: Double = 0
 
     /// 現在の検出品質レベル
     /// 実行中でない場合は.goodを返す
@@ -79,10 +76,14 @@ final class CalibrationViewModel {
     /// キャリブレーションサービス
     private let calibrationService: CalibrationServiceProtocol
 
+    /// 進捗更新用タイマーのキャンセラブル
+    private var timerCancellable: AnyCancellable?
+
     /// ロガー
     private let logger = Logger.calibrationViewModel
 
     /// 日付フォーマッター（キャッシュ）
+    /// @MainActor クラス内の static let のため、初期化・アクセスともにスレッドセーフ
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -109,6 +110,7 @@ final class CalibrationViewModel {
 
         do {
             try await calibrationService.startCalibration()
+            startDisplayTimer()
             logger.info("Calibration started")
         } catch let error as CalibrationError {
             errorMessage = error.localizedDescription
@@ -122,6 +124,7 @@ final class CalibrationViewModel {
     /// キャリブレーションをキャンセル
     func cancelCalibration() {
         calibrationService.cancelCalibration()
+        stopDisplayTimer()
         logger.info("Calibration cancelled")
     }
 
@@ -131,6 +134,9 @@ final class CalibrationViewModel {
     /// 既存のキャリブレーションデータは保持される。
     func prepareForRecalibration() {
         calibrationService.prepareForRecalibration()
+        stopDisplayTimer()
+        displayProgress = 0
+        displayRemainingSeconds = 0
         errorMessage = nil
         logger.debug("Prepared for recalibration")
     }
@@ -150,13 +156,41 @@ final class CalibrationViewModel {
         errorMessage = nil
     }
 
+    // MARK: - Display Timer
+
+    /// 進捗表示用タイマーを開始（0.1秒ごとに更新）
+    private func startDisplayTimer() {
+        updateDisplayValues()
+        timerCancellable = Timer.publish(every: 0.1, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.updateDisplayValues()
+            }
+    }
+
+    /// 進捗表示用タイマーを停止
+    private func stopDisplayTimer() {
+        timerCancellable?.cancel()
+        timerCancellable = nil
+    }
+
+    /// 表示用の進捗値を更新
+    private func updateDisplayValues() {
+        guard isInProgress else {
+            stopDisplayTimer()
+            return
+        }
+        displayProgress = state.progress?.progress ?? 0
+        displayRemainingSeconds = state.progress?.remainingSeconds ?? 0
+    }
+
     /// 状態説明テキストを取得
     var statusText: String {
         switch state {
         case .notCalibrated:
             return String(localized: "Calibration not configured")
         case .inProgress:
-            let seconds = Int(ceil(remainingSeconds))
+            let seconds = Int(ceil(displayRemainingSeconds))
             return String(localized: "Calibrating... \(seconds) seconds remaining")
         case .completed:
             return String(localized: "Calibration Complete")

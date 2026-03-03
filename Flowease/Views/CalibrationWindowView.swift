@@ -5,7 +5,6 @@
 //  キャリブレーションウィンドウ用のビュー
 //
 
-import Combine
 import SwiftUI
 
 /// キャリブレーションウィンドウ用のビュー
@@ -14,12 +13,6 @@ import SwiftUI
 struct CalibrationWindowView: View {
     @Bindable var viewModel: CalibrationViewModel
     @Environment(\.dismissWindow) private var dismissWindow
-
-    /// タイマーで進捗を更新（0.1秒ごと）
-    @State private var timerTick = 0
-
-    /// 進捗更新用タイマー
-    private let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack(spacing: 16) {
@@ -33,12 +26,6 @@ struct CalibrationWindowView: View {
         }
         .padding()
         .frame(width: 280, height: 240)
-        .onReceive(timer) { _ in
-            // タイマーでビューを再描画（進捗更新用）
-            if viewModel.isInProgress {
-                timerTick += 1
-            }
-        }
     }
 
     // MARK: - Content View
@@ -50,13 +37,11 @@ struct CalibrationWindowView: View {
             CalibrationStatusView(status: .notCalibrated)
 
         case .inProgress:
-            // timerTickを使って再描画をトリガー
             CalibrationInProgressView(
-                progress: viewModel.progress,
-                remainingSeconds: viewModel.remainingSeconds,
+                progress: viewModel.displayProgress,
+                remainingSeconds: viewModel.displayRemainingSeconds,
                 warningMessage: viewModel.qualityWarningMessage
             )
-            .id(timerTick)
 
         case .completed:
             CalibrationStatusView(status: .completed)
@@ -74,7 +59,7 @@ struct CalibrationWindowView: View {
         case .notCalibrated, .failed:
             HStack(spacing: 12) {
                 Button("Cancel") {
-                    dismissWindow(id: "calibration")
+                    dismissWindow(id: WindowID.calibration)
                 }
                 .buttonStyle(.bordered)
 
@@ -102,7 +87,7 @@ struct CalibrationWindowView: View {
                 .buttonStyle(.bordered)
 
                 Button("Close") {
-                    dismissWindow(id: "calibration")
+                    dismissWindow(id: WindowID.calibration)
                 }
                 .buttonStyle(.borderedProminent)
             }

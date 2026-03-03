@@ -29,7 +29,9 @@ enum CalibrationState: Sendable, Equatable {
     // MARK: - Convenience Properties
 
     /// キャリブレーション未実行かどうか
-    var isNotCalibrated: Bool { self == .notCalibrated }
+    var isNotCalibrated: Bool {
+        self == .notCalibrated
+    }
 
     /// キャリブレーション実行中かどうか
     var isInProgress: Bool {
@@ -38,7 +40,9 @@ enum CalibrationState: Sendable, Equatable {
     }
 
     /// キャリブレーション完了かどうか
-    var isCompleted: Bool { self == .completed }
+    var isCompleted: Bool {
+        self == .completed
+    }
 
     /// キャリブレーション失敗かどうか
     var isFailed: Bool {

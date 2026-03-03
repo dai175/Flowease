@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+// MARK: - WindowID
+
+/// ウィンドウ識別子の定数
+enum WindowID {
+    static let calibration = "calibration"
+}
+
+// MARK: - FloweaseApp
+
 /// Flowease アプリケーションのエントリポイント
 ///
 /// メニューバーに常駐し、姿勢をモニタリングするアプリケーション。
@@ -33,7 +42,7 @@ struct FloweaseApp: App {
         .menuBarExtraStyle(.window)
 
         // キャリブレーションウィンドウ
-        Window("Posture Calibration", id: "calibration") {
+        Window("Posture Calibration", id: WindowID.calibration) {
             CalibrationWindowView(viewModel: appState.calibrationViewModel)
         }
         .windowStyle(.hiddenTitleBar)

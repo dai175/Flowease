@@ -50,8 +50,8 @@ struct CalibrationView: View {
 
         case .inProgress:
             CalibrationInProgressView(
-                progress: viewModel.progress,
-                remainingSeconds: viewModel.remainingSeconds,
+                progress: viewModel.displayProgress,
+                remainingSeconds: viewModel.displayRemainingSeconds,
                 warningMessage: viewModel.qualityWarningMessage
             )
 
@@ -65,7 +65,6 @@ struct CalibrationView: View {
 
     // MARK: - Action Buttons
 
-    @ViewBuilder
     private var actionButtons: some View {
         HStack(spacing: 12) {
             switch viewModel.state {
@@ -130,7 +129,10 @@ private final class MockCalibrationServiceForPreview: CalibrationServiceProtocol
 
     func processFaceFrame(_: FacePosition) {}
     func processNoFaceFrame() {}
-    var faceReferencePosture: FaceReferencePosture? { nil }
+    var faceReferencePosture: FaceReferencePosture? {
+        nil
+    }
+
     func prepareForRecalibration() {
         state = .notCalibrated
     }

@@ -63,11 +63,6 @@ final class PostureAlertService {
         logger.debug("Settings updated: threshold=\(newSettings.threshold), enabled=\(newSettings.isEnabled)")
     }
 
-    /// 現在の設定を取得する
-    var currentSettings: AlertSettings {
-        settings
-    }
-
     /// 通知状態をリセットする
     ///
     /// 監視停止・一時停止時に呼び出し、再開時にクリーンな状態から始める。
