@@ -23,18 +23,18 @@ final class CalibrationViewModelTests: XCTestCase {
 
     // MARK: - Setup / Teardown
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         mockStorage = MockCalibrationStorageForCalibrationVM()
         calibrationService = CalibrationService(storage: mockStorage)
         sut = CalibrationViewModel(calibrationService: calibrationService)
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
         calibrationService = nil
         mockStorage = nil
-        super.tearDown()
+        try await super.tearDown()
     }
 
     // MARK: - Test Helpers
