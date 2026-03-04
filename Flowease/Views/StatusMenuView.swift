@@ -129,9 +129,10 @@ struct StatusMenuView: View {
             calibrationViewModel.prepareForRecalibration()
         }
 
+        NSApplication.shared.activate(ignoringOtherApps: true)
+
         if let window = NSApplication.shared.windows.first(where: { $0.identifier?.rawValue == WindowID.calibration }) {
             window.makeKeyAndOrderFront(nil)
-            NSApplication.shared.activate(ignoringOtherApps: true)
         } else {
             openWindow(id: WindowID.calibration)
         }
