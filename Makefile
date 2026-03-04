@@ -1,4 +1,4 @@
-.PHONY: help setup build test lint format fix clean hooks-install hooks-run
+.PHONY: help setup build run test lint format fix clean hooks-install hooks-run
 
 help:
 	@echo "Usage: make [command]"
@@ -8,6 +8,7 @@ help:
 	@echo ""
 	@echo "Build:"
 	@echo "  build        - Build the project"
+	@echo "  run          - Build and run the app"
 	@echo "  test         - Run tests"
 	@echo "  clean        - Remove build artifacts"
 	@echo ""
@@ -25,7 +26,10 @@ setup: hooks-install
 	@echo "Next: Configure Xcode Build Phase (see README.md)"
 
 build:
-	xcodebuild -scheme Flowease -destination 'platform=macOS' build
+	xcodebuild -scheme Flowease -destination 'platform=macOS' -derivedDataPath build/ build
+
+run: build
+	open build/Build/Products/Debug/Flowease.app
 
 test:
 	xcodebuild -scheme Flowease -destination 'platform=macOS' test 2>&1 | xcbeautify

@@ -74,6 +74,7 @@ fi
 |---------|------|
 | `make help` | 利用可能なコマンド一覧 |
 | `make build` | プロジェクトをビルド |
+| `make run` | ビルドしてアプリを起動 |
 | `make test` | テストを実行 |
 | `make lint` | SwiftLint でコードをチェック |
 | `make format` | SwiftFormat でコードをフォーマット |

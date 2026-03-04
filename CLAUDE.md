@@ -17,6 +17,7 @@ brew install swiftlint swiftformat xcbeautify pre-commit
 
 ```bash
 make build          # Build the project
+make run            # Build and run the app
 make test           # Run all tests (uses xcbeautify for readable output)
 make lint           # Run SwiftLint (--strict mode)
 make format         # Run SwiftFormat
