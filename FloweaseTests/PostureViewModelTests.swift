@@ -26,8 +26,8 @@ final class PostureViewModelTests: XCTestCase {
 
     // MARK: - Setup / Teardown
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         mockCameraService = MockCameraServiceForViewModel()
         mockPostureAnalyzer = MockPostureAnalyzerForViewModel()
         mockCalibrationStorage = MockCalibrationStorageForViewModel()
@@ -40,13 +40,13 @@ final class PostureViewModelTests: XCTestCase {
         )
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         sut = nil
         calibrationService = nil
         mockCalibrationStorage = nil
         mockPostureAnalyzer = nil
         mockCameraService = nil
-        super.tearDown()
+        try await super.tearDown()
     }
 
     // MARK: - Test Helpers
