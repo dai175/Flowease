@@ -16,11 +16,11 @@ final class CalibrationStorageTests: XCTestCase {
 
     // MARK: - Setup / Teardown
 
-    override func tearDown() {
+    override func tearDown() async throws {
         // 各テスト後にクリーンアップ
         let defaults = UserDefaults(suiteName: Self.testSuiteName)
         defaults?.removePersistentDomain(forName: Self.testSuiteName)
-        super.tearDown()
+        try await super.tearDown()
     }
 
     // MARK: - Test Helpers
