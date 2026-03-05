@@ -47,10 +47,9 @@ struct StatusMenuView: View {
                 calibrationSection
             }
 
-            Divider()
-
             // カメラ選択（authorized 時のみ表示）
             if viewModel.cameraAuthorizationStatus == .authorized {
+                Divider()
                 HStack(spacing: 8) {
                     StatusBadge(systemName: "camera", color: .secondary)
 
