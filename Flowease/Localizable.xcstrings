@@ -1297,19 +1297,19 @@
         }
       }
     },
-    "Score < %lld for %lld min" : {
+    "Alert if score stays below %lld for %lld min" : {
       "comment" : "Alert settings summary - natural language format",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Score < %1$lld for %2$lld min"
+            "value" : "Alert if score stays below %1$lld for %2$lld min"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "スコア%1$lld以下が%2$lld分続くと通知"
+            "value" : "%1$lld未満が%2$lld分続いたら通知"
           }
         }
       }
