@@ -43,6 +43,9 @@ struct AlertSettingsCard: View {
     /// 展開/折りたたみ状態
     @State private var isExpanded: Bool
 
+    /// カラースキーム（スライダー・数値のカラー化に使用）
+    @Environment(\.colorScheme) private var colorScheme
+
     // MARK: - Dynamic Type Support
 
     /// 展開ボタンのアイコンサイズ（Dynamic Type対応）
@@ -89,6 +92,7 @@ struct AlertSettingsCard: View {
                 Text(statusSummary)
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Spacer()
@@ -168,6 +172,10 @@ struct AlertSettingsCard: View {
 
     // MARK: - Threshold Slider
 
+    private var thresholdColor: Color {
+        ColorGradient.color(fromScore: settings.threshold, colorScheme: colorScheme)
+    }
+
     private var thresholdSlider: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
@@ -178,7 +186,7 @@ struct AlertSettingsCard: View {
                 Text("\(settings.threshold)")
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(thresholdColor)
             }
 
             Slider(
@@ -193,6 +201,7 @@ struct AlertSettingsCard: View {
                     Double(AlertSettings.thresholdRange.upperBound),
                 step: 1
             )
+            .tint(thresholdColor)
             .controlSize(.small)
             .accessibilityLabel(
                 String(localized: "Score Threshold", comment: "Accessibility label for threshold slider")
@@ -281,8 +290,9 @@ struct AlertSettingsCard: View {
         guard settings.isEnabled else {
             return String(localized: "Disabled")
         }
+        let minutes = settings.evaluationPeriodMinutes
         return String(
-            localized: "Score < \(settings.threshold) for \(settings.evaluationPeriodSeconds / 60) min"
+            localized: "Alert if score stays below \(settings.threshold) for \(minutes) min"
         )
     }
 }

@@ -34,6 +34,8 @@ struct StatusMenuView: View {
             // === Primary: スコア + 状態 + モニタリング ===
             heroSection
 
+            Divider()
+
             // === Secondary: 設定 ===
             VStack(spacing: 8) {
                 // 通知設定カード（appStateがある場合のみ表示）
@@ -45,24 +47,16 @@ struct StatusMenuView: View {
                 calibrationSection
             }
 
+            Divider()
+
             // カメラ選択（authorized 時のみ表示）
             if viewModel.cameraAuthorizationStatus == .authorized {
-                let selectedCameraName = viewModel.availableCameras
-                    .first { $0.id == viewModel.selectedCameraID }?.name
-                    ?? String(localized: "System Default")
-
                 HStack(spacing: 8) {
                     StatusBadge(systemName: "camera", color: .secondary)
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Camera")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        Text(selectedCameraName)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
+                    Text("Camera")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
 
                     Spacer()
 
@@ -71,6 +65,7 @@ struct StatusMenuView: View {
                         selectedCameraID: viewModel.selectedCameraID,
                         onSelect: { viewModel.selectCamera($0) }
                     )
+                    .frame(maxWidth: 160, alignment: .trailing)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
