@@ -118,6 +118,5 @@ struct FaceTrackingOverlayView: View {
             .background(.black.opacity(0.6))
             .clipShape(Capsule())
             .position(x: size.width / 2, y: size.height - 20)
-            .accessibilityLabel(message)
     }
 }

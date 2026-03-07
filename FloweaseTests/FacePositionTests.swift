@@ -127,7 +127,7 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 1.1,
-            width: 1.1,
+            width: 1.0,
             height: 1.0,
             roll: 0.0,
             captureQuality: 0.5,

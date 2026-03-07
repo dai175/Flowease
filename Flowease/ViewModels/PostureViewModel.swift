@@ -182,11 +182,12 @@ final class PostureViewModel {
     }
 
     /// 監視がアクティブかどうか
+    ///
+    /// カメラ権限が許可されており、キャプチャが実行中であれば true を返す。
+    /// 初回キャリブレーション時はスコア未生成のため、monitoringState ではなく
+    /// カメラの実際の準備状態で判定する。
     var isMonitoringActive: Bool {
-        if case .active = monitoringState {
-            return true
-        }
-        return false
+        cameraAuthorizationStatus == .authorized && cameraService.isCapturing
     }
 
     // MARK: - Camera Selection
@@ -452,9 +453,9 @@ final class PostureViewModel {
 
     /// 顔検出成功時の処理
     private func handleSuccessfulDetection(_ facePosition: FacePosition) {
+        guard cameraService.isCapturing else { return }
         consecutiveFailureCount = 0
         currentFacePosition = facePosition
-        guard cameraService.isCapturing else { return }
 
         if calibrationService.state.isInProgress {
             calibrationService.processFaceFrame(facePosition)
