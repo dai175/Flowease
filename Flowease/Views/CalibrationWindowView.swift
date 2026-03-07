@@ -10,14 +10,23 @@ import SwiftUI
 /// キャリブレーションウィンドウ用のビュー
 ///
 /// CalibrationViewModel を使用してキャリブレーションの状態表示と操作を提供する。
+/// カメラプレビューを表示し、顔検出状態に応じた枠線を表示する。
 struct CalibrationWindowView: View {
     @Bindable var viewModel: CalibrationViewModel
+    var postureViewModel: PostureViewModel
     @Environment(\.dismissWindow) private var dismissWindow
 
     var body: some View {
         VStack(spacing: 16) {
+            // カメラプレビュー
+            CalibrationCameraPreview(
+                postureViewModel: postureViewModel,
+                calibrationViewModel: viewModel
+            )
+
             // 状態に応じたコンテンツ
-            contentView
+            CalibrationContentView(viewModel: viewModel)
+                .frame(maxHeight: .infinity)
 
             Divider()
 
@@ -25,30 +34,7 @@ struct CalibrationWindowView: View {
             actionButtons
         }
         .padding()
-        .frame(width: 280, height: 240)
-    }
-
-    // MARK: - Content View
-
-    @ViewBuilder
-    private var contentView: some View {
-        switch viewModel.state {
-        case .notCalibrated:
-            CalibrationStatusView(status: .notCalibrated)
-
-        case .inProgress:
-            CalibrationInProgressView(
-                progress: viewModel.displayProgress,
-                remainingSeconds: viewModel.displayRemainingSeconds,
-                warningMessage: viewModel.qualityWarningMessage
-            )
-
-        case .completed:
-            CalibrationStatusView(status: .completed)
-
-        case let .failed(failure):
-            CalibrationStatusView(status: .failed(failure))
-        }
+        .frame(width: 320, height: 380)
     }
 
     // MARK: - Action Buttons
@@ -69,6 +55,7 @@ struct CalibrationWindowView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(!postureViewModel.isMonitoringActive)
             }
 
         case .inProgress:

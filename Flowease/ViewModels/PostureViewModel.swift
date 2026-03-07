@@ -173,6 +173,19 @@ final class PostureViewModel {
         cameraService.authorizationStatus
     }
 
+    /// キャプチャセッション（カメラプレビュー表示用）
+    var captureSession: AVCaptureSession? {
+        cameraService.captureSession
+    }
+
+    /// 監視がアクティブかどうか
+    var isMonitoringActive: Bool {
+        if case .active = monitoringState {
+            return true
+        }
+        return false
+    }
+
     // MARK: - Camera Selection
 
     /// カメラを選択

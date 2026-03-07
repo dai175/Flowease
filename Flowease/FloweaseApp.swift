@@ -43,7 +43,10 @@ struct FloweaseApp: App {
 
         // キャリブレーションウィンドウ
         Window("Posture Calibration", id: WindowID.calibration) {
-            CalibrationWindowView(viewModel: appState.calibrationViewModel)
+            CalibrationWindowView(
+                viewModel: appState.calibrationViewModel,
+                postureViewModel: appState.postureViewModel
+            )
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)

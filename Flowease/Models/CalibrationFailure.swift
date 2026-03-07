@@ -4,7 +4,7 @@ import Foundation
 ///
 /// キャリブレーションが完了できなかった場合の原因を表す。
 /// ユーザーへのメッセージ表示に使用。
-enum CalibrationFailure: Sendable, Equatable {
+enum CalibrationFailure: Equatable {
     /// 顔が検出されなかった
     case noFaceDetected
 
@@ -18,11 +18,11 @@ enum CalibrationFailure: Sendable, Equatable {
     var userMessage: String {
         switch self {
         case .noFaceDetected:
-            return String(localized: "Please ensure your face is visible to the camera")
+            return String(localized: "Please adjust your position so your face is visible in the camera preview.")
         case .lowConfidence:
-            return String(localized: "Please adjust the lighting")
+            return String(localized: "Please brighten the lighting and ensure your face is clearly visible.")
         case .insufficientFrames:
-            return String(localized: "Please try again")
+            return String(localized: "Please hold still in a good posture for 3 seconds and try again.")
         }
     }
 
