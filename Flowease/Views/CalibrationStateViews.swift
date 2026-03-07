@@ -49,10 +49,11 @@ struct CalibrationStatusView: View {
             }
         }
 
-        var titleStyle: HierarchicalShapeStyle {
+        var titleColor: Color {
             switch self {
             case .notCalibrated: .secondary
-            case .completed, .failed: .primary
+            case .completed: .green
+            case .failed: .orange
             }
         }
 
@@ -87,10 +88,18 @@ struct CalibrationStatusView: View {
                 }
             }
 
-            Text(status.title)
-                .font(.subheadline)
-                .foregroundStyle(status.titleStyle)
-                .multilineTextAlignment(.center)
+            HStack(spacing: 4) {
+                if !showIcon, status != .notCalibrated {
+                    Image(systemName: status.iconName)
+                        .font(.subheadline)
+                        .foregroundStyle(status.iconColor)
+                        .accessibilityHidden(true)
+                }
+                Text(status.title)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(status.titleColor)
+            }
+            .multilineTextAlignment(.center)
 
             if let description = status.description {
                 Text(description)
@@ -236,7 +245,11 @@ struct CalibrationCameraPreview: View {
             case .lowConfidence: .orange
             case .noFaceDetected: .red
             }
-        default:
+        case .completed:
+            .green
+        case .failed:
+            .orange
+        case .notCalibrated:
             postureViewModel.isMonitoringActive ? .green : .red
         }
     }
