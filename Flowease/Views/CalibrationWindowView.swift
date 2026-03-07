@@ -72,6 +72,7 @@ struct CalibrationWindowView: View {
                     }
                 }
                 .buttonStyle(.bordered)
+                .disabled(!postureViewModel.isMonitoringActive)
 
                 Button("Close") {
                     dismissWindow(id: WindowID.calibration)

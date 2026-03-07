@@ -56,7 +56,7 @@ final class CameraPreviewNSView: NSView {
 
     private func setupLayer() {
         wantsLayer = true
-        previewLayer.videoGravity = .resizeAspectFill
+        previewLayer.videoGravity = .resizeAspect
         layer = previewLayer
     }
 
