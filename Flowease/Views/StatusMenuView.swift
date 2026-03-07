@@ -221,6 +221,10 @@ private final class MockCameraService: CameraServiceProtocol {
     weak var frameDelegate: CameraFrameDelegate?
     var availableCameras: [CameraDevice]
     var selectedCameraID: String?
+    var captureSession: AVCaptureSession? {
+        nil
+    }
+
     private let cameraAvailable: Bool
 
     init(status: CameraAuthorizationStatus, cameraAvailable: Bool = true) {

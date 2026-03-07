@@ -307,6 +307,7 @@ private final class MockCameraServiceForViewModel: CameraServiceProtocol {
     weak var frameDelegate: CameraFrameDelegate?
     var availableCameras: [CameraDevice] = []
     var selectedCameraID: String?
+    var captureSession: AVCaptureSession? { nil }
     private var cameraAvailable = true
 
     func requestAuthorization() async -> CameraAuthorizationStatus {

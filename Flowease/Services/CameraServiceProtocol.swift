@@ -9,7 +9,7 @@
 
 /// カメラ権限の状態
 /// AVAuthorizationStatus をアプリ内で扱いやすい形にラップ
-enum CameraAuthorizationStatus: Sendable, Equatable {
+enum CameraAuthorizationStatus: Equatable {
     /// カメラアクセスが許可されている
     case authorized
     /// カメラアクセスが拒否されている
@@ -70,6 +70,8 @@ protocol CameraServiceProtocol: AnyObject, Sendable {
     var availableCameras: [CameraDevice] { get }
     /// 現在選択されているカメラのID
     var selectedCameraID: String? { get }
+    /// キャプチャセッション（カメラプレビュー表示用）
+    var captureSession: AVCaptureSession? { get }
 
     /// カメラ権限をリクエスト
     /// - Returns: リクエスト後の権限状態
@@ -92,7 +94,7 @@ protocol CameraServiceProtocol: AnyObject, Sendable {
 // MARK: - CameraServiceError
 
 /// CameraService のエラー型
-enum CameraServiceError: Error, Sendable, Equatable {
+enum CameraServiceError: Error, Equatable {
     /// カメラデバイスが利用できない
     case noCameraAvailable
     /// カメラ権限がない

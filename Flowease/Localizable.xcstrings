@@ -23,6 +23,23 @@
     "%lld" : {
       "comment" : "Numeric score display - no translation needed"
     },
+    "%llds" : {
+      "comment" : "キャリブレーション残り秒数",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%llds"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld秒"
+          }
+        }
+      }
+    },
     "%lld out of 100" : {
       "comment" : "Accessibility value for posture score",
       "localizations" : {
@@ -407,6 +424,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "カメラ"
+          }
+        }
+      }
+    },
+    "Camera Preview" : {
+      "comment" : "カメラプレビューのアクセシビリティラベル",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera Preview"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラプレビュー"
           }
         }
       }
@@ -1036,6 +1070,22 @@
         }
       }
     },
+    "Please adjust your position so your face is visible in the camera preview." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please adjust your position so your face is visible in the camera preview."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラプレビューに顔が映るように位置を調整してください。"
+          }
+        }
+      }
+    },
     "Please assume good posture" : {
       "localizations" : {
         "en" : {
@@ -1080,6 +1130,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "カメラに顔が映っていることを確認してください"
+          }
+        }
+      }
+    },
+    "Please brighten the lighting and ensure your face is clearly visible." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please brighten the lighting and ensure your face is clearly visible."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照明を明るくし、顔がはっきり映るようにしてください。"
+          }
+        }
+      }
+    },
+    "Please hold still in a good posture for 3 seconds and try again." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please hold still in a good posture for 3 seconds and try again."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3秒間、動かずに良い姿勢を保ってからもう一度お試しください。"
           }
         }
       }

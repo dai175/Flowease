@@ -17,6 +17,9 @@ struct CalibrationView: View {
     /// キャリブレーションViewModel
     @Bindable var viewModel: CalibrationViewModel
 
+    /// 姿勢ViewModel（カメラプレビュー・顔検出状態用）
+    var postureViewModel: PostureViewModel
+
     /// ウィンドウを閉じるアクション
     @Environment(\.dismiss) private var dismiss
 
@@ -28,8 +31,14 @@ struct CalibrationView: View {
 
             Divider()
 
+            // カメラプレビュー
+            CalibrationCameraPreview(
+                postureViewModel: postureViewModel,
+                calibrationViewModel: viewModel
+            )
+
             // 状態に応じたコンテンツ
-            contentView
+            CalibrationContentView(viewModel: viewModel)
 
             Divider()
 
@@ -38,29 +47,6 @@ struct CalibrationView: View {
         }
         .padding()
         .frame(width: 280)
-    }
-
-    // MARK: - Content View
-
-    @ViewBuilder
-    private var contentView: some View {
-        switch viewModel.state {
-        case .notCalibrated:
-            CalibrationStatusView(status: .notCalibrated)
-
-        case .inProgress:
-            CalibrationInProgressView(
-                progress: viewModel.displayProgress,
-                remainingSeconds: viewModel.displayRemainingSeconds,
-                warningMessage: viewModel.qualityWarningMessage
-            )
-
-        case .completed:
-            CalibrationStatusView(status: .completed)
-
-        case let .failed(failure):
-            CalibrationStatusView(status: .failed(failure))
-        }
     }
 
     // MARK: - Action Buttons
@@ -80,6 +66,7 @@ struct CalibrationView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(!postureViewModel.isMonitoringActive)
 
             case .inProgress:
                 Button("Cancel") {
@@ -136,31 +123,4 @@ private final class MockCalibrationServiceForPreview: CalibrationServiceProtocol
     func prepareForRecalibration() {
         state = .notCalibrated
     }
-}
-
-// MARK: - Preview
-
-#Preview("未キャリブレーション") {
-    CalibrationView(viewModel: makePreviewViewModel(state: .notCalibrated))
-}
-
-#Preview("実行中") {
-    CalibrationView(viewModel: makePreviewViewModel(
-        state: .inProgress(CalibrationProgress(
-            startTime: Date().addingTimeInterval(-1),
-            collectedFrames: 30
-        ))
-    ))
-}
-
-#Preview("完了") {
-    CalibrationView(viewModel: makePreviewViewModel(state: .completed))
-}
-
-#Preview("失敗 - 顔未検出") {
-    CalibrationView(viewModel: makePreviewViewModel(state: .failed(.noFaceDetected)))
-}
-
-#Preview("失敗 - 低信頼度") {
-    CalibrationView(viewModel: makePreviewViewModel(state: .failed(.lowConfidence)))
 }

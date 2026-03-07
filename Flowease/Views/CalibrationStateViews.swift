@@ -5,6 +5,7 @@
 //  キャリブレーション状態表示の共通コンポーネント
 //
 
+@preconcurrency import AVFoundation
 import SwiftUI
 
 // MARK: - CalibrationStatusView
@@ -68,17 +69,22 @@ struct CalibrationStatusView: View {
     }
 
     let status: Status
+    /// アイコンを表示するかどうか（カメラプレビューがある場合は非表示にする）
+    var showIcon: Bool = true
 
     var body: some View {
         VStack(spacing: 12) {
-            // StatusBadge スタイルの大きいバージョン
-            ZStack {
-                Circle()
-                    .fill(status.iconColor.opacity(0.15))
-                    .frame(width: 48, height: 48)
-                Image(systemName: status.iconName)
-                    .font(.system(size: iconFontSize, weight: .semibold))
-                    .foregroundStyle(status.iconColor)
+            if !showIcon { Spacer(minLength: 0) }
+            if showIcon {
+                // StatusBadge スタイルの大きいバージョン
+                ZStack {
+                    Circle()
+                        .fill(status.iconColor.opacity(0.15))
+                        .frame(width: 48, height: 48)
+                    Image(systemName: status.iconName)
+                        .font(.system(size: iconFontSize, weight: .semibold))
+                        .foregroundStyle(status.iconColor)
+                }
             }
 
             Text(status.title)
@@ -94,7 +100,7 @@ struct CalibrationStatusView: View {
             }
             Spacer(minLength: 0)
         }
-        .frame(minHeight: 144)
+        .frame(minHeight: showIcon ? 144 : nil)
     }
 }
 
@@ -120,19 +126,62 @@ struct CalibrationInProgressView: View {
     let progress: Double
     let remainingSeconds: Double
     let warningMessage: String?
+    /// 円形プログレスを表示するか（false の場合リニアプログレスバー）
+    var showCircularProgress: Bool = true
 
-    init(progress: Double, remainingSeconds: Double, warningMessage: String? = nil) {
+    init(
+        progress: Double,
+        remainingSeconds: Double,
+        warningMessage: String? = nil,
+        showCircularProgress: Bool = true
+    ) {
         self.progress = progress
         self.remainingSeconds = remainingSeconds
         self.warningMessage = warningMessage
+        self.showCircularProgress = showCircularProgress
+    }
+
+    private var progressAccessibilityValue: String {
+        let pct = Int(progress * 100)
+        let secs = Int(ceil(remainingSeconds))
+        return String(
+            localized: "\(pct) percent complete, \(secs) seconds remaining",
+            comment: "Accessibility value for calibration progress"
+        )
     }
 
     var body: some View {
         VStack(spacing: 12) {
-            CalibrationProgressView(
-                progress: progress,
-                remainingSeconds: remainingSeconds
-            )
+            if !showCircularProgress { Spacer(minLength: 0) }
+            if showCircularProgress {
+                CalibrationProgressView(
+                    progress: progress,
+                    remainingSeconds: remainingSeconds
+                )
+            } else {
+                // リニアプログレスバー + 残り秒数
+                HStack(spacing: 8) {
+                    ProgressView(value: min(progress, 1.0))
+                        .progressViewStyle(.linear)
+                        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: progress)
+                    Text(
+                        String(
+                            localized: "\(Int(ceil(remainingSeconds)))s",
+                            comment: "キャリブレーション残り秒数"
+                        )
+                    )
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(
+                    String(
+                        localized: "Calibration Progress",
+                        comment: "Accessibility label for calibration progress"
+                    )
+                )
+                .accessibilityValue(progressAccessibilityValue)
+            }
 
             Text("Maintain your posture...")
                 .font(.subheadline)
@@ -155,7 +204,69 @@ struct CalibrationInProgressView: View {
             .clipShape(RoundedRectangle(cornerRadius: 6))
             Spacer(minLength: 0)
         }
-        .frame(minHeight: 144)
+        .frame(minHeight: showCircularProgress ? 144 : nil)
+    }
+}
+
+// MARK: - CalibrationCameraPreview
+
+/// キャリブレーション画面用のカメラプレビュー（顔検出状態に応じた枠線付き）
+struct CalibrationCameraPreview: View {
+    let postureViewModel: PostureViewModel
+    let calibrationViewModel: CalibrationViewModel
+
+    var body: some View {
+        CameraPreviewView(session: postureViewModel.captureSession)
+            .aspectRatio(4 / 3, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(borderColor, lineWidth: 3)
+            )
+            .accessibilityLabel(
+                String(localized: "Camera Preview", comment: "カメラプレビューのアクセシビリティラベル")
+            )
+    }
+
+    private var borderColor: Color {
+        switch calibrationViewModel.state {
+        case .inProgress:
+            switch calibrationViewModel.qualityLevel {
+            case .good: .green
+            case .lowConfidence: .orange
+            case .noFaceDetected: .red
+            }
+        default:
+            postureViewModel.isMonitoringActive ? .green : .red
+        }
+    }
+}
+
+// MARK: - CalibrationContentView
+
+/// キャリブレーション状態に応じたコンテンツ表示（カメラプレビューモード用）
+struct CalibrationContentView: View {
+    let viewModel: CalibrationViewModel
+
+    var body: some View {
+        switch viewModel.state {
+        case .notCalibrated:
+            CalibrationStatusView(status: .notCalibrated, showIcon: false)
+
+        case .inProgress:
+            CalibrationInProgressView(
+                progress: viewModel.displayProgress,
+                remainingSeconds: viewModel.displayRemainingSeconds,
+                warningMessage: viewModel.qualityWarningMessage,
+                showCircularProgress: false
+            )
+
+        case .completed:
+            CalibrationStatusView(status: .completed, showIcon: false)
+
+        case let .failed(failure):
+            CalibrationStatusView(status: .failed(failure), showIcon: false)
+        }
     }
 }
 

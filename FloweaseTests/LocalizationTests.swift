@@ -176,21 +176,21 @@ final class LocalizationTests: XCTestCase {
         // noFaceDetected
         XCTAssertEqual(
             CalibrationFailure.noFaceDetected.userMessage,
-            "Please ensure your face is visible to the camera",
+            "Please adjust your position so your face is visible in the camera preview.",
             "noFaceDetected userMessage should be in English"
         )
 
         // lowConfidence
         XCTAssertEqual(
             CalibrationFailure.lowConfidence.userMessage,
-            "Please adjust the lighting",
+            "Please brighten the lighting and ensure your face is clearly visible.",
             "lowConfidence userMessage should be in English"
         )
 
         // insufficientFrames
         XCTAssertEqual(
             CalibrationFailure.insufficientFrames.userMessage,
-            "Please try again",
+            "Please hold still in a good posture for 3 seconds and try again.",
             "insufficientFrames userMessage should be in English"
         )
     }
