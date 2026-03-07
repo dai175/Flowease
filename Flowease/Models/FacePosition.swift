@@ -1,5 +1,7 @@
 import Foundation
 
+// MARK: - FacePosition
+
 /// 顔検出結果データ
 ///
 /// VNFaceObservationから取得した顔の位置・サイズ・傾き情報を保持する。
@@ -7,7 +9,7 @@ import Foundation
 ///
 /// Note: nonisolated宣言により、バックグラウンドスレッドからもプロパティにアクセス可能。
 /// FaceDetectorでの顔検出時に使用される。
-nonisolated struct FacePosition: Sendable, Equatable {
+nonisolated struct FacePosition {
     /// 顔中心のX座標（正規化座標 0-1）
     let centerX: Double
 
@@ -16,6 +18,12 @@ nonisolated struct FacePosition: Sendable, Equatable {
 
     /// 顔の面積（width × height、正規化座標）
     let area: Double
+
+    /// 顔のバウンディングボックス幅（正規化座標 0-1）
+    let width: Double
+
+    /// 顔のバウンディングボックス高さ（正規化座標 0-1）
+    let height: Double
 
     /// 顔の傾き（roll角、ラジアン単位、[-π, π)）
     /// nilの場合はroll角取得不可
@@ -52,6 +60,10 @@ nonisolated struct FacePosition: Sendable, Equatable {
         // area: 0.0 < value ≤ 1.0 (0は無効)
         guard area > 0.0, area <= 1.0 else { return false }
 
+        // width/height: 0.0 < value ≤ 1.0
+        guard width > 0.0, width <= 1.0 else { return false }
+        guard height > 0.0, height <= 1.0 else { return false }
+
         // roll: -π ≤ value < π (半開区間) または nil
         if let roll {
             // -π ≤ roll < π (πは無効)
@@ -62,5 +74,23 @@ nonisolated struct FacePosition: Sendable, Equatable {
         guard (0.0 ... 1.0).contains(captureQuality) else { return false }
 
         return true
+    }
+}
+
+// MARK: Equatable
+
+/// カスタム Equatable（timestamp を除外）
+///
+/// timestamp は毎フレーム異なるため、合成 Equatable ではアニメーション (.animation(value:)) が
+/// 毎フレーム再トリガーされる。顔の位置・サイズ・品質のみで等価判定する。
+extension FacePosition: Equatable {
+    static func == (lhs: FacePosition, rhs: FacePosition) -> Bool {
+        lhs.centerX == rhs.centerX
+            && lhs.centerY == rhs.centerY
+            && lhs.area == rhs.area
+            && lhs.width == rhs.width
+            && lhs.height == rhs.height
+            && lhs.roll == rhs.roll
+            && lhs.captureQuality == rhs.captureQuality
     }
 }

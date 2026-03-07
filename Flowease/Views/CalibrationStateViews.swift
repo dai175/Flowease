@@ -224,6 +224,15 @@ struct CalibrationCameraPreview: View {
     let postureViewModel: PostureViewModel
     let calibrationViewModel: CalibrationViewModel
 
+    private var showGuide: Bool {
+        switch calibrationViewModel.state {
+        case .notCalibrated, .inProgress:
+            true
+        case .completed, .failed:
+            false
+        }
+    }
+
     var body: some View {
         CameraPreviewView(session: postureViewModel.captureSession)
             .aspectRatio(4 / 3, contentMode: .fit)
@@ -231,6 +240,13 @@ struct CalibrationCameraPreview: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(borderColor, lineWidth: 3)
+            )
+            .overlay(
+                FaceTrackingOverlayView(
+                    facePosition: postureViewModel.currentFacePosition,
+                    showGuide: showGuide
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             )
             .accessibilityLabel(
                 String(localized: "Camera Preview", comment: "カメラプレビューのアクセシビリティラベル")
