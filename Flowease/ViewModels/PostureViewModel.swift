@@ -34,6 +34,9 @@ final class PostureViewModel {
     /// 現在選択されているカメラのID（UIバインディング用）
     private(set) var selectedCameraID: String?
 
+    /// 現在検出中の顔位置（カメラプレビューのオーバーレイ表示用）
+    private(set) var currentFacePosition: FacePosition?
+
     // MARK: - Dependencies
 
     private let cameraService: CameraServiceProtocol
@@ -420,6 +423,7 @@ final class PostureViewModel {
         cameraService.stopCapturing()
         cameraService.frameDelegate = nil
         clearScoreHistory()
+        currentFacePosition = nil
         consecutiveFailureCount = 0
         monitoringState = .paused(.cameraInitializing)
         logger.info("Posture monitoring stopped")
@@ -449,6 +453,7 @@ final class PostureViewModel {
     /// 顔検出成功時の処理
     private func handleSuccessfulDetection(_ facePosition: FacePosition) {
         consecutiveFailureCount = 0
+        currentFacePosition = facePosition
         guard cameraService.isCapturing else { return }
 
         if calibrationService.state.isInProgress {
@@ -474,6 +479,8 @@ final class PostureViewModel {
     /// ユーザー不在時に誤って通知が送られることを防ぐ。
     /// breakdown は減衰比率に応じて比例スケーリングする。
     private func handleNoFaceDetected() {
+        currentFacePosition = nil
+
         // キャリブレーション中の場合
         if calibrationService.state.isInProgress {
             calibrationService.processNoFaceFrame()

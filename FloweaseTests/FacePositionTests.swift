@@ -15,6 +15,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: Date()
@@ -29,6 +31,8 @@ struct FacePositionTests {
             centerX: -0.1,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: Date()
@@ -43,6 +47,8 @@ struct FacePositionTests {
             centerX: 1.1,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: Date()
@@ -57,6 +63,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: -0.1,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: Date()
@@ -71,6 +79,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 1.1,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: Date()
@@ -85,6 +95,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.0,
+            width: 0.0,
+            height: 0.0,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: Date()
@@ -99,6 +111,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: -0.1,
+            width: 0.0,
+            height: 0.0,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: Date()
@@ -113,6 +127,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 1.1,
+            width: 1.1,
+            height: 1.0,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: Date()
@@ -127,6 +143,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: -.pi - 0.1,
             captureQuality: 0.5,
             timestamp: Date()
@@ -141,6 +159,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: .pi,
             captureQuality: 0.5,
             timestamp: Date()
@@ -155,6 +175,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: nil,
             captureQuality: 0.5,
             timestamp: Date()
@@ -169,6 +191,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: -0.1,
             timestamp: Date()
@@ -183,6 +207,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 1.1,
             timestamp: Date()
@@ -199,6 +225,8 @@ struct FacePositionTests {
             centerX: 0.0,
             centerY: 0.0,
             area: 0.001,
+            width: 0.01,
+            height: 0.1,
             roll: -.pi,
             captureQuality: 0.0,
             timestamp: Date()
@@ -213,6 +241,8 @@ struct FacePositionTests {
             centerX: 1.0,
             centerY: 1.0,
             area: 1.0,
+            width: 1.0,
+            height: 1.0,
             roll: .pi - 0.0001,
             captureQuality: 1.0,
             timestamp: Date()
@@ -227,6 +257,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: -.pi,
             captureQuality: 0.5,
             timestamp: Date()
@@ -241,6 +273,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: .pi - 0.0001,
             captureQuality: 0.5,
             timestamp: Date()
@@ -257,6 +291,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.3,
             timestamp: Date()
@@ -271,6 +307,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.29,
             timestamp: Date()
@@ -295,6 +333,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: date
@@ -303,6 +343,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: date
@@ -318,6 +360,8 @@ struct FacePositionTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: date
@@ -326,6 +370,8 @@ struct FacePositionTests {
             centerX: 0.6,
             centerY: 0.5,
             area: 0.1,
+            width: 0.25,
+            height: 0.4,
             roll: 0.0,
             captureQuality: 0.5,
             timestamp: date

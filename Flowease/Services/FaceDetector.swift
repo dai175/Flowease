@@ -14,7 +14,7 @@ import OSLog
 /// 顔検出エラー
 ///
 /// Vision Framework で発生する可能性のあるエラーを分類する。
-enum FaceDetectionError: Error, Sendable, Equatable {
+enum FaceDetectionError: Error, Equatable {
     /// 顔が検出されなかった
     case noFaceDetected
 
@@ -177,6 +177,8 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
             centerX: Double(box.midX),
             centerY: Double(box.midY),
             area: Double(box.width * box.height),
+            width: Double(box.width),
+            height: Double(box.height),
             roll: observation.roll?.doubleValue,
             captureQuality: quality,
             timestamp: Date()

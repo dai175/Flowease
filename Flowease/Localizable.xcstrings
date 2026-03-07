@@ -904,6 +904,38 @@
         }
       }
     },
+    "Move closer to the camera" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move closer to the camera"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もう少しカメラに近づいてください"
+          }
+        }
+      }
+    },
+    "Move further from the camera" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move further from the camera"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もう少しカメラから離れてください"
+          }
+        }
+      }
+    },
     "Monitoring" : {
       "localizations" : {
         "en" : {

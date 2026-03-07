@@ -44,6 +44,8 @@ struct FaceScoreCalculatorTests {
             centerX: centerX,
             centerY: centerY,
             area: area,
+            width: sqrt(area),
+            height: sqrt(area),
             roll: roll,
             captureQuality: captureQuality,
             timestamp: Date()
@@ -481,6 +483,8 @@ struct FaceScoreCalculatorTests {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.04,
+            width: 0.2,
+            height: 0.2,
             roll: 0.0,
             captureQuality: 0.8,
             timestamp: now

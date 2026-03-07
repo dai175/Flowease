@@ -42,6 +42,8 @@ final class CalibrationServiceTests: XCTestCase {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.05,
+            width: 0.2,
+            height: 0.25,
             roll: 0.0,
             captureQuality: 0.9,
             timestamp: timestamp
@@ -54,6 +56,8 @@ final class CalibrationServiceTests: XCTestCase {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.05,
+            width: 0.2,
+            height: 0.25,
             roll: 0.0,
             captureQuality: 0.2,
             timestamp: timestamp
@@ -67,6 +71,8 @@ final class CalibrationServiceTests: XCTestCase {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.0, // 無効値：area は 0 < value <= 1.0 が必要
+            width: 0.0,
+            height: 0.0,
             roll: 0.0,
             captureQuality: 0.9,
             timestamp: timestamp
@@ -79,6 +85,8 @@ final class CalibrationServiceTests: XCTestCase {
             centerX: 0.5,
             centerY: 0.5,
             area: 0.05,
+            width: 0.2,
+            height: 0.25,
             roll: roll,
             captureQuality: 0.9,
             timestamp: timestamp
@@ -426,12 +434,12 @@ final class CalibrationServiceTests: XCTestCase {
 
         // When: 異なるY座標のフレームを処理
         sut.processFaceFrame(FacePosition(
-            centerX: 0.5, centerY: 0.4, area: 0.05, roll: 0.0,
-            captureQuality: 0.9, timestamp: Date()
+            centerX: 0.5, centerY: 0.4, area: 0.05, width: 0.2, height: 0.25,
+            roll: 0.0, captureQuality: 0.9, timestamp: Date()
         ))
         sut.processFaceFrame(FacePosition(
-            centerX: 0.5, centerY: 0.6, area: 0.05, roll: 0.0,
-            captureQuality: 0.9, timestamp: Date()
+            centerX: 0.5, centerY: 0.6, area: 0.05, width: 0.2, height: 0.25,
+            roll: 0.0, captureQuality: 0.9, timestamp: Date()
         ))
 
         // Then: フレームが蓄積される
