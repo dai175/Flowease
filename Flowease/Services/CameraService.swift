@@ -72,25 +72,32 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
     /// Note: extension からアクセスするため internal
     let frameCounter = OSAllocatedUnfairLock(initialState: 0)
 
+    /// デフォルトのフレーム処理間隔
+    static let defaultFrameProcessingInterval = 2
+
     /// 処理するフレームの間隔（2 = 2フレームに1回処理）
     /// Note: extension からアクセスするため internal
-    let frameProcessingInterval = 2
+    let frameProcessingInterval: Int
 
     /// 現在実際に使用中のカメラID（フォールバック判定用）
     /// Note: extension からアクセスするため internal
     var currentCameraID: String?
 
-    /// フォールバック試行中フラグ（無限ループ防止）
+    /// カメラ復旧状態（フォールバック管理用）
     /// Note: extension からアクセスするため internal
-    var isAttemptingFallback = false
+    var recoveryState: CameraRecoveryState = .normal
 
     // MARK: - Initialization
 
     /// イニシャライザ
     ///
     /// - Parameter deviceManager: カメラデバイスマネージャー（依存注入によりテスト可能）
-    init(deviceManager: any CameraDeviceManaging = CameraDeviceManager()) {
+    init(
+        deviceManager: any CameraDeviceManaging = CameraDeviceManager(),
+        frameProcessingInterval: Int = CameraService.defaultFrameProcessingInterval
+    ) {
         self.deviceManager = deviceManager
+        self.frameProcessingInterval = frameProcessingInterval
         // UserDefaults から選択カメラIDを復元
         selectedCameraID = UserDefaults.standard.string(forKey: Self.selectedCameraKey)
         super.init()

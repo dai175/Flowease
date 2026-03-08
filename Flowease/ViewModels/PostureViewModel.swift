@@ -354,35 +354,11 @@ final class PostureViewModel {
     /// スコアを追加
     ///
     /// 新しいスコアを履歴に追加し、監視状態を `active` に更新する。
-    /// 履歴が最大件数を超えた場合は古いものから削除する。
     /// アラートサービスが設定されている場合は通知判定も実行する。
     ///
     /// - Parameter score: 追加する姿勢スコア
     func addScore(_ score: PostureScore) {
-        scoreHistory.append(score)
-
-        // 最大件数を超えた場合は古いものから削除
-        if scoreHistory.count > maxScoreHistoryCount {
-            scoreHistory.removeFirst()
-        }
-
-        // 状態安定化用履歴に追加
-        stateScoreHistory.append(score)
-        // 古いスコアを削除（平均化期間 + 1秒のバッファ）
-        let cutoff = Date().addingTimeInterval(-(stateAveragingPeriodSeconds + 1.0))
-        stateScoreHistory.removeAll { $0.timestamp < cutoff }
-
-        // 状態を active に更新
-        monitoringState = .active(score)
-        logger.debug("Score added: \(score.value), smoothed score: \(self.smoothedScore)")
-
-        // アラート用スコア履歴に追加し、通知判定を実行
-        if let alertHistory = alertScoreHistory, let service = alertService {
-            alertHistory.add(score)
-            Task {
-                await service.evaluate()
-            }
-        }
+        appendToDisplayHistory(score, includeInAlertHistory: true)
     }
 
     /// スコア履歴をクリア
@@ -521,6 +497,21 @@ final class PostureViewModel {
     ///
     /// 顔未検出時の減衰スコアなど、実際の姿勢を反映しないスコアに使用する。
     private func addScoreForDisplayOnly(_ score: PostureScore) {
+        appendToDisplayHistory(score, includeInAlertHistory: false)
+    }
+
+    /// スコアを表示用履歴に追加する共通処理
+    ///
+    /// スコア履歴は2系統で管理される:
+    /// - **表示用 (scoreHistory/stateScoreHistory)**: UI のスムージング・状態安定化に使用。
+    ///   顔未検出時の減衰スコアを含むため、リアルタイムなUI表示に適する。
+    /// - **アラート用 (alertScoreHistory)**: 姿勢悪化の通知判定に使用。
+    ///   実際の検出スコアのみを含み、減衰スコアを除外することで誤通知を防ぐ。
+    ///
+    /// - Parameters:
+    ///   - score: 追加する姿勢スコア
+    ///   - includeInAlertHistory: アラート用履歴にも追加する場合は true
+    private func appendToDisplayHistory(_ score: PostureScore, includeInAlertHistory: Bool) {
         scoreHistory.append(score)
         if scoreHistory.count > maxScoreHistoryCount {
             scoreHistory.removeFirst()
@@ -531,7 +522,18 @@ final class PostureViewModel {
         stateScoreHistory.removeAll { $0.timestamp < cutoff }
 
         monitoringState = .active(score)
-        logger.debug("Display-only score added: \(score.value) (not sent to alert history)")
+
+        if includeInAlertHistory {
+            logger.debug("Score added: \(score.value), smoothed score: \(self.smoothedScore)")
+            if let alertHistory = alertScoreHistory, let service = alertService {
+                alertHistory.add(score)
+                Task {
+                    await service.evaluate()
+                }
+            }
+        } else {
+            logger.debug("Display-only score added: \(score.value) (not sent to alert history)")
+        }
     }
 
     /// Vision エラー時の処理

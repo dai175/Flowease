@@ -91,6 +91,18 @@ protocol CameraServiceProtocol: AnyObject, Sendable {
     func selectCamera(_ deviceID: String?)
 }
 
+// MARK: - CameraRecoveryState
+
+/// カメラの復旧状態
+///
+/// フォールバック試行時の状態を管理し、無限ループを防止する。
+enum CameraRecoveryState: Equatable {
+    /// 通常動作中（フォールバック未実行）
+    case normal
+    /// システムデフォルトカメラへのフォールバック試行中
+    case attemptingFallback(originalCameraID: String?)
+}
+
 // MARK: - CameraServiceError
 
 /// CameraService のエラー型
