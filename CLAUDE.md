@@ -58,6 +58,9 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 
 - Code: English
 - Comments/Documentation: Japanese acceptable
+- Commit messages: English, Conventional Commits format (feat:, fix:, docs:, refactor:, chore:, etc.)
+- PR titles: English, Conventional Commits format
+- PR body: Japanese (section headings like ## Summary, ## Test plan in English)
 - Respond in Japanese
 
 ## Technologies
