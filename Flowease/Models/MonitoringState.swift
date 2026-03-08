@@ -4,7 +4,7 @@ import Foundation
 ///
 /// アプリケーションの姿勢監視機能の現在の状態を表す。
 /// 状態によってメニューバーアイコンの表示が変わる。
-enum MonitoringState: Sendable, Equatable {
+enum MonitoringState: Equatable {
     /// 正常に監視中
     ///
     /// カメラで人物を検出し、姿勢スコアを算出できている状態。

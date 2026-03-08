@@ -96,6 +96,7 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
         deviceManager: any CameraDeviceManaging = CameraDeviceManager(),
         frameProcessingInterval: Int = CameraService.defaultFrameProcessingInterval
     ) {
+        precondition(frameProcessingInterval > 0, "frameProcessingInterval must be positive")
         self.deviceManager = deviceManager
         self.frameProcessingInterval = frameProcessingInterval
         // UserDefaults から選択カメラIDを復元

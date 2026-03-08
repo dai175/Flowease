@@ -4,7 +4,7 @@ import Foundation
 ///
 /// 複数フレームから平均化された顔位置と評価項目の基準値を保持する。
 /// UserDefaultsへの永続化に対応するためCodableを実装。
-struct FaceReferencePosture: Codable, Sendable, Equatable {
+struct FaceReferencePosture: Codable, Equatable {
     /// キャリブレーション完了日時
     let calibratedAt: Date
 

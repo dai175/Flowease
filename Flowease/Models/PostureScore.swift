@@ -3,7 +3,7 @@ import Foundation
 /// 姿勢スコア (0-100)
 ///
 /// 姿勢の分析結果を表すスコア。値が高いほど良好な姿勢を示す。
-struct PostureScore: Sendable, Equatable {
+struct PostureScore: Equatable {
     /// スコア値 (0: 最悪 〜 100: 最良)
     let value: Int
 

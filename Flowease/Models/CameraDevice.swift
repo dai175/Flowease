@@ -4,7 +4,7 @@ import Foundation
 ///
 /// AVCaptureDevice のラッパーとして機能し、UI表示に必要な情報を提供します。
 /// Sendable に準拠しており、並行処理環境で安全に使用できます。
-struct CameraDevice: Identifiable, Equatable, Sendable {
+struct CameraDevice: Identifiable, Equatable {
     /// デバイスの一意識別子（AVCaptureDevice.uniqueID）
     let id: String
 

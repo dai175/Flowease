@@ -6,7 +6,7 @@ import Foundation
 ///
 /// 姿勢監視が一時的に停止している理由を表す。
 /// これらの状態は自動的に解消される可能性がある。
-enum PauseReason: Sendable, Equatable {
+enum PauseReason: Equatable {
     /// カメラの準備中
     ///
     /// AVCaptureSession の初期化・設定中に発生。

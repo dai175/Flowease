@@ -15,7 +15,7 @@ import Foundation
 /// - `good`: 80以上（良好な姿勢）
 /// - `fair`: 60-79（普通の姿勢）
 /// - `poor`: 60未満（改善が必要な姿勢）
-enum ScoreStatus: Sendable, Equatable {
+enum ScoreStatus: Equatable {
     case good
     case fair
     case poor
