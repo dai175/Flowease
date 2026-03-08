@@ -39,6 +39,9 @@ final class CameraPreviewNSView: NSView {
     /// connection 監視用 KVO
     private var connectionObservation: NSKeyValueObservation?
 
+    /// observation の世代管理（セッション再切替時の競合防止）
+    private var observationGeneration: Int = 0
+
     /// キャプチャセッションの設定
     var session: AVCaptureSession? {
         didSet {
@@ -90,12 +93,17 @@ final class CameraPreviewNSView: NSView {
         }
 
         // connection が未確立の場合は KVO で監視
+        observationGeneration += 1
+        let generation = observationGeneration
         connectionObservation = previewLayer.observe(\.connection, options: [.new]) { [weak self] layer, _ in
             Task { @MainActor in
                 guard let self, let connection = layer.connection else { return }
                 self.configureMirroring(for: connection)
-                self.connectionObservation?.invalidate()
-                self.connectionObservation = nil
+                // セッション再切替で世代が変わっていない場合のみ解除
+                if self.observationGeneration == generation {
+                    self.connectionObservation?.invalidate()
+                    self.connectionObservation = nil
+                }
             }
         }
     }
