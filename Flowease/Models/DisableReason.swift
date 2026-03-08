@@ -6,7 +6,7 @@ import Foundation
 ///
 /// 姿勢監視が無効化されている理由を表す。
 /// これらの状態はユーザーの操作なしには解消されない。
-enum DisableReason: Sendable, Equatable {
+enum DisableReason: Equatable {
     /// カメラアクセス権限が拒否されている
     ///
     /// ユーザーがカメラアクセスを明示的に拒否した場合。

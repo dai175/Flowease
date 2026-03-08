@@ -4,7 +4,7 @@ import Foundation
 ///
 /// 姿勢アラート通知に関するユーザー設定を保持する構造体。
 /// UserDefaultsで永続化される。
-struct AlertSettings: Sendable, Equatable, Codable {
+struct AlertSettings: Equatable, Codable {
     /// 通知機能の有効/無効
     var isEnabled: Bool
 

@@ -20,7 +20,7 @@ import Foundation
 /// 2. Notified → 姿勢改善: 平均スコアが閾値を超える → hasImprovedSinceLastNotification = true
 /// 3. 姿勢改善 → Notified: 再度平均スコアが閾値以下 → 通知送信
 /// 4. Notified → 間隔経過: 姿勢改善なしで最短間隔経過 → リマインド通知送信
-struct AlertState: Sendable, Equatable {
+struct AlertState: Equatable {
     /// 最後に通知を送信した時刻（nil = 未送信）
     var lastNotificationTime: Date?
 

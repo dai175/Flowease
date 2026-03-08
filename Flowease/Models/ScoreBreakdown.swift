@@ -4,7 +4,7 @@ import Foundation
 ///
 /// 顔検出による姿勢スコアの内訳を表す。各評価項目は0〜100の範囲で表現される。
 /// 3項目評価: 垂直位置変化(40%)、サイズ変化(40%)、傾き(20%)
-struct ScoreBreakdown: Sendable, Equatable, Codable {
+struct ScoreBreakdown: Equatable, Codable {
     /// 垂直位置変化スコア (0-100) - 重み40%
     ///
     /// 顔のY座標の下方変化（うつむき）を評価。

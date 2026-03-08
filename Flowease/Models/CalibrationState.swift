@@ -9,7 +9,7 @@ import Foundation
 ///
 /// Note: この状態は永続化されない。アプリ再起動時は`referencePosture`の有無から
 /// `notCalibrated`または`completed`に復帰する。
-enum CalibrationState: Sendable, Equatable {
+enum CalibrationState: Equatable {
     /// キャリブレーション未実行
     /// 初回起動時、またはリセット後の状態
     case notCalibrated

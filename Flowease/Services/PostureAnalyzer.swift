@@ -12,7 +12,7 @@ import OSLog
 ///
 /// PostureAnalyzer の分析結果を表す列挙型。
 /// 成功時は FacePosition を、失敗時は原因を区別して返す。
-enum AnalysisResult: Sendable, Equatable {
+enum AnalysisResult: Equatable {
     /// 顔が正常に検出された
     case success(FacePosition)
 

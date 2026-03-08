@@ -4,7 +4,7 @@ import Foundation
 ///
 /// 個々の姿勢スコアとタイムスタンプを保持する軽量な構造体。
 /// ScoreHistoryで時系列データとして管理される。
-struct ScoreRecord: Sendable, Equatable {
+struct ScoreRecord: Equatable {
     /// スコア値 (0-100)
     let value: Int
 

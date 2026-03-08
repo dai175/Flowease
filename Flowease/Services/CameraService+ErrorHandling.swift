@@ -60,8 +60,8 @@ extension CameraService {
                 recoveryState = .attemptingFallback(originalCameraID: selectedCameraID)
 
                 // フォールバック: システムデフォルトカメラで再試行
-                // selectedCameraID はそのまま維持（ユーザーの設定を保持）
-                // 一時的に nil を使って開始し、デフォルトカメラを使用
+                // 一時的に UserDefaults をクリアしてデフォルトカメラで開始
+                // 成功時は selectedCameraID を nil に更新、失敗時は元の設定を復元
                 let savedSelectedID = selectedCameraID
                 UserDefaults.standard.removeObject(forKey: Self.selectedCameraKey)
 
