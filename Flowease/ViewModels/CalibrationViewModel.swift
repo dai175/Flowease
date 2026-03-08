@@ -182,6 +182,12 @@ final class CalibrationViewModel {
             stopDisplayTimer()
             return
         }
+        // waitingForFrames 状態では targetDuration を表示
+        if let progress = state.progress, progress.isWaitingForFrames {
+            displayProgress = 0
+            displayRemainingSeconds = progress.targetDuration
+            return
+        }
         displayProgress = state.progress?.progress ?? 0
         displayRemainingSeconds = state.progress?.remainingSeconds ?? 0
     }
