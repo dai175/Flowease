@@ -36,11 +36,15 @@ final class CameraPreviewNSView: NSView {
     /// プレビューレイヤー
     private let previewLayer = AVCaptureVideoPreviewLayer()
 
+    /// connection 監視用 KVO
+    private var connectionObservation: NSKeyValueObservation?
+
     /// キャプチャセッションの設定
     var session: AVCaptureSession? {
         didSet {
             guard session !== oldValue else { return }
             previewLayer.session = session
+            observeConnection()
         }
     }
 
@@ -60,14 +64,46 @@ final class CameraPreviewNSView: NSView {
         layer = previewLayer
     }
 
+    deinit {
+        connectionObservation?.invalidate()
+    }
+
     override func layout() {
         super.layout()
         previewLayer.frame = bounds
 
-        // レイアウト時にミラーリング設定を確認（セッション接続後に connection が利用可能になるため）
-        if let connection = previewLayer.connection, connection.isVideoMirroringSupported {
-            connection.automaticallyAdjustsVideoMirroring = false
-            connection.isVideoMirrored = true
+        // フォールバック: layout 時にもミラーリングを確認
+        if let connection = previewLayer.connection {
+            configureMirroring(for: connection)
         }
+    }
+
+    /// connection の確立を監視し、ミラーリングを設定する
+    private func observeConnection() {
+        connectionObservation?.invalidate()
+        connectionObservation = nil
+
+        // すでに connection がある場合は即座に設定
+        if let connection = previewLayer.connection {
+            configureMirroring(for: connection)
+            return
+        }
+
+        // connection が未確立の場合は KVO で監視
+        connectionObservation = previewLayer.observe(\.connection, options: [.new]) { [weak self] layer, _ in
+            Task { @MainActor in
+                guard let self, let connection = layer.connection else { return }
+                self.configureMirroring(for: connection)
+                self.connectionObservation?.invalidate()
+                self.connectionObservation = nil
+            }
+        }
+    }
+
+    /// ミラーリングを設定する
+    private func configureMirroring(for connection: AVCaptureConnection) {
+        guard connection.isVideoMirroringSupported else { return }
+        connection.automaticallyAdjustsVideoMirroring = false
+        connection.isVideoMirrored = true
     }
 }
