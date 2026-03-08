@@ -4,7 +4,7 @@ import Foundation
 ///
 /// キャリブレーション実行中の状態を追跡する。
 /// フレーム収集の進捗、残り時間、失敗判定に使用。
-struct CalibrationProgress: Sendable, Equatable {
+struct CalibrationProgress: Equatable {
     /// キャリブレーション開始時刻
     let startTime: Date
 
@@ -49,6 +49,21 @@ struct CalibrationProgress: Sendable, Equatable {
         self.noFaceStreak = max(0, noFaceStreak)
     }
 
+    // MARK: - Factory Methods
+
+    /// フレーム受信待ち状態の進捗を生成
+    ///
+    /// startTime を distantFuture に設定することで、最初のフレーム受信前は
+    /// progress = 0.0、elapsedTime < 0 となり、タイマーが実質的に未開始の状態を表現する。
+    static func waitingForFrames(
+        targetDuration: TimeInterval = CalibrationProgress.defaultTargetDuration
+    ) -> CalibrationProgress {
+        CalibrationProgress(
+            startTime: .distantFuture,
+            targetDuration: targetDuration
+        )
+    }
+
     // MARK: - Computed Properties
 
     /// 経過時間（秒）
@@ -88,6 +103,14 @@ struct CalibrationProgress: Sendable, Equatable {
         elapsedTime >= targetDuration
     }
 
+    /// フレーム受信待ち状態かどうか
+    ///
+    /// `waitingForFrames()` で生成された進捗は startTime が distantFuture のため、
+    /// 実質的にタイマーが開始されていない状態を表す。
+    var isWaitingForFrames: Bool {
+        startTime == .distantFuture
+    }
+
     /// 現在の検出品質レベル
     /// 低信頼度または顔未検出の連続フレーム数に応じて品質を判定
     var currentQualityLevel: QualityLevel {
@@ -103,7 +126,7 @@ struct CalibrationProgress: Sendable, Equatable {
     }
 
     /// 検出品質レベル
-    enum QualityLevel: Sendable {
+    enum QualityLevel {
         /// 良好（高信頼度で検出中）
         case good
         /// 低信頼度（検出されているが信頼度が低い）

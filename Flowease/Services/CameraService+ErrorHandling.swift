@@ -47,15 +47,17 @@ extension CameraService {
 
             // フォールバック試行: 選択されたカメラが失敗し、まだフォールバックを試みていない場合
             let defaultCamera = AVCaptureDevice.default(for: .video)
-            let canFallback = !isAttemptingFallback
-                && selectedCameraID != nil
-                && failedCameraID == selectedCameraID
-                && defaultCamera != nil
-                && defaultCamera?.uniqueID != selectedCameraID
+            let canFallback: Bool = {
+                if case .attemptingFallback = recoveryState { return false }
+                return selectedCameraID != nil
+                    && failedCameraID == selectedCameraID
+                    && defaultCamera != nil
+                    && defaultCamera?.uniqueID != selectedCameraID
+            }()
 
             if canFallback {
                 logger.info("Selected camera failed, attempting fallback to system default")
-                isAttemptingFallback = true
+                recoveryState = .attemptingFallback(originalCameraID: selectedCameraID)
 
                 // フォールバック: システムデフォルトカメラで再試行
                 // selectedCameraID はそのまま維持（ユーザーの設定を保持）
@@ -65,7 +67,7 @@ extension CameraService {
 
                 startCapturing()
 
-                isAttemptingFallback = false
+                recoveryState = .normal
 
                 // フォールバックが成功したかチェック
                 if isCapturing {

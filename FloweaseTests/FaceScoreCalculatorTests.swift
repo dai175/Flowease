@@ -349,8 +349,9 @@ struct FaceScoreCalculatorTests {
         #expect(tiltScore > 0)
     }
 
-    /// rollがnilの場合は70点（デフォルト）
-    @Test func tiltScoreDefaultWhenRollIsNil() {
+    /// rollがnilの場合: tiltは100（データなし=問題なし）、
+    /// 総合スコアはvertical/sizeの重み再配分で算出
+    @Test func tiltScoreWhenRollIsNil() {
         let calculator = FaceScoreCalculator()
         let reference = makeReferencePosture()
         calculator.setReferencePosture(reference)
@@ -359,7 +360,34 @@ struct FaceScoreCalculatorTests {
 
         let score = calculator.calculate(from: face)
 
-        #expect(score?.breakdown.tilt == 70)
+        // tiltデータなし: breakdown.tilt = 100
+        #expect(score?.breakdown.tilt == 100)
+        // vertical/sizeともに基準通り → 総合も100点
+        #expect(score?.value == 100)
+    }
+
+    /// rollがnilの場合: vertical/sizeのみで重み再配分されたスコア
+    @Test func totalScoreWithNilRollUsesRedistributedWeights() {
+        let calculator = FaceScoreCalculator()
+        let reference = makeReferencePosture(
+            baselineY: 0.5,
+            baselineArea: 0.04,
+            baselineRoll: 0.0
+        )
+        calculator.setReferencePosture(reference)
+
+        // Y座標低下: 0.15逸脱 → vertical=0点, size=100点
+        let face = makeFacePosition(
+            centerY: 0.35,
+            area: 0.04,
+            roll: nil
+        )
+
+        let score = calculator.calculate(from: face)
+
+        // roll nil時: vertical(50%) + size(50%) = 0*0.5 + 100*0.5 = 50
+        #expect(score?.value == 50)
+        #expect(score?.breakdown.tilt == 100)
     }
 
     // MARK: - Weighted Total Score Tests

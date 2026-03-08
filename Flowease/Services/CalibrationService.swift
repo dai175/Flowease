@@ -10,7 +10,7 @@ import OSLog
 // MARK: - CalibrationError
 
 /// キャリブレーション処理で発生するエラー
-enum CalibrationError: Error, Equatable, Sendable {
+enum CalibrationError: Error, Equatable {
     /// 既にキャリブレーション実行中
     case alreadyInProgress
 
@@ -133,8 +133,8 @@ final class CalibrationService: CalibrationServiceProtocol {
         hasReceivedFirstFrame = false
         currentProgress = nil // 最初のフレーム受信時に作成
 
-        // 状態を更新（ダミーの進捗で開始）
-        state = .inProgress(CalibrationProgress())
+        // フレーム受信待ち状態の進捗で開始（タイマー未開始）
+        state = .inProgress(.waitingForFrames())
         logger.info("Calibration started (waiting for frames)")
     }
 

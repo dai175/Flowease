@@ -50,6 +50,15 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
         let sizeChangeWeight: Double = 0.40
         let tiltWeight: Double = 0.20
 
+        /// roll未取得時の正規化済み重み（事前計算）
+        var verticalWeightWithoutTilt: Double {
+            verticalPositionWeight / (verticalPositionWeight + sizeChangeWeight)
+        }
+
+        var sizeWeightWithoutTilt: Double {
+            sizeChangeWeight / (verticalPositionWeight + sizeChangeWeight)
+        }
+
         // Thresholds（threshold: 減少開始点、maxDeviation: スコア0になる点）
         let verticalThreshold: Double = 0.02
         let verticalMaxDeviation: Double = 0.15
@@ -109,16 +118,26 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
         let tiltScore = calculateTiltScore(face: face, baseline: baseline)
 
         // 加重平均で総合スコアを算出
-        let weightedScore = Double(verticalScore) * config.verticalPositionWeight
-            + Double(sizeScore) * config.sizeChangeWeight
-            + Double(tiltScore) * config.tiltWeight
+        // roll未取得時は tilt を除外し、vertical/size の重みを正規化して再配分
+        let weightedScore: Double
+        let breakdownTilt: Int
+        if let tiltScore {
+            weightedScore = Double(verticalScore) * config.verticalPositionWeight
+                + Double(sizeScore) * config.sizeChangeWeight
+                + Double(tiltScore) * config.tiltWeight
+            breakdownTilt = tiltScore
+        } else {
+            weightedScore = Double(verticalScore) * config.verticalWeightWithoutTilt
+                + Double(sizeScore) * config.sizeWeightWithoutTilt
+            breakdownTilt = 100 // tiltデータなし: 問題なしとして表示
+        }
 
         let totalScore = Int(weightedScore.rounded())
 
         logger.debug(
             """
             Score calculation complete: total=\(totalScore), vertical=\(verticalScore), \
-            size=\(sizeScore), tilt=\(tiltScore)
+            size=\(sizeScore), tilt=\(breakdownTilt), rollAvailable=\(tiltScore != nil)
             """
         )
 
@@ -128,7 +147,7 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
             breakdown: ScoreBreakdown(
                 verticalPosition: verticalScore,
                 sizeChange: sizeScore,
-                tilt: tiltScore
+                tilt: breakdownTilt
             ),
             confidence: face.captureQuality
         )
@@ -159,9 +178,11 @@ final class FaceScoreCalculator: FaceScoreCalculatorProtocol {
     }
 
     /// 傾きスコアを計算（両方向、ラップアラウンド考慮）
-    private func calculateTiltScore(face: FacePosition, baseline: FaceBaselineMetrics) -> Int {
+    ///
+    /// roll が取得できない場合は nil を返し、呼び出し元で重み再配分を行う。
+    private func calculateTiltScore(face: FacePosition, baseline: FaceBaselineMetrics) -> Int? {
         guard let roll = face.roll else {
-            return 70 // roll未取得時のデフォルト
+            return nil // roll未取得時: 呼び出し元で重み再配分
         }
 
         let diff = roll - baseline.baselineRoll
