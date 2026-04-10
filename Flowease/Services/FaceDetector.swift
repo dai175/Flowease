@@ -113,13 +113,7 @@ final class FaceDetector: FaceDetectorProtocol, Sendable {
 
             let position = createFacePosition(from: largestFace, quality: quality)
 
-            logger.debug("""
-            Face detected: center=(\(String(format: "%.3f", position.centerX)), \
-            \(String(format: "%.3f", position.centerY))), \
-            area=\(String(format: "%.4f", position.area)), \
-            roll=\(position.roll.map { String(format: "%.3f", $0) } ?? "nil"), \
-            quality=\(String(format: "%.2f", position.captureQuality))
-            """)
+            logger.debug("Face detected: quality=\(String(format: "%.2f", position.captureQuality))")
 
             return .success(position)
         } catch {
