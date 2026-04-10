@@ -221,10 +221,11 @@ final class CameraService: NSObject, CameraServiceProtocol, ObservableObject {
             // startRunning() はブロッキング呼び出しなのでバックグラウンドで実行
             captureQueue.async { [weak self] in
                 session?.startRunning()
+                let isRunning = session?.isRunning ?? false
                 Task { @MainActor [weak self] in
                     guard let self else { return }
                     // セッションが実際に開始されたかチェック
-                    guard let session, session.isRunning else {
+                    guard isRunning else {
                         isCapturing = false
                         logger.error("Failed to start frame capture")
                         frameDelegate?.cameraService(self, didEncounterError: CameraServiceError.cameraInUse)

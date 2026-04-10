@@ -334,9 +334,13 @@ final class CalibrationService: CalibrationServiceProtocol {
         state = .completed
         clearCalibrationData()
 
-        logger.info("""
-        Calibration complete: frameCount=\(facePosture.frameCount), \
-        avgQuality=\(String(format: "%.2f", facePosture.averageQuality)), \
+        let avgQuality = String(format: "%.2f", facePosture.averageQuality)
+        logger
+            .info(
+                "Calibration complete: frameCount=\(facePosture.frameCount), avgQuality=\(avgQuality)"
+            )
+        logger.debug("""
+        Calibration baseline: \
         baselineY=\(String(format: "%.3f", facePosture.baselineMetrics.baselineY)), \
         baselineArea=\(String(format: "%.3f", facePosture.baselineMetrics.baselineArea)), \
         baselineRoll=\(String(format: "%.3f", facePosture.baselineMetrics.baselineRoll))
