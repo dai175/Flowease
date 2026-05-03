@@ -4,9 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Flowease is a macOS menu bar application built with SwiftUI. Target: macOS 14.6+, Swift 6.0.
+Flowease is a macOS menu bar application built with SwiftUI.
 
 ## Prerequisites
+
+Required:
+- macOS 14.6+
+- Xcode 16.0+
 
 Required tools (install via Homebrew):
 ```bash
@@ -28,14 +32,9 @@ make hooks-run      # Run hooks on all files
 make help           # Show all available commands
 ```
 
-## Code Style Rules
+## Code Style
 
-- Use `Logger` or `os_log` instead of `print()` (enforced by SwiftLint custom rule)
-- Avoid force unwrapping (`!`) - use optional binding or guard
-- Avoid implicitly unwrapped optionals (`String!`)
-- Line length: 120 (warning), 150 (error)
-- Function body: max 50 lines (warning), 100 (error)
-- See `.swiftlint.yml` for full configuration
+Enforced by SwiftLint (`.swiftlint.yml`) and SwiftFormat (`.swiftformat`). Run `make fix` before committing.
 
 ## Architecture
 
@@ -48,38 +47,33 @@ SwiftUI App with MVVM architecture for macOS menu bar:
 - `Services/` - Business logic (camera capture, face detection, posture analysis, score calculation, calibration, alerts, notifications, persistence)
 - `Utilities/` - Helpers (color gradients, logger extensions, menu bar icon rendering, lock extensions)
 
+Feature specs are stored in `specs/NNN-feature-name/` (numbered, spec-driven workflow).
+
+## Concurrency
+
+Swift 6 strict concurrency. Conventions:
+- UI / ViewModels / Services: `@MainActor`
+- Data models: `Sendable` value types
+- `@unchecked Sendable` classes use `NSLock` (e.g., `ScoreHistory`, `CalibrationStorage`)
+- `CameraService.frameCounter`: `OSAllocatedUnfairLock`
+- `PostureAnalyzer.analyze()`: `nonisolated` + `sending` (called from AVCapture callback)
+- `FaceDetector`: `Sendable`, runs Vision in `Task.detached`
+
 ## Testing
 
 - Tests in `FloweaseTests/` — one test file per source file (e.g., `FaceDetectorTests.swift`)
+- **New tests use Swift Testing** (`import Testing`, `@Test`, `#expect`)
+- Legacy `FloweaseTests.swift` still uses XCTest — do not add new XCTest-based tests
 - Run: `make test`
 - Tests are excluded from SwiftLint analysis
 
 ## Language
 
-- Code: English
 - Comments/Documentation: Japanese acceptable
 - Commit messages: English, Conventional Commits format (feat:, fix:, docs:, refactor:, chore:, etc.)
 - PR titles: English, Conventional Commits format
 - PR body: Japanese (section headings like ## Summary, ## Test plan in English)
 - Respond in Japanese
-
-## Technologies
-
-- **UI**: Swift 6.0 + SwiftUI
-- **Camera**: AVFoundation (video capture, CMSampleBuffer)
-- **Face Detection**: Vision framework (VNDetectFaceRectanglesRequest, VNDetectFaceCaptureQualityRequest)
-- **Notifications**: UserNotifications framework (macOS system notifications)
-- **Persistence**: UserDefaults (calibration data, alert settings)
-
-## Features
-
-- Posture scoring (camera → face analysis → 0–100 score)
-- Posture calibration (register personal baseline posture)
-- Posture alerts (customizable threshold, evaluation period, notification interval)
-- Menu bar resident (hidden from Dock)
-- Score-based color gradient (green=good, red=needs improvement, gray=undetected)
-- Camera selection (auto-handles disconnect/reconnect)
-- VoiceOver accessibility (English and Japanese)
 
 ## Localization
 
